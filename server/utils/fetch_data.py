@@ -7,9 +7,9 @@ from datetime import datetime
 def fetch_options_data(
     symbols: list,
     expiration: str,
-    min_strike: float,
-    max_strike: float,
-    option_type: str = "both",
+    min_strike: float = 80,
+    max_strike: float = 200,
+    option_type: str = "call",
     total_results: int = 10,
 ):
     """
