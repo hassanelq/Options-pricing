@@ -1,11 +1,9 @@
 "use client";
 import NavLink from "./ui/NavLink";
 import dynamic from "next/dynamic";
-// import LottieAnimation from "./ui/LootieAnimation";
 
-// Dynamically import LottieAnimation
 const LottieAnimation = dynamic(() => import("./ui/LootieAnimation"), {
-  ssr: false, // Disable SSR
+  ssr: false,
 });
 
 export default function Hero() {
@@ -13,12 +11,10 @@ export default function Hero() {
     <section>
       <div className="custom-screen text-gray-600 text-center flex flex-col gap-14 pt-14">
         <div className="space-y-8 max-w-4xl mx-auto">
-          {/* Lottie Animation */}
           <div className="flex justify-center">
             <LottieAnimation />
           </div>
 
-          {/* Hero Content */}
           <div className="space-y-5">
             <h1 className="text-4xl text-gray-800 font-extrabold mx-auto sm:text-6xl">
               Options Pricing Simulator
@@ -39,7 +35,7 @@ export default function Hero() {
               </NavLink>
               <NavLink
                 target="_blank"
-                href="https://github.com/hassanelq/Simulations-MC-BrownMotion"
+                href="https://github.com/hassanelq/Options-pricing"
                 className="text-gray-700 border hover:bg-gray-50"
                 scroll={false}
               >

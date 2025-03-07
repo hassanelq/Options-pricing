@@ -6,12 +6,12 @@ import Footer from "./Components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 // Metadata specific to the Simulations Project
-let title = "Simulations Hub - Monte Carlo, Brownian Motion & More";
+let title = "Pricing European Options";
 let description =
-  "Explore advanced simulations, including Monte Carlo, Brownian Motion, and Portfolio Income Analysis.";
+  "Estimate the fair value of European options using the Black Scholes Model and Heston model.";
 let url = "https://simulations-mc.vercel.app/";
 let ogimage = "/images/ogimage.png";
-let sitename = "Simulations Hub";
+let sitename = "Price European Options";
 
 export const metadata = {
   metadataBase: new URL(url),

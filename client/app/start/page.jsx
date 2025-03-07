@@ -5,51 +5,36 @@ import NavLink from "../Components/ui/NavLink";
 export default function StartPage() {
   const simulations = [
     {
-      title: "Probability Distributions",
-      path: "/start/probability",
+      title: "Ornstein Uhlenbeck Process",
+      path: "/start/ornstein-uhlenbeck",
       description:
-        "Explore probability distributions and their applications in real-world scenarios.",
+        "Learn about the Ornstein Uhlenbeck Process, a mean-reverting stochastic process used in finance and physics.",
+      icon: "📉",
+    },
+    {
+      title: "Black Scholes Model",
+      path: "/start/black-scholes",
+      description:
+        "Understand the Black Scholes Model, a mathematical model used to calculate the theoretical price of European-style options.",
       icon: "🎲",
     },
     {
-      title: "Investment Simulation",
-      path: "/start/investment",
+      title: "Heston Model",
+      path: "/start/heston",
       description:
-        "Simulate the growth of an investment portfolio over time, accounting for market volatility and annual contributions.",
-      icon: "📊",
+        "Explore the Heston Model, a stochastic volatility model used to price options and other derivatives.",
+      icon: "📈",
     },
-    {
-      title: "Options Pricing",
-      path: "/start/options",
-      description:
-        "Estimate the fair value of financial options using the Monte Carlo method by simulating asset price paths.",
-      icon: "📊",
-    },
-    // {
-    //   title: "Monte Carlo Simulation",
-    //   path: "/start/monteCarlo",
-    //   description:
-    //     "Simulate random processes and analyze complex systems using Monte Carlo methods.",
-    //   icon: "📊",
-    // },
-    // {
-    //   title: "Brownian Motion",
-    //   path: "/start/brownianMotion",
-    //   description:
-    //     "Dive into stochastic processes and Brownian motion with interactive simulations.",
-    //   icon: "🌊",
-    // },
   ];
 
   return (
     <div className="min-h-[85vh] flex flex-col items-center justify-center bg-gray-50 py-12 px-6">
       <h1 className="text-4xl font-extrabold text-gray-800 mb-8 text-center">
-        Choose a Simulation
+        Select a model
       </h1>
       <p className="text-lg text-gray-600 mb-12 max-w-2xl text-center">
-        Explore our simulation tools, using Monte Carlo methods. Each simulation
-        is designed to help you understand complex concepts through interactive
-        visualizations.
+        Select a model to explore and understand the underlying concepts of
+        financial derivatives.
       </p>
       <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-4xl">
         {simulations.map((sim, index) => (
