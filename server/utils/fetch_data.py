@@ -1,73 +1,101 @@
 import yfinance as yf
 import numpy as np
 import pandas as pd
+from datetime import datetime
 
 
-def fetch_option_data(
-    symbol: str, expiration: str, strike_price: float, option_type: str = "call"
+def fetch_options_data(
+    symbols: list,
+    expiration: str,
+    min_strike: float,
+    max_strike: float,
+    option_type: str = "both",
+    total_results: int = 10,
 ):
     """
-    Fetches stock price and closest available option chain data for a given symbol and expiration date.
+    Fetches stock price and selects the best available option chain data for multiple symbols.
 
     Parameters:
-    - symbol (str): Stock ticker symbol (e.g., "AAPL").
-    - expiration (str): Expiration date of the option in YYYY-MM-DD format.
-    - strike_price (float): The desired strike price of the option.
-    - option_type (str): "call" or "put".
+    - symbols (list): List of stock ticker symbols (e.g., ["AAPL", "TSLA"]).
+    - expiration (str): The expiration date in YYYY-MM-DD format.
+    - min_strike (float): Minimum strike price.
+    - max_strike (float): Maximum strike price.
+    - option_type (str): "call", "put", or "both".
+    - total_results (int): Maximum total number of results to return.
 
     Returns:
-    - dict: Contains stock price, closest available strike price, market option price, implied volatility.
+    - list: Contains the best matching options for each symbol, distributed equally.
     """
     try:
-        # Get stock data
-        stock = yf.Ticker(symbol)
+        results = []
+        num_per_symbol = max(
+            1, total_results // len(symbols)
+        )  # Even distribution per symbol
 
-        # Ensure stock price data is available
-        history = stock.history(period="1d")
-        if history.empty:
-            return {"error": "No stock price data available"}
-        stock_price = history["Close"].iloc[-1]
+        for symbol in symbols:
+            stock = yf.Ticker(symbol)
 
-        # Check if expiration date is valid
-        if expiration not in stock.options:
-            return {"error": f"Expiration date {expiration} is not available"}
+            # Get real-time stock price
+            history = stock.history(period="1d")
+            if history.empty:
+                continue
+            stock_price = history["Close"].iloc[-1]
 
-        # Get option chain for the expiration date
-        options = stock.option_chain(expiration)
+            # Check if expiration date exists for this stock
+            if expiration not in stock.options:
+                continue
 
-        # Select calls or puts
-        option_table = options.calls if option_type.lower() == "call" else options.puts
+            # Fetch the option chain for the specific expiration date
+            options = stock.option_chain(expiration)
 
-        # Get the available strike prices
-        available_strikes = option_table["strike"].values
+            # Select calls or puts or both
+            calls = options.calls if option_type in ["call", "both"] else pd.DataFrame()
+            puts = options.puts if option_type in ["put", "both"] else pd.DataFrame()
 
-        if len(available_strikes) == 0:
-            return {"error": "No options available for this expiration date"}
+            # Combine calls & puts if needed
+            option_table = pd.concat([calls, puts], ignore_index=True)
 
-        # Find the closest strike price
-        closest_strike = min(available_strikes, key=lambda x: abs(x - strike_price))
+            # Filter by strike price range
+            filtered_options = option_table[
+                (option_table["strike"] >= min_strike)
+                & (option_table["strike"] <= max_strike)
+            ]
 
-        # Retrieve the option data for the closest strike price
-        option_data = option_table[option_table["strike"] == closest_strike]
+            # Select the "best" options: prioritize by open interest & volume
+            if not filtered_options.empty:
+                filtered_options = filtered_options.sort_values(
+                    by=["openInterest", "volume"], ascending=False
+                )
 
-        if option_data.empty:
-            return {"error": "Strike price data unavailable"}
+                selected_options = filtered_options.head(
+                    num_per_symbol
+                )  # Pick top results
 
-        # Extract necessary data
-        market_price = option_data["lastPrice"].values[0]
-        implied_volatility = option_data["impliedVolatility"].values[0]
+                # Extract relevant data
+                for _, row in selected_options.iterrows():
+                    option_category = (
+                        "call" if row["strike"] in calls["strike"].values else "put"
+                    )
 
-        return {
-            "stock_price": stock_price,
-            "strike_price": closest_strike,
-            "expiration": expiration,
-            "option_type": option_type,
-            "market_price": market_price,
-            "implied_volatility": implied_volatility,
-        }
+                    results.append(
+                        {
+                            "symbol": symbol,
+                            "stock_price": stock_price,
+                            "expiration": expiration,
+                            "strike_price": row["strike"],
+                            "option_type": option_category,
+                            "market_price": row["lastPrice"],
+                            "implied_volatility": row["impliedVolatility"],
+                            "open_interest": row["openInterest"],
+                            "volume": row["volume"],
+                        }
+                    )
+
+        return results if results else {"error": "No options found matching criteria"}
 
     except Exception as e:
         return {"error": str(e)}
 
 
-# print(fetch_option_data("AAPL", "2025-04-17", 150.0, "call"))
+# Example Test
+# print(fetch_best_options(["AAPL", "TSLA"], "2025-04-17", 100, 200, "both"))

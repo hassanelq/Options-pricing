@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from routes.option import router as option_router
+from routes.options_bulk import router as bulk_option_router
+from routes.black_scholes import router as bs_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Options Pricing API", version="1.0")
@@ -13,8 +14,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include the option pricing route
-app.include_router(option_router)
+# Include routes
+app.include_router(bulk_option_router)
+app.include_router(bs_router)
 
 
 @app.get("/")

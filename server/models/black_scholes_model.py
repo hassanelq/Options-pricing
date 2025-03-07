@@ -1,19 +1,17 @@
 from pydantic import BaseModel
 
 
-class OptionRequest(BaseModel):
-    symbol: str
-    expiration: str
-    strike_price: float
-    option_type: str
-
-
-class OptionResponse(BaseModel):
+class BlackScholesRequest(BaseModel):
     stock_price: float
     strike_price: float
     expiration: str
+    risk_free_rate: float
+    implied_volatility: float
     option_type: str
     market_price: float
-    implied_volatility: float
+
+
+class BlackScholesResponse(BaseModel):
     black_scholes_price: float
+    market_price: float
     mispricing: float
