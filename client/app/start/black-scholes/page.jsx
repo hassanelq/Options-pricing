@@ -5,27 +5,27 @@ import LoadingDots from "../../Components/ui/LoadingDots";
 
 const BlackSholesPage = () => {
   const [inputs, setInputs] = useState({
-    stockPrice: 100,
     strikePrice: 110,
-    riskFreeRate: 5,
-    volatility: 20,
     timeToMaturity: 1,
+
+    stockPrice: 100,
+    volatility: 20,
     dividendYield: 0,
-    optionType: "call",
-    numSimulations: 1000,
+
+    riskFreeRate: 5,
   });
   const [results, setResults] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const inputLabels = {
-    stockPrice: "Current Stock Price ($)",
     strikePrice: "Strike Price ($)",
-    riskFreeRate: "Risk-Free Rate (%)",
-    volatility: "Volatility (%)",
     timeToMaturity: "Time to Maturity (Years)",
-    dividendYield: "Dividend Yield (%)",
-    optionType: "Option Type",
-    numSimulations: "Number of Simulations",
+
+    stockPrice: "Current Stock Price ($)",
+    volatility: "Annualized volatility (%)",
+    dividendYield: "Dividend Yield (d%)",
+
+    riskFreeRate: "Risk-Free Interest Rate (r%)",
   };
 
   const runSimulation = useCallback(() => {
@@ -60,33 +60,17 @@ const BlackSholesPage = () => {
           {Object.entries(inputLabels).map(([key, label]) => (
             <div key={key} className="mb-4">
               <label className="block font-medium">{label}</label>
-              {key === "optionType" ? (
-                <select
-                  value={inputs[key]}
-                  onChange={(e) =>
-                    setInputs((prev) => ({
-                      ...prev,
-                      [key]: e.target.value,
-                    }))
-                  }
-                  className="border p-2 rounded w-full"
-                >
-                  <option value="call">Call</option>
-                  <option value="put">Put</option>
-                </select>
-              ) : (
-                <input
-                  type="number"
-                  value={inputs[key] || 0}
-                  onChange={(e) =>
-                    setInputs((prev) => ({
-                      ...prev,
-                      [key]: parseFloat(e.target.value) || 0,
-                    }))
-                  }
-                  className="border p-2 rounded w-full"
-                />
-              )}
+              <input
+                type="number"
+                value={inputs[key] || 0}
+                onChange={(e) =>
+                  setInputs((prev) => ({
+                    ...prev,
+                    [key]: parseFloat(e.target.value) || 0,
+                  }))
+                }
+                className="border p-2 rounded w-full"
+              />
             </div>
           ))}
           <button
@@ -128,15 +112,6 @@ const BlackSholesPage = () => {
                       {results.inTheMoneyProbability}%
                     </p>
                   </div>
-                </div>
-              </div>
-
-              <div className="space-y-8">
-                <div className="">
-                  <h5 className="text-lg font-semibold mb-4">
-                    Simulated Price Paths
-                  </h5>
-                  <LineChart data={results.pricePaths} />
                 </div>
               </div>
             </>
