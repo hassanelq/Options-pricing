@@ -1,0 +1,44 @@
+﻿Ticker,Name,OptionStyle,Underlying
+SPX,S&P 500 Index,European,Index
+NDX,Nasdaq-100 Index,European,Index
+RUT,Russell 2000 Index,European,Index
+DJX,Dow Jones Industrial Average Index,European,Index
+VIX,CBOE Volatility Index,European,Index
+OEX,S&P 100 Index (OEX),American,Index
+XEO,S&P 100 Index (XEO),European,Index
+UKX,FTSE 100 Index,European,Index
+DAX,DAX 40 Index,European,Index
+ESTX50,EURO STOXX 50 Index,European,Index
+BABA,Alibaba Group Holding Ltd (ADR),American,ADR
+TOT,TotalEnergies SE (ADR),American,ADR
+RIO,Rio Tinto PLC (ADR),American,ADR
+VALE,VALE S.A. (ADR),American,ADR
+SAN,Santander Bank (ADR),American,ADR
+NVS,Novartis AG (ADR),American,ADR
+AZN,AstraZeneca PLC (ADR),American,ADR
+GC,Gold (COMEX),American,Commodity Future
+SI,Silver (COMEX),American,Commodity Future
+CL,Crude Oil (NYMEX),American,Commodity Future
+NG,Natural Gas (NYMEX),American,Commodity Future
+ZC,Corn (CBOT),American,Commodity Future
+ZW,Wheat (CBOT),American,Commodity Future
+ZS,Soybeans (CBOT),American,Commodity Future
+KC,Coffee (ICE US),American,Commodity Future
+CC,Cocoa (ICE US),American,Commodity Future
+SB,Raw Sugar (ICE US),American,Commodity Future
+CT,Cotton No.2 (ICE US),American,Commodity Future
+ES,E-mini S&P 500 Futures,American,Future
+NQ,E-mini Nasdaq-100 Futures,American,Future
+YM,E-mini Dow Jones Futures,American,Future
+RTY,E-mini Russell 2000 Futures,American,Future
+ZT,2-Year Treasury Note Futures (CBOT),American,Future
+ZF,5-Year Treasury Note Futures (CBOT),American,Future
+ZN,10-Year Treasury Note Futures (CBOT),American,Future
+ZB,30-Year Treasury Bond Futures (CBOT),American,Future
+EURUSD,Euro/US Dollar (CME),European,FX Future
+GBPUSD,British Pound/US Dollar (CME),European,FX Future
+USDJPY,US Dollar/Japanese Yen (CME),European,FX Future
+SNE,Sony Group Corp (ADR),American,ADR
+TM,Toyota Motor Corp (ADR),American,ADR
+NSRGY,NestlÃ© SA (ADR),American,ADR
+BHP,BHP Group Ltd (ADR),American,ADR

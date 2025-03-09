@@ -91,3 +91,26 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Failed to fetch option data" });
   }
 }
+
+// Fetch available options from API
+// const fetchOptions = async () => {
+//   setIsLoading(true);
+//   try {
+//     const response = await axios.post("http://127.0.0.1:8000/options-data", {
+//       symbol: inputs.symbol.split(",").map((s) => s.trim()), // Convert CSV to list
+//       expiration: inputs.expiration.toISOString().split("T")[0], // Format to YYYY-MM-DD
+//       min_strike: parseFloat(inputs.minStrike),
+//       max_strike: parseFloat(inputs.maxStrike),
+//       option_type: inputs.optionType.toLowerCase(),
+//       total_results: parseInt(inputs.totalResults),
+//     });
+
+//     setOptionsList(response.data);
+//     setSelectedOption(null);
+//     setPricingResult(null);
+//   } catch (error) {
+//     console.error("Error fetching options:", error);
+//     setOptionsList([]);
+//   }
+//   setIsLoading(false);
+// };
