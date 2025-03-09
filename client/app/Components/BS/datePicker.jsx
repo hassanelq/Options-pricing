@@ -7,14 +7,18 @@ import "react-datepicker/dist/react-datepicker.css";
 const DatePickerComponent = ({ selectedDate, onChange }) => {
   return (
     <div className="w-full">
-      <label className="block font-medium">Expiration Date</label>
-      <DatePicker
-        selected={selectedDate}
-        onChange={onChange}
-        className="border p-2 rounded w-full"
-        dateFormat="yyyy-MM-dd"
-        minDate={new Date()}
-      />
+      <label className="block font-medium mb-1 text-gray-700">
+        Expiration Date
+      </label>
+      <div className="relative">
+        <DatePicker
+          selected={selectedDate}
+          onChange={onChange}
+          className="border border-gray-300 p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          dateFormat="yyyy-MM-dd"
+          minDate={new Date()} // Prevent past dates
+        />
+      </div>
     </div>
   );
 };
