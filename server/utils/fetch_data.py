@@ -20,7 +20,7 @@ def fetch_options_data(
     - expiration (str): The expiration date in YYYY-MM-DD format.
     - min_strike (float): Minimum strike price.
     - max_strike (float): Maximum strike price.
-    - option_type (str): "call", "put", or "both".
+    - option_type (str): "call", "put".
     - total_results (int): Maximum total number of results to return.
 
     Returns:
