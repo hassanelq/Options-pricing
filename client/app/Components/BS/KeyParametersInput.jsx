@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import TickerSearch from "./BS/searchTicker";
+import TickerSearch from "./searchTicker";
 
 const KeyParametersInput = ({
   selectedAssetType,

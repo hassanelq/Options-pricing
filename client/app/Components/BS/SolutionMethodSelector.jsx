@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { PRICING_CONFIG } from "../config";
+import { PRICING_CONFIG } from "../../config";
 
 const SolutionMethodSelector = ({
   selectedSolution,

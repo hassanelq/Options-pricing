@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import OptionStyleSelector from "./../components/OptionStyleSelector";
-import PricingApproachSelector from "./../components/PricingApproachSelector";
-import SolutionMethodSelector from "./../components/SolutionMethodSelector";
-import AssetTypeSelector from "./../components/AssetTypeSelector";
-import KeyParametersInput from "./../components/KeyParametersInput";
-import OptionList from "./../components/OptionList";
-import ParametersInput from "./../components/ParametersInput";
-import PricingResult from "./../components/PricingResult";
+import OptionStyleSelector from "../Components/BS/OptionStyleSelector";
+import PricingApproachSelector from "../Components/BS/PricingApproachSelector";
+import SolutionMethodSelector from "../Components/BS/SolutionMethodSelector";
+import AssetTypeSelector from "../Components/BS/AssetTypeSelector";
+import KeyParametersInput from "../Components/BS/KeyParametersInput";
+import OptionList from "../Components/BS/OptionList";
+import ParametersInput from "../Components/BS/ParametersInput";
+import PricingResult from "../Components/BS/PricingResult";
 import { fetchMarketData } from "./../api/marketData";
 
 const PricingPage = () => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { fetchRiskFreeRate } from "../api/riskFreeRate";
+import { fetchRiskFreeRate } from "../../api/riskFreeRate";
 
 const ParametersInput = ({ parameters, setParameters }) => {
   const [timeToExpiration, setTimeToExpiration] = useState(0);

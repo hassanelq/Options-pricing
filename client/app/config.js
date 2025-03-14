@@ -22,6 +22,6 @@ export const PRICING_CONFIG = {
 
 export const ASSET_TYPES_MAP = {
   blackScholes: ["Stocks", "Indices", "FX", "ETFs"],
-  heston: ["Equities", "Commodities", "FX"],
+  heston: ["Stocks", "Commodities", "FX"],
   ou: ["Interest Rates", "Commodities", "Energy Prices"],
 };
