@@ -18,11 +18,13 @@ const PricingPage = () => {
   const [selectedAssetType, setSelectedAssetType] = useState("Stocks");
   const [parameters, setParameters] = useState({
     symbol: "AAPL",
+    option_type: "call",
     underlyingPrice: 100,
     strikePrice: 150,
     expiration: new Date(),
     riskFreeRate: 4,
     volatility: 0.1,
+    market_price: 60,
     dividends: 0,
   });
   const [selectedSolution, setSelectedSolution] = useState(
@@ -63,11 +65,13 @@ const PricingPage = () => {
   const handleAutoFill = (option) => {
     setParameters({
       symbol: option.symbol,
+      option_type: option.option_type,
       underlyingPrice: option.stock_price,
       strikePrice: option.strike_price,
       expiration: option.expiration,
       riskFreeRate: 0,
       volatility: option.implied_volatility,
+      market_price: option.market_price,
       dividends: 0,
     });
     setActiveStep(Math.max(activeStep, 7));
@@ -100,11 +104,13 @@ const PricingPage = () => {
     setSelectedAssetType("Stocks");
     setParameters({
       symbol: "AAPL",
-      underlyingPrice: 0,
+      option_type: "call",
+      underlyingPrice: 100,
       strikePrice: 150,
-      expiration: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-      riskFreeRate: 0,
-      volatility: 0,
+      expiration: new Date(),
+      riskFreeRate: 4,
+      volatility: 0.1,
+      market_price: 60,
       dividends: 0,
     });
     setPriceResult(null);
