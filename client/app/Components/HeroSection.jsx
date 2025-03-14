@@ -17,29 +17,24 @@ export default function Hero() {
 
           <div className="space-y-5">
             <h1 className="text-4xl text-gray-800 font-extrabold mx-auto sm:text-6xl">
-              Options Pricing Simulator
+              Welcome to Option Pricer
             </h1>
             <p className="max-w-xl mx-auto">
-              Discover a powerful and interactive tool designed to help you
-              explore quantitative finance concepts. Simulate financial models,
-              including Normal Distributions, Brownian Motion, and Monte Carlo
-              simulations, to better understand market dynamics and asset
-              behavior.
+              Fetch options from the market and compute theoretical pricing
+              using mathematical models.
             </p>
             <div className="flex items-center justify-center gap-x-3 font-medium text-sm">
               <NavLink
-                href="/start"
+                href="/Options-pricing"
                 className="text-white bg-gray-800 hover:bg-gray-600 active:bg-gray-900"
               >
-                Start Simulations
+                Start Pricing an Option
               </NavLink>
               <NavLink
-                target="_blank"
-                href="https://github.com/hassanelq/Options-pricing"
+                href="/markets-Data"
                 className="text-gray-700 border hover:bg-gray-50"
-                scroll={false}
               >
-                Learn More
+                Explore Market Data
               </NavLink>
             </div>
           </div>

@@ -1,101 +1,87 @@
 import yfinance as yf
 import numpy as np
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def fetch_options_data(
-    symbols: list,
-    expiration: str,
-    min_strike: float = 80,
-    max_strike: float = 200,
-    option_type: str = "call",
+    symbol: str,
     total_results: int = 10,
 ):
     """
-    Fetches stock price and selects the best available option chain data for multiple symbols.
+    Fetches stock price and selects the best available option chain data for a symbol,
+    ensuring half are calls and half are puts with evenly spaced expiration dates.
 
     Parameters:
-    - symbols (list): List of stock ticker symbols (e.g., ["AAPL", "TSLA"]).
-    - expiration (str): The expiration date in YYYY-MM-DD format.
-    - min_strike (float): Minimum strike price.
-    - max_strike (float): Maximum strike price.
-    - option_type (str): "call", "put".
-    - total_results (int): Maximum total number of results to return.
+    - symbol (str): Stock symbol, e.g., "AAPL".
+    - total_results (int): Total number of options to return (half calls, half puts).
 
     Returns:
-    - list: Contains the best matching options for each symbol, distributed equally.
+    - list: Contains options distributed by type and expiration date.
     """
     try:
         results = []
-        num_per_symbol = max(
-            1, total_results // len(symbols)
-        )  # Even distribution per symbol
+        stock = yf.Ticker(symbol)
 
-        for symbol in symbols:
-            stock = yf.Ticker(symbol)
+        # Get real-time stock price
+        history = stock.history(period="1d")
+        stock_price = history["Close"].iloc[-1]
 
-            # Get real-time stock price
-            history = stock.history(period="1d")
-            if history.empty:
-                continue
-            stock_price = history["Close"].iloc[-1]
+        # Available expiration dates sorted
+        expiration_dates = sorted(
+            stock.options, key=lambda x: datetime.strptime(x, "%Y-%m-%d")
+        )
 
-            # Check if expiration date exists for this stock
-            if expiration not in stock.options:
-                continue
+        if len(expiration_dates) < 2:
+            return {"error": "Not enough expiration dates available."}
 
-            # Fetch the option chain for the specific expiration date
-            options = stock.option_chain(expiration)
+        num_calls = total_results // 2
+        num_puts = total_results - num_calls
 
-            # Select calls or puts or both
-            calls = options.calls if option_type in ["call", "both"] else pd.DataFrame()
-            puts = options.puts if option_type in ["put", "both"] else pd.DataFrame()
+        # Select evenly spaced expiration dates
+        call_expirations = np.linspace(
+            0, len(expiration_dates) - 1, num_calls, dtype=int
+        )
+        put_expirations = np.linspace(0, len(expiration_dates) - 1, num_puts, dtype=int)
 
-            # Combine calls & puts if needed
-            option_table = pd.concat([calls, puts], ignore_index=True)
+        # Fetch options and organize them
+        def fetch_options(expirations, option_type):
+            opt_results = []
+            for i in expirations:
+                exp_date = expiration_dates[i]
+                options = stock.option_chain(exp_date)
+                option_table = options.calls if option_type == "call" else options.puts
 
-            # Filter by strike price range
-            filtered_options = option_table[
-                (option_table["strike"] >= min_strike)
-                & (option_table["strike"] <= max_strike)
-            ]
+                if not option_table.empty:
+                    best_option = option_table.sort_values(
+                        by=["openInterest", "volume"], ascending=False
+                    ).head(1)
+                    if not best_option.empty:
+                        row = best_option.iloc[0]
+                        opt_results.append(
+                            {
+                                "symbol": symbol,
+                                "stock_price": stock_price,
+                                "expiration": exp_date,
+                                "strike_price": row["strike"],
+                                "option_type": option_type,
+                                "market_price": row["lastPrice"],
+                                "implied_volatility": row["impliedVolatility"],
+                                "open_interest": row["openInterest"],
+                                "volume": row["volume"],
+                            }
+                        )
+            return opt_results
 
-            # Select the "best" options: prioritize by open interest & volume
-            if not filtered_options.empty:
-                filtered_options = filtered_options.sort_values(
-                    by=["openInterest", "volume"], ascending=False
-                )
+        # Get calls and puts
+        results.extend(fetch_options(call_expirations, "call"))
+        results.extend(fetch_options(put_expirations, "put"))
 
-                selected_options = filtered_options.head(
-                    num_per_symbol
-                )  # Pick top results
-
-                # Extract relevant data
-                for _, row in selected_options.iterrows():
-                    option_category = (
-                        "call" if row["strike"] in calls["strike"].values else "put"
-                    )
-
-                    results.append(
-                        {
-                            "symbol": symbol,
-                            "stock_price": stock_price,
-                            "expiration": expiration,
-                            "strike_price": row["strike"],
-                            "option_type": option_category,
-                            "market_price": row["lastPrice"],
-                            "implied_volatility": row["impliedVolatility"],
-                            "open_interest": row["openInterest"],
-                            "volume": row["volume"],
-                        }
-                    )
-
-        return results if results else {"error": "No options found matching criteria"}
+        return results if results else {"error": "No options found matching criteria."}
 
     except Exception as e:
         return {"error": str(e)}
 
 
 # Example Test
-# print(fetch_best_options(["AAPL", "TSLA"], "2025-04-17", 100, 200, "both"))
+# print(fetch_options_data("AAPL", 10))

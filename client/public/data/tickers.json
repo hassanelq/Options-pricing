@@ -1,554 +1,87 @@
-[
-  {
-    "Ticker": "AAPL",
-    "Name": "Apple Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "MSFT",
-    "Name": "Microsoft Corp",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "AMZN",
-    "Name": "Amazon.com Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "GOOG",
-    "Name": "Alphabet Inc Class C",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "GOOGL",
-    "Name": "Alphabet Inc Class A",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "TSLA",
-    "Name": "Tesla Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "META",
-    "Name": "Meta Platforms Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "NFLX",
-    "Name": "Netflix Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "NVDA",
-    "Name": "NVIDIA Corp",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "AMD",
-    "Name": "Advanced Micro Devices Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "INTC",
-    "Name": "Intel Corp",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "CSCO",
-    "Name": "Cisco Systems Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "IBM",
-    "Name": "International Business Machines Corp",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "ORCL",
-    "Name": "Oracle Corp",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "ADBE",
-    "Name": "Adobe Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "CRM",
-    "Name": "Salesforce Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "PYPL",
-    "Name": "PayPal Holdings Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "BAC",
-    "Name": "Bank of America Corp",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "JPM",
-    "Name": "JPMorgan Chase & Co",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "WFC",
-    "Name": "Wells Fargo & Co",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "C",
-    "Name": "Citigroup Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "GS",
-    "Name": "Goldman Sachs Group Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "V",
-    "Name": "Visa Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "MA",
-    "Name": "Mastercard Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "XOM",
-    "Name": "Exxon Mobil Corp",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "CVX",
-    "Name": "Chevron Corp",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "COP",
-    "Name": "ConocoPhillips",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "PFE",
-    "Name": "Pfizer Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "JNJ",
-    "Name": "Johnson & Johnson",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "MRK",
-    "Name": "Merck & Co Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "ABT",
-    "Name": "Abbott Laboratories",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "PEP",
-    "Name": "PepsiCo Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "KO",
-    "Name": "Coca-Cola Co",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "MCD",
-    "Name": "McDonald's Corp",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "HD",
-    "Name": "Home Depot Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "WMT",
-    "Name": "Walmart Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "T",
-    "Name": "AT&T Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "VZ",
-    "Name": "Verizon Communications Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "DIS",
-    "Name": "Walt Disney Co",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "UNH",
-    "Name": "UnitedHealth Group Inc",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "PG",
-    "Name": "Procter & Gamble Co",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "GE",
-    "Name": "General Electric Co",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "BA",
-    "Name": "Boeing Co",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "F",
-    "Name": "Ford Motor Co",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "GM",
-    "Name": "General Motors Co",
-    "OptionStyle": "American",
-    "Underlying": "Stock"
-  },
-  {
-    "Ticker": "SPY",
-    "Name": "SPDR S&P 500 ETF",
-    "OptionStyle": "American",
-    "Underlying": "ETF"
-  },
-  {
-    "Ticker": "QQQ",
-    "Name": "Invesco QQQ Trust",
-    "OptionStyle": "American",
-    "Underlying": "ETF"
-  },
-  {
-    "Ticker": "IWM",
-    "Name": "iShares Russell 2000 ETF",
-    "OptionStyle": "American",
-    "Underlying": "ETF"
-  },
-  {
-    "Ticker": "DIA",
-    "Name": "SPDR Dow Jones Industrial Average ETF",
-    "OptionStyle": "American",
-    "Underlying": "ETF"
-  },
-  {
-    "Ticker": "SPX",
-    "Name": "S&P 500 Index",
-    "OptionStyle": "European",
-    "Underlying": "Index"
-  },
-  {
-    "Ticker": "NDX",
-    "Name": "Nasdaq-100 Index",
-    "OptionStyle": "European",
-    "Underlying": "Index"
-  },
-  {
-    "Ticker": "RUT",
-    "Name": "Russell 2000 Index",
-    "OptionStyle": "European",
-    "Underlying": "Index"
-  },
-  {
-    "Ticker": "DJX",
-    "Name": "Dow Jones Industrial Average Index",
-    "OptionStyle": "European",
-    "Underlying": "Index"
-  },
-  {
-    "Ticker": "VIX",
-    "Name": "CBOE Volatility Index",
-    "OptionStyle": "European",
-    "Underlying": "Index"
-  },
-  {
-    "Ticker": "OEX",
-    "Name": "S&P 100 Index (OEX)",
-    "OptionStyle": "American",
-    "Underlying": "Index"
-  },
-  {
-    "Ticker": "XEO",
-    "Name": "S&P 100 Index (XEO)",
-    "OptionStyle": "European",
-    "Underlying": "Index"
-  },
-  {
-    "Ticker": "UKX",
-    "Name": "FTSE 100 Index",
-    "OptionStyle": "European",
-    "Underlying": "Index"
-  },
-  {
-    "Ticker": "DAX",
-    "Name": "DAX 40 Index",
-    "OptionStyle": "European",
-    "Underlying": "Index"
-  },
-  {
-    "Ticker": "ESTX50",
-    "Name": "EURO STOXX 50 Index",
-    "OptionStyle": "European",
-    "Underlying": "Index"
-  },
-  {
-    "Ticker": "BABA",
-    "Name": "Alibaba Group Holding Ltd (ADR)",
-    "OptionStyle": "American",
-    "Underlying": "ADR"
-  },
-  {
-    "Ticker": "TOT",
-    "Name": "TotalEnergies SE (ADR)",
-    "OptionStyle": "American",
-    "Underlying": "ADR"
-  },
-  {
-    "Ticker": "RIO",
-    "Name": "Rio Tinto PLC (ADR)",
-    "OptionStyle": "American",
-    "Underlying": "ADR"
-  },
-  {
-    "Ticker": "VALE",
-    "Name": "VALE S.A. (ADR)",
-    "OptionStyle": "American",
-    "Underlying": "ADR"
-  },
-  {
-    "Ticker": "SAN",
-    "Name": "Santander Bank (ADR)",
-    "OptionStyle": "American",
-    "Underlying": "ADR"
-  },
-  {
-    "Ticker": "NVS",
-    "Name": "Novartis AG (ADR)",
-    "OptionStyle": "American",
-    "Underlying": "ADR"
-  },
-  {
-    "Ticker": "AZN",
-    "Name": "AstraZeneca PLC (ADR)",
-    "OptionStyle": "American",
-    "Underlying": "ADR"
-  },
-  {
-    "Ticker": "GC",
-    "Name": "Gold (COMEX)",
-    "OptionStyle": "American",
-    "Underlying": "Commodity Future"
-  },
-  {
-    "Ticker": "SI",
-    "Name": "Silver (COMEX)",
-    "OptionStyle": "American",
-    "Underlying": "Commodity Future"
-  },
-  {
-    "Ticker": "CL",
-    "Name": "Crude Oil (NYMEX)",
-    "OptionStyle": "American",
-    "Underlying": "Commodity Future"
-  },
-  {
-    "Ticker": "NG",
-    "Name": "Natural Gas (NYMEX)",
-    "OptionStyle": "American",
-    "Underlying": "Commodity Future"
-  },
-  {
-    "Ticker": "ZC",
-    "Name": "Corn (CBOT)",
-    "OptionStyle": "American",
-    "Underlying": "Commodity Future"
-  },
-  {
-    "Ticker": "ZW",
-    "Name": "Wheat (CBOT)",
-    "OptionStyle": "American",
-    "Underlying": "Commodity Future"
-  },
-  {
-    "Ticker": "ZS",
-    "Name": "Soybeans (CBOT)",
-    "OptionStyle": "American",
-    "Underlying": "Commodity Future"
-  },
-  {
-    "Ticker": "KC",
-    "Name": "Coffee (ICE US)",
-    "OptionStyle": "American",
-    "Underlying": "Commodity Future"
-  },
-  {
-    "Ticker": "CC",
-    "Name": "Cocoa (ICE US)",
-    "OptionStyle": "American",
-    "Underlying": "Commodity Future"
-  },
-  {
-    "Ticker": "SB",
-    "Name": "Raw Sugar (ICE US)",
-    "OptionStyle": "American",
-    "Underlying": "Commodity Future"
-  },
-  {
-    "Ticker": "CT",
-    "Name": "Cotton No.2 (ICE US)",
-    "OptionStyle": "American",
-    "Underlying": "Commodity Future"
-  },
-  {
-    "Ticker": "ES",
-    "Name": "E-mini S&P 500 Futures",
-    "OptionStyle": "American",
-    "Underlying": "Future"
-  },
-  {
-    "Ticker": "NQ",
-    "Name": "E-mini Nasdaq-100 Futures",
-    "OptionStyle": "American",
-    "Underlying": "Future"
-  },
-  {
-    "Ticker": "YM",
-    "Name": "E-mini Dow Jones Futures",
-    "OptionStyle": "American",
-    "Underlying": "Future"
-  },
-  {
-    "Ticker": "RTY",
-    "Name": "E-mini Russell 2000 Futures",
-    "OptionStyle": "American",
-    "Underlying": "Future"
-  },
-  {
-    "Ticker": "ZT",
-    "Name": "2-Year Treasury Note Futures (CBOT)",
-    "OptionStyle": "American",
-    "Underlying": "Future"
-  },
-  {
-    "Ticker": "ZF",
-    "Name": "5-Year Treasury Note Futures (CBOT)",
-    "OptionStyle": "American",
-    "Underlying": "Future"
-  },
-  {
-    "Ticker": "ZN",
-    "Name": "10-Year Treasury Note Futures (CBOT)",
-    "OptionStyle": "American",
-    "Underlying": "Future"
-  },
-  {
-    "Ticker": "ZB",
-    "Name": "30-Year Treasury Bond Futures (CBOT)",
-    "OptionStyle": "American",
-    "Underlying": "Future"
-  },
-  {
-    "Ticker": "EURUSD",
-    "Name": "Euro/US Dollar (CME)",
-    "OptionStyle": "European",
-    "Underlying": "FX Future"
-  },
-  {
-    "Ticker": "GBPUSD",
-    "Name": "British Pound/US Dollar (CME)",
-    "OptionStyle": "European",
-    "Underlying": "FX Future"
-  },
-  {
-    "Ticker": "USDJPY",
-    "Name": "US Dollar/Japanese Yen (CME)",
-    "OptionStyle": "European",
-    "Underlying": "FX Future"
-  },
-  {
-    "Ticker": "SNE",
-    "Name": "Sony Group Corp (ADR)",
-    "OptionStyle": "American",
-    "Underlying": "ADR"
-  },
-  {
-    "Ticker": "TM",
-    "Name": "Toyota Motor Corp (ADR)",
-    "OptionStyle": "American",
-    "Underlying": "ADR"
-  },
-  {
-    "Ticker": "NSRGY",
-    "Name": "NestlÃ© SA (ADR)",
-    "OptionStyle": "American",
-    "Underlying": "ADR"
-  },
-  {
-    "Ticker": "BHP",
-    "Name": "BHP Group Ltd (ADR)",
-    "OptionStyle": "American",
-    "Underlying": "ADR"
-  }
-]
+{
+  "StockOptions": [
+    { "ticker": "AAPL", "name": "Apple Inc." },
+    { "ticker": "MSFT", "name": "Microsoft Corporation" },
+    { "ticker": "GOOGL", "name": "Alphabet Inc." },
+    { "ticker": "AMZN", "name": "Amazon.com Inc." },
+    { "ticker": "TSLA", "name": "Tesla Inc." },
+    { "ticker": "NVDA", "name": "NVIDIA Corporation" },
+    { "ticker": "META", "name": "Meta Platforms Inc." },
+    { "ticker": "NFLX", "name": "Netflix Inc." },
+    { "ticker": "BABA", "name": "Alibaba Group Holding Ltd." },
+    { "ticker": "AMD", "name": "Advanced Micro Devices Inc." }
+  ],
+  "Indices": [
+    { "ticker": "SPX", "name": "S&P 500 Index" },
+    { "ticker": "NDX", "name": "Nasdaq 100 Index" },
+    { "ticker": "DJX", "name": "Dow Jones Industrial Average" },
+    { "ticker": "FTSE", "name": "FTSE 100 Index" },
+    { "ticker": "DAX", "name": "DAX 30 Index" },
+    { "ticker": "CAC", "name": "CAC 40 Index" },
+    { "ticker": "STOXX50E", "name": "Euro Stoxx 50 Index" },
+    { "ticker": "NIKKEI", "name": "Nikkei 225 Index" },
+    { "ticker": "HSI", "name": "Hang Seng Index" },
+    { "ticker": "ASX", "name": "ASX 200 Index" }
+  ],
+  "ETFs": [
+    { "ticker": "SPY", "name": "SPDR S&P 500 ETF" },
+    { "ticker": "QQQ", "name": "Invesco QQQ Trust" },
+    { "ticker": "IWM", "name": "iShares Russell 2000 ETF" },
+    { "ticker": "EFA", "name": "iShares MSCI EAFE ETF" },
+    { "ticker": "EWJ", "name": "iShares MSCI Japan ETF" },
+    { "ticker": "XLF", "name": "Financial Select Sector SPDR Fund" },
+    { "ticker": "XLK", "name": "Technology Select Sector SPDR Fund" },
+    { "ticker": "XLE", "name": "Energy Select Sector SPDR Fund" },
+    {
+      "ticker": "VXX",
+      "name": "iPath Series B S&P 500 VIX Short-Term Futures ETN"
+    },
+    { "ticker": "TLT", "name": "iShares 20+ Year Treasury Bond ETF" }
+  ],
+  "InterestRates": [
+    { "ticker": "EURIBOR", "name": "Euro Interbank Offered Rate" },
+    { "ticker": "LIBOR", "name": "London Interbank Offered Rate" },
+    { "ticker": "SOFR", "name": "Secured Overnight Financing Rate" },
+    { "ticker": "EONIA", "name": "Euro Overnight Index Average" },
+    { "ticker": "SONIA", "name": "Sterling Overnight Index Average" },
+    { "ticker": "TONAR", "name": "Tokyo Overnight Average Rate" },
+    { "ticker": "ESTR", "name": "Euro Short-Term Rate" },
+    { "ticker": "FEDFUNDS", "name": "Federal Funds Rate" },
+    { "ticker": "BOEBASE", "name": "Bank of England Base Rate" },
+    {
+      "ticker": "RBAOFFICIAL",
+      "name": "Reserve Bank of Australia Official Cash Rate"
+    }
+  ],
+  "Commodities": [
+    { "ticker": "GC", "name": "Gold Futures" },
+    { "ticker": "SI", "name": "Silver Futures" },
+    { "ticker": "HG", "name": "Copper Futures" },
+    { "ticker": "ZC", "name": "Corn Futures" },
+    { "ticker": "ZW", "name": "Wheat Futures" },
+    { "ticker": "ZS", "name": "Soybean Futures" },
+    { "ticker": "CT", "name": "Cotton Futures" },
+    { "ticker": "KC", "name": "Coffee Futures" },
+    { "ticker": "SB", "name": "Sugar Futures" },
+    { "ticker": "CC", "name": "Cocoa Futures" }
+  ],
+  "EnergyPrices": [
+    { "ticker": "CL", "name": "Crude Oil Futures" },
+    { "ticker": "NG", "name": "Natural Gas Futures" },
+    { "ticker": "HO", "name": "Heating Oil Futures" },
+    { "ticker": "RB", "name": "RBOB Gasoline Futures" },
+    { "ticker": "BRN", "name": "Brent Crude Oil Futures" }
+  ],
+  "FX": [
+    { "ticker": "EUR/USD", "name": "Euro/US Dollar" },
+    { "ticker": "GBP/USD", "name": "British Pound/US Dollar" },
+    { "ticker": "USD/JPY", "name": "US Dollar/Japanese Yen" },
+    { "ticker": "USD/CHF", "name": "US Dollar/Swiss Franc" },
+    { "ticker": "AUD/USD", "name": "Australian Dollar/US Dollar" },
+    { "ticker": "USD/CAD", "name": "US Dollar/Canadian Dollar" },
+    { "ticker": "NZD/USD", "name": "New Zealand Dollar/US Dollar" },
+    { "ticker": "EUR/GBP", "name": "Euro/British Pound" },
+    { "ticker": "EUR/JPY", "name": "Euro/Japanese Yen" },
+    { "ticker": "GBP/JPY", "name": "British Pound/Japanese Yen" }
+  ]
+}

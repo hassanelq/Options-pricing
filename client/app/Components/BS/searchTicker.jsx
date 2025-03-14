@@ -1,11 +1,42 @@
 "use client";
 
-import React, { useState } from "react";
-import tickerData from "../../../public/data/tickers.json";
+import React, { useState, useEffect } from "react";
+import rawData from "../../../public/data/tickers.json";
 
-const TickerSearch = ({ onSelect }) => {
+// Map category names to JSON data keys
+const CATEGORY_MAP = {
+  Stocks: "StockOptions",
+  Indices: "Indices",
+  ETFs: "ETFs",
+  "Interest Rates": "InterestRates",
+  Commodities: "Commodities",
+  "Energy Prices": "EnergyPrices",
+  FX: "FX",
+};
+
+const TickerSearch = ({ onSelect, selectedAssetType }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredTickers, setFilteredTickers] = useState([]);
+
+  // Fetch tickers based on the selected asset type
+  const getTickersByAssetType = () => {
+    if (!selectedAssetType || !CATEGORY_MAP[selectedAssetType]) return [];
+    return rawData[CATEGORY_MAP[selectedAssetType]].map((item) => ({
+      Ticker: item.ticker,
+      Name: item.name,
+    }));
+  };
+
+  const [availableTickers, setAvailableTickers] = useState(
+    getTickersByAssetType()
+  );
+
+  // Update tickers when asset type changes
+  useEffect(() => {
+    setAvailableTickers(getTickersByAssetType());
+    setFilteredTickers([]); // Reset suggestions when asset type changes
+    setSearchTerm(""); // Clear search input when changing asset type
+  }, [selectedAssetType]);
 
   const handleSearch = (e) => {
     const query = e.target.value.toUpperCase();
@@ -13,9 +44,9 @@ const TickerSearch = ({ onSelect }) => {
 
     if (query.length > 0) {
       setFilteredTickers(
-        tickerData.filter(
+        availableTickers.filter(
           (item) =>
-            item.Ticker.startsWith(query) ||
+            item.Ticker.toUpperCase().startsWith(query) ||
             item.Name.toLowerCase().includes(query.toLowerCase())
         )
       );
@@ -27,18 +58,18 @@ const TickerSearch = ({ onSelect }) => {
   const handleSelect = (ticker) => {
     setSearchTerm(ticker.Ticker);
     setFilteredTickers([]);
-    onSelect(ticker.Ticker, ticker.OptionStyle);
+    onSelect(ticker.Ticker);
   };
 
   return (
     <div className="relative">
-      <label className="block font-medium">Search Stock/ETF/Index</label>
+      <label className="block font-medium">Search Symbol...</label>
       <input
         type="text"
         value={searchTerm}
         onChange={handleSearch}
         className="border p-2 rounded w-full"
-        placeholder="Type ticker or name..."
+        placeholder={`Search ${selectedAssetType || "Asset"}...`}
       />
 
       {filteredTickers.length > 0 && (
@@ -52,7 +83,6 @@ const TickerSearch = ({ onSelect }) => {
               <div>
                 <span className="font-bold">{item.Ticker}</span> - {item.Name}
               </div>
-              <span className="text-sm text-gray-500">{item.OptionStyle}</span>
             </li>
           ))}
         </ul>
