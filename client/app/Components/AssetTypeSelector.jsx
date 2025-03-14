@@ -12,7 +12,7 @@ const AssetTypeSelector = ({
     possibleAssetTypes.length > 0 && (
       <div className="mb-6">
         <h2 className="text-xl font-semibold mb-3 text-teal-800">
-          Choose Asset Type
+          Step 3: Choose Asset Type
         </h2>
         <div className="flex flex-wrap gap-4">
           {possibleAssetTypes.map((asset) => (

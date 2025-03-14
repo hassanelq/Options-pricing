@@ -11,9 +11,9 @@ const SolutionMethodSelector = ({
   );
 
   return (
-    <div className="mb-6">
+    <div className="my-6">
       <h2 className="text-xl font-semibold mb-3 text-teal-800">
-        Step 3: Solution Method
+        Step 5: Solution Method
       </h2>
       <div className="flex flex-wrap gap-4">
         {approachData?.solutions.map((method) => (

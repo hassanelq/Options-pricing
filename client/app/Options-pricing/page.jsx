@@ -6,14 +6,15 @@ import PricingApproachSelector from "./../components/PricingApproachSelector";
 import SolutionMethodSelector from "./../components/SolutionMethodSelector";
 import AssetTypeSelector from "./../components/AssetTypeSelector";
 import KeyParametersInput from "./../components/KeyParametersInput";
+import OptionList from "./../components/OptionList";
+import ParametersInput from "./../components/ParametersInput";
 import PricingResult from "./../components/PricingResult";
 import { fetchMarketData } from "./../api/marketData";
 
 const PricingPage = () => {
   const [selectedStyle, setSelectedStyle] = useState("European");
   const [selectedApproach, setSelectedApproach] = useState("blackScholes");
-  const [selectedSolution, setSelectedSolution] = useState("Direct Formula");
-  const [selectedAssetType, setSelectedAssetType] = useState("");
+  const [selectedAssetType, setSelectedAssetType] = useState("Stocks");
   const [parameters, setParameters] = useState({
     symbol: "AAPL",
     underlyingPrice: 0,
@@ -23,11 +24,35 @@ const PricingPage = () => {
     volatility: 0,
     dividends: 0,
   });
+  const [selectedSolution, setSelectedSolution] = useState("Direct Formula");
   const [priceResult, setPriceResult] = useState(null);
+  const [optionsData, setOptionsData] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleFetchMarketData = async () => {
-    const marketData = await fetchMarketData(parameters.symbol);
-    setParameters((prev) => ({ ...prev, ...marketData }));
+    setIsLoading(true);
+    setError(false);
+    try {
+      const marketData = await fetchMarketData(parameters.symbol);
+      setOptionsData(marketData);
+    } catch {
+      setError(true);
+    }
+    setIsLoading(false);
+  };
+
+  const handleAutoFill = (option) => {
+    setParameters({
+      symbol: option.symbol,
+      underlyingPrice: option.stock_price,
+      strikePrice: option.strike_price,
+      expiration: option.expiration,
+      riskFreeRate: 0,
+      volatility: option.implied_volatility,
+      dividends: 0,
+    });
   };
 
   const handleCalculatePrice = () => {
@@ -42,7 +67,7 @@ const PricingPage = () => {
     setSelectedStyle("European");
     setSelectedApproach("blackScholes");
     setSelectedSolution("Direct Formula");
-    setSelectedAssetType("");
+    setSelectedAssetType("Stocks");
     setParameters({
       symbol: "AAPL",
       underlyingPrice: 0,
@@ -53,6 +78,7 @@ const PricingPage = () => {
       dividends: 0,
     });
     setPriceResult(null);
+    setOptionsData([]);
   };
 
   return (
@@ -72,22 +98,35 @@ const PricingPage = () => {
           selectedApproach={selectedApproach}
           setSelectedApproach={setSelectedApproach}
         />
-        <SolutionMethodSelector
-          selectedSolution={selectedSolution}
-          setSelectedSolution={setSelectedSolution}
-          approach={selectedApproach}
-        />
         <AssetTypeSelector
           selectedAssetType={selectedAssetType}
           setSelectedAssetType={setSelectedAssetType}
           approach={selectedApproach}
         />
         <KeyParametersInput
+          selectedAssetType={selectedAssetType}
           parameters={parameters}
           setParameters={setParameters}
           fetchMarketData={handleFetchMarketData}
         />
 
+        <OptionList
+          optionsData={optionsData}
+          handleAutoFill={handleAutoFill}
+          isLoading={isLoading}
+          error={error}
+        />
+
+        <ParametersInput
+          parameters={parameters}
+          setParameters={setParameters}
+        />
+
+        <SolutionMethodSelector
+          selectedSolution={selectedSolution}
+          setSelectedSolution={setSelectedSolution}
+          approach={selectedApproach}
+        />
         <div className="flex flex-wrap gap-4 mt-8">
           <button
             onClick={handleCalculatePrice}
