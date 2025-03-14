@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import rawData from "../../../public/data/tickers.json";
 
 // Map category names to JSON data keys
@@ -62,33 +63,112 @@ const TickerSearch = ({ onSelect, selectedAssetType }) => {
   };
 
   return (
-    <div className="relative">
-      <label className="block font-medium">Search Symbol...</label>
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={handleSearch}
-        onFocus={() => setFilteredTickers(availableTickers)}
-        className="border p-2 rounded w-full"
-        placeholder={`Search ${selectedAssetType || "Asset"}...`}
-      />
+    <motion.div
+      className="relative my-6"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <label className="block mb-2 font-medium text-teal-800">
+        <div className="flex items-center">
+          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-teal-600 to-emerald-500 flex items-center justify-center text-white font-bold mr-2 shadow-sm">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-3 w-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+          Search Symbol
+        </div>
+      </label>
+
+      <motion.div
+        className="relative"
+        whileHover={{ scale: 1.01 }}
+        transition={{ duration: 0.2 }}
+      >
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={handleSearch}
+          onFocus={() => setFilteredTickers(availableTickers)}
+          className="w-full border border-indigo-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-transparent transition-all duration-200 shadow-sm"
+          placeholder={`Search ${selectedAssetType || "Asset"}...`}
+        />
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-emerald-700">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
+      </motion.div>
 
       {filteredTickers.length > 0 && (
-        <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded shadow-md mt-1 max-h-52 overflow-auto">
+        <motion.ul
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+          className="absolute z-10 w-full bg-white border border-indigo-100 rounded-lg shadow-lg mt-1 max-h-52 overflow-auto"
+        >
           {filteredTickers.map((item, index) => (
-            <li
+            <motion.li
               key={index}
-              className="p-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center"
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: index * 0.03 }}
+              whileHover={{ backgroundColor: "#EEF2FF" }}
+              className="p-3 cursor-pointer flex justify-between items-center border-b last:border-b-0 border-indigo-50"
               onClick={() => handleSelect(item)}
             >
               <div>
-                <span className="font-bold">{item.Ticker}</span> - {item.Name}
+                <span className="font-bold text-emerald-700">
+                  {item.Ticker}
+                </span>{" "}
+                <span className="text-gray-600">- {item.Name}</span>
               </div>
-            </li>
+              <motion.div
+                whileHover={{ scale: 1.2 }}
+                className="text-emerald-700"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </motion.div>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
       )}
-    </div>
+    </motion.div>
   );
 };
 
