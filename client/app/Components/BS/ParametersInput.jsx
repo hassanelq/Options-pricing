@@ -32,6 +32,10 @@ const ParametersInput = ({ parameters, setParameters }) => {
       (selectedDate - today) / (1000 * 60 * 60 * 24 * 365.25); // Adjusted for leap years
 
     setTimeToExpiration(yearsRemaining.toFixed(2));
+    setParameters((prev) => ({
+      ...prev,
+      yearsToExpiration: yearsRemaining.toFixed(2),
+    }));
   };
 
   const fetchRiskFreeRateData = async () => {
@@ -91,6 +95,43 @@ const ParametersInput = ({ parameters, setParameters }) => {
       </div>
 
       <div className="grid md:grid-cols-2 gap-4 ml-11">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
+          <label className="block mb-1 font-medium text-teal-800">
+            Option Type
+          </label>
+          <div className="flex space-x-4">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="option_type"
+                value="call"
+                checked={parameters.option_type === "call"}
+                onChange={() =>
+                  setParameters((prev) => ({ ...prev, option_type: "call" }))
+                }
+                className="form-radio text-teal-600"
+              />
+              <span className="text-teal-800">Call</span>
+            </label>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="option_type"
+                value="put"
+                checked={parameters.option_type === "put"}
+                onChange={() =>
+                  setParameters((prev) => ({ ...prev, option_type: "put" }))
+                }
+                className="form-radio text-red-600"
+              />
+              <span className="text-red-800">Put</span>
+            </label>
+          </div>
+        </motion.div>
         {[
           { label: "Underlying Price ($)", key: "underlyingPrice", step: "1" },
           { label: "Strike Price ($)", key: "strikePrice", step: "1" },

@@ -104,12 +104,12 @@ const OptionList = ({ optionsData, handleAutoFill, isLoading, error }) => {
         <table className="w-full border-collapse rounded-lg overflow-hidden">
           <thead>
             <tr className="bg-gradient-to-r from-teal-600 to-emerald-500 text-white">
-              <th className="p-2 text-left font-medium">Type</th>
-              <th className="p-2 text-right font-medium">Strike</th>
-              <th className="p-2 text-right font-medium">Underlying</th>
-              <th className="p-2 text-left font-medium">Expiration</th>
-              <th className="p-2 text-right font-medium">IV (%)</th>
-              <th className="p-2 text-right font-medium">Price</th>
+              <th className="p-2 text-center font-medium">Type</th>
+              <th className="p-2 text-center font-medium">Strike</th>
+              <th className="p-2 text-center font-medium">Underlying</th>
+              <th className="p-2 text-center font-medium">Expiration</th>
+              <th className="p-2 text-center font-medium">IV (%)</th>
+              <th className="p-2 text-center font-medium">Price</th>
               <th className="p-2 text-center font-medium">Action</th>
             </tr>
           </thead>
@@ -121,13 +121,21 @@ const OptionList = ({ optionsData, handleAutoFill, isLoading, error }) => {
                   index % 2 === 0 ? "bg-gray-50" : "bg-white"
                 }`}
               >
-                <td className="p-3 font-medium text-center">
-                  {option.option_type}
+                <td className="p-3 font-medium">
+                  <span
+                    className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
+                      option.option_type.toLowerCase() === "call"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-purple-100 text-red-500"
+                    }`}
+                  >
+                    {option.option_type}
+                  </span>
                 </td>
-                <td className="p-3 text-right">
+                <td className="p-3 text-center">
                   ${option.strike_price?.toFixed(2) || "N/A"}
                 </td>
-                <td className="p-3 text-right">
+                <td className="p-3 text-center">
                   ${option.stock_price?.toFixed(2) || "N/A"}
                 </td>
                 <td className="p-3 text-center">
@@ -135,12 +143,12 @@ const OptionList = ({ optionsData, handleAutoFill, isLoading, error }) => {
                     ? new Date(option.expiration).toLocaleDateString()
                     : "N/A"}
                 </td>
-                <td className="p-3 text-right">
+                <td className="p-3 text-center">
                   {option.implied_volatility
                     ? (option.implied_volatility * 100).toFixed(2) + "%"
                     : "N/A"}
                 </td>
-                <td className="p-3 text-right">
+                <td className="p-3 text-center">
                   ${option.market_price || "N/A"}
                 </td>
                 <td className="p-3 text-center">
