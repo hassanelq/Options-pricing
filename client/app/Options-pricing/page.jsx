@@ -25,7 +25,9 @@ const PricingPage = () => {
     volatility: 0.1,
     dividends: 0,
   });
-  const [selectedSolution, setSelectedSolution] = useState("Direct Formula");
+  const [selectedSolution, setSelectedSolution] = useState(
+    "Black-Scholes Closed-Form Solution"
+  );
   const [priceResult, setPriceResult] = useState(null);
   const [optionsData, setOptionsData] = useState([]);
   const [activeStep, setActiveStep] = useState(1);
@@ -49,10 +51,13 @@ const PricingPage = () => {
       const marketData = await fetchMarketData(parameters.symbol);
       setOptionsData(marketData);
       setActiveStep(Math.max(activeStep, 6));
-    } catch {
+    } catch (error) {
+      console.error("Error caught in component:", error);
       setError(true);
+      setOptionsData([]);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleAutoFill = (option) => {
@@ -91,7 +96,7 @@ const PricingPage = () => {
   const handleResetInputs = () => {
     setSelectedStyle("European");
     setSelectedApproach("blackScholes");
-    setSelectedSolution("Direct Formula");
+    setSelectedSolution("Black-Scholes Closed-Form Solution");
     setSelectedAssetType("Stocks");
     setParameters({
       symbol: "AAPL",
@@ -216,8 +221,8 @@ const PricingPage = () => {
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{
-              opacity: optionsData.length > 0 ? 1 : 0,
-              height: optionsData.length > 0 ? "auto" : 0,
+              opacity: isLoading || optionsData.length > 0 ? 1 : 0,
+              height: isLoading || optionsData.length > 0 ? "auto" : 0,
             }}
             transition={{ duration: 0.4 }}
           >
@@ -231,7 +236,7 @@ const PricingPage = () => {
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: activeStep >= 6 ? 1 : 0.3, y: 0 }}
+            animate={{ opacity: activeStep >= 6 ? 1 : 0.8, y: 0 }}
             transition={{ duration: 0.3, delay: 0.4 }}
           >
             <ParametersInput
@@ -243,7 +248,7 @@ const PricingPage = () => {
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: activeStep >= 7 ? 1 : 0.3, y: 0 }}
+            animate={{ opacity: activeStep >= 7 ? 1 : 0.8, y: 0 }}
             transition={{ duration: 0.3, delay: 0.5 }}
           >
             <SolutionMethodSelector

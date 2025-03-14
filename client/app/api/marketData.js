@@ -8,6 +8,6 @@ export const fetchMarketData = async (symbol) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching market data:", error);
-    return {};
+    throw error; // Throw the error instead of returning an error object
   }
 };

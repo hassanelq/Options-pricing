@@ -43,7 +43,7 @@ const SolutionMethodSelector = ({
       <div className="flex flex-wrap gap-3 ml-11">
         {approachData?.solutions.map((method, index) => (
           <motion.div
-            key={method}
+            key={method.name}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.2 + index * 0.1 }}
@@ -54,7 +54,7 @@ const SolutionMethodSelector = ({
               className={`
                 px-5 py-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center gap-3
                 ${
-                  selectedSolution === method
+                  selectedSolution === method.name
                     ? "bg-gradient-to-r from-teal-600 to-emerald-500 text-white shadow-md"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
                 }
@@ -63,15 +63,16 @@ const SolutionMethodSelector = ({
               <input
                 type="radio"
                 name="solutionMethod"
-                value={method}
-                checked={selectedSolution === method}
+                value={method.name}
+                checked={selectedSolution === method.name}
                 onChange={(e) => setSelectedSolution(e.target.value)}
                 className="hidden"
               />
-
-              <span className="font-medium">{method}</span>
-
-              {selectedSolution === method && (
+              <div className="flex flex-col">
+                <span className="font-medium text-base">{method.name}</span>
+                <span className="text-xs font-light">{method.desc}</span>
+              </div>
+              {selectedSolution === method.name && (
                 <motion.svg
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}

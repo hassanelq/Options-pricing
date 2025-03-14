@@ -5,17 +5,53 @@ export const PRICING_CONFIG = {
     {
       label: "Black-Scholes (Vanilla)",
       value: "blackScholes",
-      solutions: ["Direct Formula", "Monte Carlo", "Euler Approximation"],
+      solutions: [
+        { name: "Black-Scholes Closed-Form Solution", desc: "(Fast, Exact)" },
+        {
+          name: "Fourier Transform via Carr-Madan",
+          desc: "(Fast, Suitable for Characteristic Functions)",
+        },
+        {
+          name: "Monte Carlo Simulation",
+          desc: "(Slow, Flexible for Path-Dependent Options)",
+        },
+      ],
     },
     {
       label: "Heston (Stochastic Vol)",
       value: "heston",
-      solutions: ["Fourier Transform", "Monte Carlo", "Finite Difference"],
+      solutions: [
+        {
+          name: "Heston Characteristic Function",
+          desc: "(Very Fast, Exact in Fourier Space)",
+        },
+        {
+          name: "Fourier Transform via Carr-Madan",
+          desc: "(Fast, Works Well for European Options)",
+        },
+        {
+          name: "Monte Carlo Simulation",
+          desc: "(Slow, Suitable for Complex Payoffs)",
+        },
+      ],
     },
     {
       label: "Ornstein-Uhlenbeck (OU)",
       value: "ou",
-      solutions: ["Direct Formula", "Monte Carlo", "Finite Difference"],
+      solutions: [
+        {
+          name: "Analytical Solution via Fokker-Planck Equation",
+          desc: "(Fast, Exact for Simple Cases)",
+        },
+        {
+          name: "Fast Fourier Transform (FFT)",
+          desc: "(Fast, Spectral Approach)",
+        },
+        {
+          name: "Monte Carlo Simulation",
+          desc: "(Slow, Useful for Stochastic Interest Rate Models)",
+        },
+      ],
     },
   ],
 };
