@@ -31,10 +31,11 @@ export default function Hero() {
                 Start Pricing an Option
               </NavLink>
               <NavLink
-                href="/markets-Data"
+                href="https://github.com/hassanelq/Simulations-MC-BrownMotion"
+                target="_blank"
                 className="text-gray-700 border hover:bg-gray-50"
               >
-                Explore Market Data
+                Explore more
               </NavLink>
             </div>
           </div>
