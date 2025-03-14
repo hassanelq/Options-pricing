@@ -236,7 +236,7 @@ const PricingPage = () => {
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: activeStep >= 6 ? 1 : 0.8, y: 0 }}
+            animate={{ opacity: activeStep >= 6 ? 1 : 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.4 }}
           >
             <ParametersInput
@@ -248,7 +248,7 @@ const PricingPage = () => {
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: activeStep >= 7 ? 1 : 0.8, y: 0 }}
+            animate={{ opacity: activeStep >= 7 ? 1 : 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.5 }}
           >
             <SolutionMethodSelector
