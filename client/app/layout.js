@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 let title = "Pricing European Options";
 let description =
   "Estimate the fair value of European options using the Black Scholes Model and Heston model.";
-let url = "https://simulations-mc.vercel.app/";
+let url = "https://options-price.vercel.app/";
 let ogimage = "/images/ogimage.png";
 let sitename = "Price European Options";
 
