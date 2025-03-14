@@ -9,6 +9,7 @@ import AssetTypeSelector from "../Components/BS/AssetTypeSelector";
 import KeyParametersInput from "../Components/BS/KeyParametersInput";
 import OptionList from "../Components/BS/OptionList";
 import ParametersInput from "../Components/BS/ParametersInput";
+import PricingSummary from "../Components/BS/pricingSummary";
 import PricingResult from "../Components/BS/PricingResult";
 import { fetchMarketData } from "./../api/marketData";
 
@@ -25,8 +26,7 @@ const PricingPage = () => {
     yearsToExpiration: 0,
     riskFreeRate: 4,
     volatility: 0.1,
-    market_price: 60,
-    dividends: 0,
+    market_price: null,
   });
   const [selectedSolution, setSelectedSolution] = useState(
     "Black-Scholes Closed-Form Solution"
@@ -186,7 +186,6 @@ const PricingPage = () => {
               isActive={activeStep >= 1}
             />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: activeStep >= 2 ? 1 : 0.6, y: 0 }}
@@ -198,7 +197,6 @@ const PricingPage = () => {
               isActive={activeStep >= 2}
             />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: activeStep >= 3 ? 1 : 0.6, y: 0 }}
@@ -211,7 +209,6 @@ const PricingPage = () => {
               isActive={activeStep >= 3}
             />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: activeStep >= 4 ? 1 : 0.6, y: 0 }}
@@ -226,7 +223,6 @@ const PricingPage = () => {
               isActive={activeStep >= 4}
             />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{
@@ -242,7 +238,6 @@ const PricingPage = () => {
               error={error}
             />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: activeStep >= 6 ? 1 : 1, y: 0 }}
@@ -254,7 +249,6 @@ const PricingPage = () => {
               isActive={activeStep >= 6}
             />
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: activeStep >= 7 ? 1 : 1, y: 0 }}
@@ -267,12 +261,25 @@ const PricingPage = () => {
               isActive={activeStep >= 7}
             />
           </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.5 }}
+          >
+            <PricingSummary
+              selectedStyle={selectedStyle}
+              selectedApproach={selectedApproach}
+              selectedAssetType={selectedAssetType}
+              selectedSolution={selectedSolution}
+              parameters={parameters}
+            />
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.6 }}
-            className="flex justify-center mt-12"
+            className="flex justify-center mt-6" // Changed from mt-12 to mt-6
           >
             <motion.button
               whileHover={{ scale: 1.05 }}
