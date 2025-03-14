@@ -17,11 +17,11 @@ const PricingPage = () => {
   const [selectedAssetType, setSelectedAssetType] = useState("Stocks");
   const [parameters, setParameters] = useState({
     symbol: "AAPL",
-    underlyingPrice: 0,
+    underlyingPrice: 100,
     strikePrice: 150,
-    expiration: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-    riskFreeRate: 0,
-    volatility: 0,
+    expiration: new Date(),
+    riskFreeRate: 4,
+    volatility: 0.1,
     dividends: 0,
   });
   const [selectedSolution, setSelectedSolution] = useState("Direct Formula");

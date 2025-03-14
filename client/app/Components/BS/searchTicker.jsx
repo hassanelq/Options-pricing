@@ -68,6 +68,7 @@ const TickerSearch = ({ onSelect, selectedAssetType }) => {
         type="text"
         value={searchTerm}
         onChange={handleSearch}
+        onFocus={() => setFilteredTickers(availableTickers)}
         className="border p-2 rounded w-full"
         placeholder={`Search ${selectedAssetType || "Asset"}...`}
       />

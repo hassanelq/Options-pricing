@@ -23,7 +23,8 @@ const ParametersInput = ({ parameters, setParameters }) => {
     const today = new Date();
 
     if (isNaN(selectedDate.getTime())) {
-      return; // Prevent errors if no valid date is selected
+      setTimeToExpiration(0); // Reset to 0 if no valid date is selected
+      return;
     }
 
     const yearsRemaining =
@@ -51,6 +52,14 @@ const ParametersInput = ({ parameters, setParameters }) => {
       handleExpirationChange();
     }
   }, [parameters.expiration]);
+
+  // Automatically fetch risk-free rate when timeToExpiration is valid
+  useEffect(() => {
+    if (timeToExpiration > 0) {
+      fetchRiskFreeRateData();
+    }
+  }, [timeToExpiration]); // Runs when timeToExpiration changes
+
   return (
     <div className="grid md:grid-cols-2 gap-4 mt-8">
       {[

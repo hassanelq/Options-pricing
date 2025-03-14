@@ -21,7 +21,7 @@ const KeyParametersInput = ({
         />
         <button
           onClick={fetchMarketData}
-          className="mt-2 px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
+          className="mt-2 px-3 py-1.5 bg-cyan-600 text-white rounded hover:bg-cyan-700"
         >
           Fetch Options Data
         </button>
