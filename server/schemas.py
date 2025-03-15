@@ -48,3 +48,4 @@ class OptionData(BaseModel):
 
 class PricingResult(BaseModel):
     price: float
+    methodology: str

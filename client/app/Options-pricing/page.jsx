@@ -77,24 +77,27 @@ const PricingPage = () => {
     setActiveStep(Math.max(activeStep, 7));
   };
 
-  const handleCalculatePrice = () => {
+  const handleCalculatePrice = async () => {
     setIsCalculating(true);
-
-    // Simulate calculation time
-    setTimeout(() => {
-      setPriceResult({
-        price: (Math.random() * 50 + 10).toFixed(2),
-        delta: (Math.random() * 0.8).toFixed(4),
-        gamma: (Math.random() * 0.05).toFixed(4),
-        vega: (Math.random() * 0.5).toFixed(4),
-        theta: (-Math.random() * 0.2).toFixed(4),
-        rho: (Math.random() * 0.2 - 0.1).toFixed(4),
-        methodology: `${selectedStyle} option using ${selectedApproach} with "${selectedSolution}" solution. Asset Type: ${
-          selectedAssetType || "N/A"
-        }`,
+    try {
+      // API call to calculate option price
+      const response = await priceOption({
+        model_type: selectedApproach,
+        solution_type: selectedSolution,
+        option_type: parameters.option_type,
+        underlying_price: parameters.underlyingPrice,
+        strike_price: parameters.strikePrice,
+        yearsToExpiration: parameters.yearsToExpiration,
+        risk_free_rate: parameters.riskFreeRate,
+        volatility: parameters.volatility,
       });
+      setPriceResult(response);
       setIsCalculating(false);
-    }, 800);
+    } catch (error) {
+      console.error("Error caught in component:", error);
+      setPriceResult("Error calculating option price");
+      setIsCalculating(false);
+    }
   };
 
   const handleResetInputs = () => {
