@@ -12,6 +12,7 @@ import ParametersInput from "../Components/BS/ParametersInput";
 import PricingSummary from "../Components/BS/pricingSummary";
 import PricingResult from "../Components/BS/PricingResult";
 import { fetchMarketData } from "./../api/marketData";
+import { priceOption } from "./../api/optionPricing";
 
 const PricingPage = () => {
   const [selectedStyle, setSelectedStyle] = useState("European");
@@ -78,24 +79,27 @@ const PricingPage = () => {
   };
 
   const handleCalculatePrice = async () => {
+    const PricingRequest = {
+      model_type: selectedApproach,
+      solution_type: selectedSolution,
+      option_type: parameters.option_type,
+      underlying_price: parameters.underlyingPrice,
+      strike_price: parameters.strikePrice,
+      yearsToExpiration: parameters.yearsToExpiration,
+      risk_free_rate: parameters.riskFreeRate,
+      volatility: parameters.volatility,
+    };
+
+    console.log("Sending PricingRequest:", PricingRequest);
+
     setIsCalculating(true);
     try {
-      // API call to calculate option price
-      const response = await priceOption({
-        model_type: selectedApproach,
-        solution_type: selectedSolution,
-        option_type: parameters.option_type,
-        underlying_price: parameters.underlyingPrice,
-        strike_price: parameters.strikePrice,
-        yearsToExpiration: parameters.yearsToExpiration,
-        risk_free_rate: parameters.riskFreeRate,
-        volatility: parameters.volatility,
-      });
+      const response = await priceOption(PricingRequest);
       setPriceResult(response);
-      setIsCalculating(false);
     } catch (error) {
       console.error("Error caught in component:", error);
       setPriceResult("Error calculating option price");
+    } finally {
       setIsCalculating(false);
     }
   };

@@ -1,7 +1,5 @@
-from pydantic import BaseModel
-from datetime import datetime
-from typing import Literal
 from typing import Optional
+from pydantic import BaseModel, ConfigDict
 
 
 class MarketDataRequest(BaseModel):
@@ -34,6 +32,9 @@ class PricingRequest(BaseModel):
 
     # Monte Carlo parameters
     monte_carlo_simulations: Optional[int] = None
+
+    # Disable protected namespaces to avoid conflicts
+    model_config = ConfigDict(protected_namespaces=())
 
 
 class OptionData(BaseModel):
