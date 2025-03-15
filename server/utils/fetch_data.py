@@ -1,87 +1,100 @@
 import yfinance as yf
 import numpy as np
-import pandas as pd
-from datetime import datetime, timedelta
+from concurrent.futures import ThreadPoolExecutor
+from typing import List, Dict, Any
 
 
-def fetch_options_data(
-    symbol: str,
-    total_results: int = 10,
-):
-    """
-    Fetches stock price and selects the best available option chain data for a symbol,
-    ensuring half are calls and half are puts with evenly spaced expiration dates.
-
-    Parameters:
-    - symbol (str): Stock symbol, e.g., "AAPL".
-    - total_results (int): Total number of options to return (half calls, half puts).
-
-    Returns:
-    - list: Contains options distributed by type and expiration date.
-    """
+def get_market_data(symbol: str, total_results: int = 10) -> List[Dict[str, Any]]:
     try:
-        results = []
         stock = yf.Ticker(symbol)
+        hist = stock.history(period="1d")
+        stock_price = hist["Close"].iloc[-1]
+        exp_dates = stock.options
 
-        # Get real-time stock price
-        history = stock.history(period="1d")
-        stock_price = history["Close"].iloc[-1]
+        if not exp_dates:
+            return {"error": "No expiration dates available"}
 
-        # Available expiration dates sorted
-        expiration_dates = sorted(
-            stock.options, key=lambda x: datetime.strptime(x, "%Y-%m-%d")
-        )
-
-        if len(expiration_dates) < 2:
-            return {"error": "Not enough expiration dates available."}
+        # Select a diverse range of expiration dates
+        if len(exp_dates) > 5:
+            # Take dates with a good spread - near, middle, and far expirations
+            selected_indices = [
+                0,  # Nearest expiration
+                len(exp_dates) // 4,  # 25% out
+                len(exp_dates) // 2,  # Middle
+                3 * len(exp_dates) // 4,  # 75% out
+                len(exp_dates) - 1,  # Furthest expiration
+            ]
+            selected_exp_dates = [exp_dates[i] for i in selected_indices]
+        else:
+            selected_exp_dates = exp_dates
 
         num_calls = total_results // 2
         num_puts = total_results - num_calls
 
-        # Select evenly spaced expiration dates
-        call_expirations = np.linspace(
-            0, len(expiration_dates) - 1, num_calls, dtype=int
-        )
-        put_expirations = np.linspace(0, len(expiration_dates) - 1, num_puts, dtype=int)
+        call_results = []
+        put_results = []
 
-        # Fetch options and organize them
-        def fetch_options(expirations, option_type):
-            opt_results = []
-            for i in expirations:
-                exp_date = expiration_dates[i]
-                options = stock.option_chain(exp_date)
-                option_table = options.calls if option_type == "call" else options.puts
+        # Fetch all options data first
+        all_options_data = {}
+        for exp_date in selected_exp_dates:
+            try:
+                option_chain = stock.option_chain(exp_date)
+                all_options_data[exp_date] = {
+                    "calls": option_chain.calls,
+                    "puts": option_chain.puts,
+                }
+            except Exception as e:
+                print(f"Error fetching options for {exp_date}: {str(e)}")
 
-                if not option_table.empty:
-                    best_option = option_table.sort_values(
-                        by=["openInterest", "volume"], ascending=False
-                    ).head(1)
-                    if not best_option.empty:
-                        row = best_option.iloc[0]
-                        opt_results.append(
-                            {
-                                "symbol": symbol,
-                                "stock_price": stock_price,
-                                "expiration": exp_date,
-                                "strike_price": row["strike"],
-                                "option_type": option_type,
-                                "market_price": row["lastPrice"],
-                                "implied_volatility": row["impliedVolatility"],
-                                "open_interest": row["openInterest"],
-                                "volume": row["volume"],
-                            }
-                        )
-            return opt_results
+        # Process calls
+        for exp_date, data in all_options_data.items():
+            calls = data["calls"]
+            if not calls.empty:
+                best_calls = calls.nlargest(2, "volume")
+                for _, option in best_calls.iterrows():
+                    call_results.append(
+                        {
+                            "symbol": symbol,
+                            "stock_price": stock_price,
+                            "expiration": exp_date,
+                            "strike_price": option["strike"],
+                            "option_type": "call",
+                            "market_price": option["lastPrice"],
+                            "implied_volatility": option["impliedVolatility"],
+                            "volume": option["volume"],
+                        }
+                    )
+                    if len(call_results) >= num_calls:
+                        break
+            if len(call_results) >= num_calls:
+                break
 
-        # Get calls and puts
-        results.extend(fetch_options(call_expirations, "call"))
-        results.extend(fetch_options(put_expirations, "put"))
+        # Process puts
+        for exp_date, data in all_options_data.items():
+            puts = data["puts"]
+            if not puts.empty:
+                best_puts = puts.nlargest(2, "volume")
+                for _, option in best_puts.iterrows():
+                    put_results.append(
+                        {
+                            "symbol": symbol,
+                            "stock_price": stock_price,
+                            "expiration": exp_date,
+                            "strike_price": option["strike"],
+                            "option_type": "put",
+                            "market_price": option["lastPrice"],
+                            "implied_volatility": option["impliedVolatility"],
+                            "volume": option["volume"],
+                        }
+                    )
+                    if len(put_results) >= num_puts:
+                        break
+            if len(put_results) >= num_puts:
+                break
 
-        return results if results else {"error": "No options found matching criteria."}
+        # Combine results
+        combined_results = call_results + put_results
 
+        return combined_results[:total_results]
     except Exception as e:
         return {"error": str(e)}
-
-
-# Example Test
-# print(fetch_options_data("AAPL", 10))

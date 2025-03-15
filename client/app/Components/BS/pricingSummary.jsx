@@ -7,20 +7,6 @@ const PricingSummary = ({
   selectedSolution,
   parameters,
 }) => {
-  // Format date to be more readable
-  //   const formatDate = (date) => {
-  //     if (!date) return "N/A";
-  //     try {
-  //       return new Date(date).toLocaleDateString("en-US", {
-  //         year: "numeric",
-  //         month: "short",
-  //         day: "numeric",
-  //       });
-  //     } catch (e) {
-  //       return "Invalid Date";
-  //     }
-  //   };
-
   return (
     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border border-indigo-100 shadow-sm mt-8 mb-4">
       <h3 className="text-lg font-semibold text-teal-800 mb-3">

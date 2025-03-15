@@ -1,22 +1,19 @@
 from fastapi import FastAPI
-from routes.options_bulk import router as bulk_option_router
 from fastapi.middleware.cors import CORSMiddleware
+from routes import api
 
-app = FastAPI(title="Options Pricing API", version="1.0")
+app = FastAPI()
 
-# Enable CORS for frontend access
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include routes
-app.include_router(bulk_option_router)
+app.include_router(api.router, prefix="/api/v1")
 
 
 @app.get("/")
-def root():
-    return {"message": "Options Pricing API is running!"}
+def read_root():
+    return {"message": "Options Pricing API"}
