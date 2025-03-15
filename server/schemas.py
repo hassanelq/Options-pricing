@@ -1,21 +1,22 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Literal
 
 
 class MarketDataRequest(BaseModel):
     symbol: str
-    total_results: int = 10
+    total_results: int = 12
 
 
 class PricingRequest(BaseModel):
+    model_type: Literal["black_scholes", "heston", "ou"] = "black_scholes"
+    solution_type: str  # "closed_form", "fourier", "monte_carlo", etc.
     option_type: str
     underlying_price: float
     strike_price: float
     expiration: datetime
     risk_free_rate: float
     volatility: float
-    model_type: str = "black_scholes"
-    # Add other parameters as needed
 
 
 class OptionData(BaseModel):

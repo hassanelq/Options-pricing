@@ -16,9 +16,9 @@ def get_market_data(symbol: str, total_results: int = 12) -> List[Dict[str, Any]
 
         # Ensure maximum spacing between selected expiration dates
         selected_exp_dates = []
-        if len(exp_dates) >= 5:
+        if len(exp_dates) >= 6:
             # Calculate the stride to get maximum separation
-            total_dates_needed = 5  # We want 5 different expiration buckets
+            total_dates_needed = 6  # We want 6 different expiration buckets
             stride = max(1, (len(exp_dates) - 1) // (total_dates_needed - 1))
 
             # Select dates with maximum gaps
