@@ -99,6 +99,98 @@ const PricingSummary = ({
             </span>
           </div>
         </div>
+        {/* Show Heston parameters if they exist */}
+        {selectedApproach === "heston" && (
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <h4 className="font-medium text-teal-800 mb-2">
+              Heston Parameters
+            </h4>
+            {parameters.kappa && (
+              <div className="flex justify-between border-b border-gray-200 pb-1">
+                <span className="text-gray-700">Mean Reversion (κ):</span>
+                <span className="text-teal-700">
+                  {parameters.kappa.toFixed(2)}
+                </span>
+              </div>
+            )}
+            {parameters.theta && (
+              <div className="flex justify-between border-b border-gray-200 pb-1">
+                <span className="text-gray-700">Long-term Variance (θ):</span>
+                <span className="text-teal-700">
+                  {parameters.theta.toFixed(4)}
+                </span>
+              </div>
+            )}
+            {parameters.xi && (
+              <div className="flex justify-between border-b border-gray-200 pb-1">
+                <span className="text-gray-700">Vol of Vol (ξ):</span>
+                <span className="text-teal-700">
+                  {parameters.xi.toFixed(3)}
+                </span>
+              </div>
+            )}
+            {parameters.rho && (
+              <div className="flex justify-between border-b border-gray-200 pb-1">
+                <span className="text-gray-700">Correlation (ρ):</span>
+                <span className="text-teal-700">
+                  {parameters.rho.toFixed(2)}
+                </span>
+              </div>
+            )}
+            {parameters.v0 && (
+              <div className="flex justify-between border-b border-gray-200 pb-1">
+                <span className="text-gray-700">Initial Variance (v₀):</span>
+                <span className="text-teal-700">
+                  {parameters.v0.toFixed(4)}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Show OU parameters if they exist */}
+        {selectedApproach === "ou" && (
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <h4 className="font-medium text-teal-800 mb-2">
+              OU Process Parameters
+            </h4>
+            {parameters.kappa_ou && (
+              <div className="flex justify-between border-b border-gray-200 pb-1">
+                <span className="text-gray-700">Mean Reversion (κ):</span>
+                <span className="text-teal-700">
+                  {parameters.kappa_ou.toFixed(2)}
+                </span>
+              </div>
+            )}
+            {parameters.theta_ou && (
+              <div className="flex justify-between border-b border-gray-200 pb-1">
+                <span className="text-gray-700">Long-term Mean (θ):</span>
+                <span className="text-teal-700">
+                  {parameters.theta_ou.toFixed(2)}
+                </span>
+              </div>
+            )}
+            {parameters.xi_ou && (
+              <div className="flex justify-between border-b border-gray-200 pb-1">
+                <span className="text-gray-700">Volatility (ξ):</span>
+                <span className="text-teal-700">
+                  {parameters.xi_ou.toFixed(3)}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Show Monte Carlo simulations if exists */}
+        {selectedSolution === "monteCarlo" &&
+          parameters.monte_carlo_simulations && (
+            <div className="flex justify-between border-b border-gray-200 pb-1">
+              <span className="font-medium text-gray-700">Simulations:</span>
+              <span className="text-teal-700">
+                {parameters.monte_carlo_simulations.toLocaleString()}
+              </span>
+            </div>
+          )}
       </div>
     </div>
   );

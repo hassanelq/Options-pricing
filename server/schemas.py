@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Literal
+from typing import Optional
 
 
 class MarketDataRequest(BaseModel):
@@ -9,14 +10,30 @@ class MarketDataRequest(BaseModel):
 
 
 class PricingRequest(BaseModel):
-    model_type: Literal["black_scholes", "heston", "ou"] = "black_scholes"
-    solution_type: str  # "closed_form", "fourier", "monte_carlo", etc.
+    # Common parameters
+    model_type: str
+    solution_type: str
     option_type: str
     underlying_price: float
     strike_price: float
-    expiration: datetime
+    yearsToExpiration: float
     risk_free_rate: float
     volatility: float
+
+    # Heston parameters
+    kappa: Optional[float] = None  # Mean reversion rate
+    theta: Optional[float] = None  # Long-term variance
+    xi: Optional[float] = None  # Vol of vol
+    rho: Optional[float] = None  # Correlation
+    v0: Optional[float] = None  # Initial variance
+
+    # OU parameters
+    theta_ou: Optional[float] = None  # Long-term mean
+    kappa_ou: Optional[float] = None  # Mean reversion rate
+    xi_ou: Optional[float] = None  # Volatility
+
+    # Monte Carlo parameters
+    monte_carlo_simulations: Optional[int] = None
 
 
 class OptionData(BaseModel):
@@ -31,7 +48,3 @@ class OptionData(BaseModel):
 
 class PricingResult(BaseModel):
     price: float
-    delta: float
-    gamma: float
-    vega: float
-    theta: float

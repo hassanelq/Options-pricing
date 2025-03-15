@@ -6,10 +6,200 @@ const SolutionMethodSelector = ({
   selectedSolution,
   setSelectedSolution,
   approach,
+  parameters,
+  setParameters,
 }) => {
   const approachData = PRICING_CONFIG["European"].find(
     (a) => a.value === approach
   );
+
+  // Get current solution type from selected solution name
+  const solutionType = approachData?.solutions.find(
+    (s) => s.name === selectedSolution
+  )?.value;
+  const renderAdditionalParams = () => {
+    const inputStyle =
+      "w-full px-3 py-2 border border-indigo-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-transparent transition-all duration-200";
+    const labelStyle = "block mb-1 font-medium text-teal-800";
+
+    // Monte Carlo Parameters
+    if (approach === "blackScholes" && selectedSolution === "monteCarlo") {
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mt-8 space-y-4 p-4 bg-indigo-50 rounded-xl"
+        >
+          <h3 className="text-lg font-semibold text-teal-800">
+            Simulation Settings
+          </h3>
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className={labelStyle}>Number of Simulations</label>
+              <input
+                type="number"
+                value={parameters.monte_carlo_simulations || 10000}
+                onChange={(e) =>
+                  setParameters({
+                    ...parameters,
+                    monte_carlo_simulations: parseInt(e.target.value),
+                  })
+                }
+                className={inputStyle}
+                min="1000"
+                step="1000"
+              />
+            </div>
+          </div>
+        </motion.div>
+      );
+    }
+
+    // Heston Model Parameters
+    if (approach === "heston") {
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mt-8 space-y-4 p-4 bg-indigo-50 rounded-xl"
+        >
+          <h3 className="text-lg font-semibold text-teal-800">
+            Heston Model Parameters
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { label: "Mean Reversion (κ)", key: "kappa", step: 0.1 },
+              { label: "Long-term Variance (θ)", key: "theta", step: 0.01 },
+              { label: "Vol of Vol (ξ)", key: "xi", step: 0.1 },
+              {
+                label: "Correlation (ρ)",
+                key: "rho",
+                step: 0.1,
+                min: -1,
+                max: 1,
+              },
+              { label: "Initial Variance (v₀)", key: "v0", step: 0.01 },
+            ].map((param, index) => (
+              <motion.div
+                key={param.key}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+              >
+                <label className={labelStyle}>{param.label}</label>
+                <input
+                  type="number"
+                  value={parameters[param.key] || ""}
+                  onChange={(e) =>
+                    setParameters({
+                      ...parameters,
+                      [param.key]: parseFloat(e.target.value),
+                    })
+                  }
+                  className={inputStyle}
+                  step={param.step}
+                  min={param.min}
+                  max={param.max}
+                />
+              </motion.div>
+            ))}
+            {selectedSolution === "monteCarlo" && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <label className={labelStyle}>Simulations</label>
+                <input
+                  type="number"
+                  value={parameters.monte_carlo_simulations || 10000}
+                  onChange={(e) =>
+                    setParameters({
+                      ...parameters,
+                      monte_carlo_simulations: parseInt(e.target.value),
+                    })
+                  }
+                  className={inputStyle}
+                  min="1000"
+                  step="1000"
+                />
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
+      );
+    }
+
+    // OU Model Parameters
+    if (approach === "ou") {
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mt-8 space-y-4 p-4 bg-indigo-50 rounded-xl"
+        >
+          <h3 className="text-lg font-semibold text-teal-800">
+            OU Process Parameters
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { label: "Mean Reversion (κ)", key: "kappa_ou", step: 0.1 },
+              { label: "Long-term Mean (θ)", key: "theta_ou", step: 0.1 },
+              { label: "Volatility (ξ)", key: "xi_ou", step: 0.1 },
+            ].map((param, index) => (
+              <motion.div
+                key={param.key}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+              >
+                <label className={labelStyle}>{param.label}</label>
+                <input
+                  type="number"
+                  value={parameters[param.key] || ""}
+                  onChange={(e) =>
+                    setParameters({
+                      ...parameters,
+                      [param.key]: parseFloat(e.target.value),
+                    })
+                  }
+                  className={inputStyle}
+                  step={param.step}
+                />
+              </motion.div>
+            ))}
+            {selectedSolution === "monteCarlo" && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <label className={labelStyle}>Simulations</label>
+                <input
+                  type="number"
+                  value={parameters.monte_carlo_simulations || 10000}
+                  onChange={(e) =>
+                    setParameters({
+                      ...parameters,
+                      monte_carlo_simulations: parseInt(e.target.value),
+                    })
+                  }
+                  className={inputStyle}
+                  min="1000"
+                  step="1000"
+                />
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <motion.div
@@ -54,7 +244,7 @@ const SolutionMethodSelector = ({
               className={`
                 px-5 py-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center gap-3
                 ${
-                  selectedSolution === method.name
+                  selectedSolution === method.value
                     ? "bg-gradient-to-r from-teal-600 to-emerald-500 text-white shadow-md"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
                 }
@@ -63,8 +253,8 @@ const SolutionMethodSelector = ({
               <input
                 type="radio"
                 name="solutionMethod"
-                value={method.name}
-                checked={selectedSolution === method.name}
+                value={method.value}
+                checked={selectedSolution === method.value}
                 onChange={(e) => setSelectedSolution(e.target.value)}
                 className="hidden"
               />
@@ -94,6 +284,8 @@ const SolutionMethodSelector = ({
           </motion.div>
         ))}
       </div>
+      {/* Additional parameters section */}
+      {renderAdditionalParams()}
     </motion.div>
   );
 };

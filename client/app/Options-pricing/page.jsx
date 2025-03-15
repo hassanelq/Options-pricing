@@ -28,9 +28,7 @@ const PricingPage = () => {
     volatility: 0.1,
     market_price: null,
   });
-  const [selectedSolution, setSelectedSolution] = useState(
-    "Black-Scholes Closed-Form Solution"
-  );
+  const [selectedSolution, setSelectedSolution] = useState("closedForm");
   const [priceResult, setPriceResult] = useState(null);
   const [optionsData, setOptionsData] = useState([]);
   const [activeStep, setActiveStep] = useState(1);
@@ -102,7 +100,7 @@ const PricingPage = () => {
   const handleResetInputs = () => {
     setSelectedStyle("European");
     setSelectedApproach("blackScholes");
-    setSelectedSolution("Black-Scholes Closed-Form Solution");
+    setSelectedSolution("closedForm");
     setSelectedAssetType("Stocks");
     setParameters({
       symbol: "AAPL",
@@ -258,6 +256,8 @@ const PricingPage = () => {
               selectedSolution={selectedSolution}
               setSelectedSolution={setSelectedSolution}
               approach={selectedApproach}
+              parameters={parameters}
+              setParameters={setParameters}
               isActive={activeStep >= 7}
             />
           </motion.div>
