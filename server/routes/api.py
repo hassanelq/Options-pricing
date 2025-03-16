@@ -40,7 +40,7 @@ async def calculate_price(request: PricingRequest):
             elif request.solution_type == "fourier":
                 result = black_scholes.BlackScholes.fourier_transform(**bs_params)
             elif request.solution_type == "monteCarlo":
-                bs_params["num_simulations"] = request.monte_carlo_simulations or 10000
+                bs_params["num_simulations"] = request.monte_carlo_simulations
                 result = black_scholes.BlackScholes.monte_carlo(**bs_params)
 
         elif request.model_type == "heston":
@@ -61,9 +61,7 @@ async def calculate_price(request: PricingRequest):
             elif request.solution_type == "fourier":
                 result = heston.Heston.fourier_transform(**heston_params)
             elif request.solution_type == "monteCarlo":
-                heston_params["num_simulations"] = (
-                    request.monte_carlo_simulations or 10000
-                )
+                heston_params["num_simulations"] = request.monte_carlo_simulations
                 result = heston.Heston.monte_carlo(**heston_params)
 
         elif request.model_type == "ou":
@@ -82,7 +80,7 @@ async def calculate_price(request: PricingRequest):
             elif request.solution_type == "fft":
                 result = ornstein_uhlenbeck.OrnsteinUhlenbeck.fft(**ou_params)
             elif request.solution_type == "monteCarlo":
-                ou_params["num_simulations"] = request.monte_carlo_simulations or 10000
+                ou_params["num_simulations"] = request.monte_carlo_simulations
                 result = ornstein_uhlenbeck.OrnsteinUhlenbeck.monte_carlo(**ou_params)
 
         else:

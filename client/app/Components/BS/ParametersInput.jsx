@@ -20,7 +20,7 @@ const ParametersInput = ({ parameters, setParameters }) => {
 
   // Function to handle expiration date change
   const handleExpirationChange = () => {
-    const selectedDate = parameters.expiration;
+    const selectedDate = new Date(parameters.expiration);
     const today = new Date();
 
     if (isNaN(selectedDate.getTime())) {

@@ -104,6 +104,10 @@ const PricingPage = () => {
       yearsToExpiration: parameters.yearsToExpiration,
       risk_free_rate: parameters.riskFreeRate / 100,
       volatility: parameters.volatility,
+      monte_carlo_simulations:
+        selectedSolution === "monteCarlo"
+          ? parameters.monte_carlo_simulations
+          : undefined, // Only pass if Monte Carlo
     };
 
     console.log("Sending PricingRequest:", PricingRequest);
