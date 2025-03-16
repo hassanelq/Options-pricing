@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import OptionStyleSelector from "../Components/BS/OptionStyleSelector";
-import PricingApproachSelector from "../Components/BS/PricingApproachSelector";
+import PricingApproachSelector from "../Components/BS/PricingModel";
 import SolutionMethodSelector from "../Components/BS/SolutionMethodSelector";
 import AssetTypeSelector from "../Components/BS/AssetTypeSelector";
 import KeyParametersInput from "../Components/BS/KeyParametersInput";
@@ -22,10 +22,10 @@ const PricingPage = () => {
     symbol: "AAPL",
     option_type: "call",
     underlyingPrice: 100,
-    strikePrice: 150,
-    expiration: new Date(),
-    yearsToExpiration: 0,
-    riskFreeRate: 4,
+    strikePrice: 100,
+    expiration: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+    yearsToExpiration: 1,
+    riskFreeRate: 0.045,
     volatility: 0.1,
     market_price: null,
   });
@@ -69,11 +69,9 @@ const PricingPage = () => {
       underlyingPrice: option.stock_price,
       strikePrice: option.strike_price,
       expiration: option.expiration,
-      yearsToExpiration: 0,
-      riskFreeRate: 0,
+      riskFreeRate: 0.045,
       volatility: option.implied_volatility,
       market_price: option.market_price,
-      dividends: 0,
     });
     setActiveStep(Math.max(activeStep, 7));
   };
@@ -113,13 +111,14 @@ const PricingPage = () => {
       symbol: "AAPL",
       option_type: "call",
       underlyingPrice: 100,
-      strikePrice: 150,
-      expiration: new Date(),
-      yearsToExpiration: 0,
-      riskFreeRate: 4,
+      strikePrice: 100,
+      expiration: new Date(
+        new Date().setFullYear(new Date().getFullYear() + 1)
+      ),
+      yearsToExpiration: 1,
+      riskFreeRate: 0.045,
       volatility: 0.1,
-      market_price: 60,
-      dividends: 0,
+      market_price: null,
     });
     setPriceResult(null);
     setOptionsData([]);

@@ -16,9 +16,7 @@ const PricingApproachSelector = ({ selectedApproach, setSelectedApproach }) => {
         <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-600 to-emerald-500 flex items-center justify-center text-white font-bold mr-3 shadow-md">
           2
         </div>
-        <h2 className="text-xl font-semibold text-teal-800">
-          Pricing Approach
-        </h2>
+        <h2 className="text-xl font-semibold text-teal-800">Pricing Model</h2>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 ml-11">

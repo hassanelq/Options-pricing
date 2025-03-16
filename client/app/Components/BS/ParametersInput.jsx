@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { fetchRiskFreeRate } from "../../api/riskFreeRate";
 
 const ParametersInput = ({ parameters, setParameters }) => {
-  const [timeToExpiration, setTimeToExpiration] = useState(0);
+  const [timeToExpiration, setTimeToExpiration] = useState(1);
   const [isFetchingRate, setIsFetchingRate] = useState(false);
   const [fetchError, setFetchError] = useState(null);
   const [rateType, setRateType] = useState("N/A");
@@ -20,7 +20,7 @@ const ParametersInput = ({ parameters, setParameters }) => {
 
   // Function to handle expiration date change
   const handleExpirationChange = () => {
-    const selectedDate = new Date(parameters.expiration);
+    const selectedDate = parameters.expiration;
     const today = new Date();
 
     if (isNaN(selectedDate.getTime())) {
@@ -181,15 +181,21 @@ const ParametersInput = ({ parameters, setParameters }) => {
           </label>
           <input
             type="date"
-            value={parameters.expiration}
-            // Sets the minimum date to tomorrow
+            value={
+              parameters.expiration
+                ? new Date(parameters.expiration).toISOString().split("T")[0]
+                : ""
+            }
             min={
               new Date(new Date().setDate(new Date().getDate() + 1))
                 .toISOString()
                 .split("T")[0]
             }
             onChange={(e) =>
-              setParameters((prev) => ({ ...prev, expiration: e.target.value }))
+              setParameters((prev) => ({
+                ...prev,
+                expiration: new Date(e.target.value), // Convert back to Date object
+              }))
             }
             className="w-full border border-indigo-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-transparent transition-all duration-200"
           />
@@ -238,40 +244,54 @@ const ParametersInput = ({ parameters, setParameters }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={fetchRiskFreeRateData}
-              className="ml-2 px-3 py-2 bg-gradient-to-r from-teal-600 to-emerald-500 text-white rounded-lg hover:shadow-md transition-all duration-200 font-medium"
+              className={`ml-2 px-3 py-2 bg-gradient-to-r from-teal-600 to-emerald-500 text-white rounded-lg shadow hover:shadow-lg transition-all duration-200 font-medium flex items-center gap-2 ${
+                isFetchingRate ? "opacity-75" : ""
+              }`}
             >
-              Fetch
+              {isFetchingRate ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                </>
+              ) : (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                  Fetch
+                </>
+              )}
             </motion.button>
           </div>
-          {isFetchingRate && (
-            <motion.div
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-right text-teal-600 font-semibold mt-1 flex items-center justify-end"
-            >
-              <svg
-                className="animate-spin h-4 w-4 mr-1"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Fetching risk-free rate...
-            </motion.div>
-          )}
           {fetchError && (
             <motion.div
               initial={{ opacity: 0, y: 5 }}
