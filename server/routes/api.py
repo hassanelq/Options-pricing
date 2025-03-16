@@ -98,9 +98,4 @@ async def calculate_price(request: PricingRequest):
     return PricingResult(
         price=result["price"],
         methodology=result["methodology"],
-        delta=result.get("delta", 0),
-        gamma=result.get("gamma", 0),
-        vega=result.get("vega", 0),
-        theta=result.get("theta", 0),
-        rho=result.get("rho", 0),
     )
