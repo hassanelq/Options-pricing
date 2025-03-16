@@ -104,32 +104,65 @@ const ParametersInput = ({ parameters, setParameters }) => {
             Option Type
           </label>
           <div className="flex space-x-4">
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="radio"
-                name="option_type"
-                value="call"
-                checked={parameters.option_type === "call"}
-                onChange={() =>
-                  setParameters((prev) => ({ ...prev, option_type: "call" }))
-                }
-                className="form-radio text-teal-600"
-              />
-              <span className="text-teal-800">Call</span>
-            </label>
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="radio"
-                name="option_type"
-                value="put"
-                checked={parameters.option_type === "put"}
-                onChange={() =>
-                  setParameters((prev) => ({ ...prev, option_type: "put" }))
-                }
-                className="form-radio text-red-600"
-              />
-              <span className="text-red-800">Put</span>
-            </label>
+            {[
+              {
+                name: "Call",
+                value: "call",
+                color: "from-teal-600 to-emerald-500",
+              },
+              { name: "Put", value: "put", color: "from-red-600 to-red-500" },
+            ].map((option) => (
+              <motion.label
+                key={option.value}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-5 py-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center gap-3
+        ${
+          parameters.option_type === option.value
+            ? `bg-gradient-to-r ${option.color} text-white shadow-md`
+            : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
+        }
+      `}
+              >
+                {/* Hidden Radio Input */}
+                <input
+                  type="radio"
+                  name="option_type"
+                  value={option.value}
+                  checked={parameters.option_type === option.value}
+                  onChange={() =>
+                    setParameters((prev) => ({
+                      ...prev,
+                      option_type: option.value,
+                    }))
+                  }
+                  className="hidden"
+                />
+
+                {/* Label Text */}
+                <span className="font-medium text-base">{option.name}</span>
+
+                {/* Checkmark when selected */}
+                {parameters.option_type === option.value && (
+                  <motion.svg
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                    className="w-5 h-5 ml-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </motion.svg>
+                )}
+              </motion.label>
+            ))}
           </div>
         </motion.div>
         {[

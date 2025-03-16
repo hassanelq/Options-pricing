@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { PRICING_CONFIG } from "../../config";
 
@@ -12,6 +12,38 @@ const SolutionMethodSelector = ({
   const approachData = PRICING_CONFIG["European"].find(
     (a) => a.value === approach
   );
+
+  useEffect(() => {
+    if (
+      selectedSolution === "monteCarlo" &&
+      !parameters.monte_carlo_simulations
+    ) {
+      setParameters((prev) => ({
+        ...prev,
+        monte_carlo_simulations: 10000, // Default Monte Carlo simulations
+      }));
+    }
+
+    if (approach === "heston") {
+      setParameters((prev) => ({
+        ...prev,
+        kappa: prev.kappa ?? 2.0, // Default Mean Reversion Speed
+        theta: prev.theta ?? 0.04, // Default Long-term Variance
+        xi: prev.xi ?? 0.1, // Default Volatility of Volatility
+        rho: prev.rho ?? -0.7, // Default Correlation
+        v0: prev.v0 ?? 0.04, // Default Initial Variance
+      }));
+    }
+
+    if (approach === "ou") {
+      setParameters((prev) => ({
+        ...prev,
+        kappa_ou: prev.kappa_ou ?? 1.5, // Default Mean Reversion Speed
+        theta_ou: prev.theta_ou ?? 0.05, // Default Long-term Mean
+        xi_ou: prev.xi_ou ?? 0.02, // Default Volatility
+      }));
+    }
+  }, [selectedSolution, approach, setParameters]);
 
   // Get current solution type from selected solution name
   const solutionType = approachData?.solutions.find(

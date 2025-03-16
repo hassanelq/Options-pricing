@@ -14,6 +14,8 @@ import PricingResult from "../Components/BS/PricingResult";
 import { fetchMarketData } from "./../api/marketData";
 import { priceOption } from "./../api/optionPricing";
 
+import { PRICING_CONFIG } from "../config";
+
 const PricingPage = () => {
   const [selectedStyle, setSelectedStyle] = useState("European");
   const [selectedApproach, setSelectedApproach] = useState("blackScholes");
@@ -29,7 +31,23 @@ const PricingPage = () => {
     volatility: 0.1,
     market_price: null,
   });
-  const [selectedSolution, setSelectedSolution] = useState("closedForm");
+
+  // Get approach data from config
+  const approachData = PRICING_CONFIG["European"].find(
+    (a) => a.value === selectedApproach
+  );
+
+  const [selectedSolution, setSelectedSolution] = useState(
+    approachData["solutions"][0].value
+  );
+
+  // Ensure selectedSolution updates when selectedApproach changes
+  useEffect(() => {
+    if (approachData) {
+      setSelectedSolution(approachData.solutions[0].value);
+    }
+  }, [selectedApproach]);
+
   const [priceResult, setPriceResult] = useState(null);
   const [optionsData, setOptionsData] = useState([]);
   const [activeStep, setActiveStep] = useState(1);
