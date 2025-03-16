@@ -1,71 +1,178 @@
+"use client";
+
+// components/Footer.js
 import React from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
 const Footer = () => (
-  <footer className="bg-gray-50">
-    <div className="custom-screen py-10">
-      <div className="border-t pt-6 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left">
-        {/* Footer Text */}
-        <p className="text-gray-600 mb-4 sm:mb-0">
-          Created by{" "}
-          <a
-            href="https://www.elqadi.me/"
-            className="text-blue-600 hover:underline transition"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Hassan EL QADI
-          </a>
-          .
-        </p>
+  <footer className="bg-gradient-to-b from-gray-50 to-teal-50 border-t border-gray-200">
+    <div className="custom-screen py-12">
+      <div className="grid md:grid-cols-3 gap-8">
+        {/* Profile Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="space-y-4"
+        >
+          <div className="flex items-center gap-4">
+            <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-teal-500">
+              <Image
+                src="/images/me.jpeg" // Add your profile image
+                alt="Hassan EL QADI"
+                layout="fill"
+                objectFit="cover"
+              />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-emerald-500">
+                Hassan EL QADI
+              </h3>
+              <p className="text-sm text-gray-600">
+                Financial Engineer & Developer
+              </p>
+            </div>
+          </div>
+          <p className="text-gray-600 text-sm">
+            Building quantitative tools and financial models to democratize
+            access to sophisticated financial analysis.
+          </p>
+        </motion.div>
+
+        {/* Project Links */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="grid grid-cols-2 gap-4 md:pl-12"
+        >
+          <div className="space-y-3">
+            <h4 className="text-gray-800 font-semibold">Project</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href="/Options-pricing"
+                  className="text-gray-600 hover:text-teal-600 transition text-sm"
+                >
+                  Pricing Models
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/documentation"
+                  className="text-gray-600 hover:text-teal-600 transition text-sm"
+                >
+                  Documentation
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/methodology"
+                  className="text-gray-600 hover:text-teal-600 transition text-sm"
+                >
+                  Methodology
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div className="space-y-3">
+            <h4 className="text-gray-800 font-semibold">Resources</h4>
+            <ul className="space-y-2">
+              <li>
+                <a
+                  href="https://github.com/hassanelq/Simulations-MC-BrownMotion"
+                  className="text-gray-600 hover:text-teal-600 transition text-sm"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  GitHub Repository
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/report"
+                  className="text-gray-600 hover:text-teal-600 transition text-sm"
+                >
+                  Project report
+                </a>
+              </li>
+            </ul>
+          </div>
+        </motion.div>
 
         {/* Social Links */}
-        <div className="flex items-center gap-4">
-          <a
-            href="https://www.linkedin.com/in/el-qadi/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-600 hover:text-blue-600 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6"
-              fill="currentColor"
-              viewBox="0 0 24 24"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="space-y-4 md:text-right"
+        >
+          <h4 className="text-gray-800 font-semibold">Connect</h4>
+          <div className="flex gap-4 md:justify-end">
+            {/* LinkedIn */}
+            <a
+              href="https://www.linkedin.com/in/el-qadi/"
+              target="_blank"
+              rel="noopener"
+              className="p-2 rounded-full bg-white border border-gray-200 hover:border-teal-500 transition-all hover:-translate-y-1"
             >
-              <path d="M19 0H5C2.24 0 0 2.24 0 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5V5c0-2.76-2.24-5-5-5zM8.5 19H5.5v-9h3v9zm-1.5-10.2c-.97 0-1.7-.8-1.7-1.7 0-.97.79-1.7 1.7-1.7s1.7.79 1.7 1.7c0 .96-.79 1.7-1.7 1.7zm13 10.2h-3v-4.7c0-1.12-.9-2-2-2s-2 .88-2 2v4.7h-3v-9h3v1.6c.61-.96 1.85-1.6 3-1.6 2.21 0 4 1.79 4 4v4.9z" />
-            </svg>
-          </a>
-          <a
-            href="https://github.com/hassanelq/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-600 hover:text-gray-800 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6"
-              fill="currentColor"
-              viewBox="0 0 24 24"
+              <svg
+                className="w-5 h-5 text-[#0A66C2]"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M19 0H5a5 5 0 0 0-5 5v14a5 5 0 0 0 5 5h14a5 5 0 0 0 5-5V5a5 5 0 0 0-5-5zM8 19H5V8h3v11zM6.5 6.732c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zM20 19h-3v-5.604c0-3.368-4-3.113-4 0V19h-3V8h3v1.765c1.396-2.586 7-2.777 7 2.476V19z" />
+              </svg>
+            </a>
+
+            {/* GitHub */}
+            <a
+              href="https://github.com/hassanelq"
+              target="_blank"
+              rel="noopener"
+              className="p-2 rounded-full bg-white border border-gray-200 hover:border-teal-500 transition-all hover:-translate-y-1"
             >
-              <path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.66-.22.66-.48v-1.72c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.47-1.1-1.47-.9-.62.07-.61.07-.61 1 .07 1.54 1.03 1.54 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.26-4.56-1.11-4.56-4.95 0-1.09.39-1.98 1.02-2.68-.1-.25-.45-1.28.1-2.65 0 0 .84-.27 2.75 1.02A9.54 9.54 0 0 1 12 6.85a9.55 9.55 0 0 1 2.5.33c1.91-1.3 2.75-1.02 2.75-1.02.56 1.37.21 2.4.1 2.65.63.7 1.02 1.59 1.02 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.86v2.75c0 .27.18.58.68.48A10.02 10.02 0 0 0 22 12c0-5.52-4.48-10-10-10z" />
-            </svg>
-          </a>
-          <a
-            href="https://www.elqadi.me/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-600 hover:text-green-500 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6"
-              fill="currentColor"
-              viewBox="0 0 24 24"
+              <svg
+                className="w-5 h-5 text-gray-800"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.89.83.09-.65.34-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.8-.22 1.65-.33 2.5-.33.85 0 1.7.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V19c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z" />
+              </svg>
+            </a>
+
+            {/* Portfolio */}
+            <a
+              href="https://www.elqadi.me"
+              target="_blank"
+              rel="noopener"
+              className="p-2 rounded-full bg-white border border-gray-200 hover:border-teal-500 transition-all hover:-translate-y-1"
             >
-              <path d="M12 2a10 10 0 0 0-10 10 10 10 0 1 0 10-10zm0 2c2.1 0 4 .81 5.47 2.13a12.29 12.29 0 0 0-10.94 0A8 8 0 0 1 12 4zM4 12c0-1.67.56-3.21 1.5-4.47a10.23 10.23 0 0 1 13 0A7.96 7.96 0 1 1 4 12zm7.5 6.33a2 2 0 1 1 4 0 2 2 0 0 1-4 0z" />
-            </svg>
-          </a>
-        </div>
+              <svg
+                className="w-5 h-5 text-teal-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                />
+              </svg>
+            </a>
+          </div>
+        </motion.div>
+      </div>
+
+      <div className="mt-8 pt-8 border-t border-gray-200 text-center">
+        <p className="text-sm text-gray-600">
+          © {new Date().getFullYear()} Option Pricing Dashboard. Open source
+          under MIT License.
+        </p>
       </div>
     </div>
   </footer>

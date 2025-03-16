@@ -3,7 +3,7 @@
 
 import { useRef } from "react";
 import Lottie from "lottie-react";
-import animationData from "/public/Animations/Animation1.json";
+import animationData from "/public/Animations/Animation3.json";
 
 const LottieAnimation = () => {
   const lottieRef = useRef();

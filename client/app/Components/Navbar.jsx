@@ -5,109 +5,146 @@ import Link from "next/link";
 import Image from "next/image";
 import NavLink from "./ui/NavLink";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-
-  const navigation = [{ title: "Homepage", path: "/" }];
-
   const pathname = usePathname();
 
+  const navigation = [
+    { title: "Home", path: "/" },
+    { title: "Documentation", path: "/documentation" },
+    { title: "Methodology", path: "/methodology" },
+  ];
+
   useEffect(() => {
-    if (typeof document !== "undefined") {
-      // Close the menu when navigating
-      document.body.classList.remove("overflow-hidden");
-      setMenuOpen(false);
-    }
-  }, [pathname]); // Ensure SSR-safe usage
+    document.body.classList.remove("overflow-hidden");
+    setMenuOpen(false);
+  }, [pathname]);
 
   const toggleMenu = () => {
-    if (typeof document !== "undefined") {
-      setMenuOpen((prevState) => !prevState);
-      document.body.classList.toggle("overflow-hidden", !menuOpen);
-    }
+    setMenuOpen((prev) => !prev);
+    document.body.classList.toggle("overflow-hidden", !menuOpen);
+  };
+
+  const mobileMenuVariants = {
+    open: { opacity: 1, y: 0 },
+    closed: { opacity: 0, y: "-100%" },
   };
 
   return (
-    <header>
-      <nav
-        className={`bg-white w-full md:static md:text-sm ${
-          menuOpen ? "fixed z-10 h-full" : ""
-        }`}
-      >
-        <div className="custom-screen items-center mx-auto md:flex">
-          <div className="flex items-center justify-between py-3 md:py-5 md:block">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3">
-              <Image src="/images/HE.svg" alt="logo" width={40} height={40} />
+    <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm shadow-sm">
+      <nav className="custom-screen mx-auto">
+        <div className="flex items-center justify-between py-4 md:py-5">
+          <motion.div whileHover={{ scale: 1.05 }}>
+            <Link href="/" className="flex items-center gap-2">
+              <div className="relative h-10 w-10">
+                <Image src="/images/HE.svg" alt="Hassan EL QADI" fill />
+              </div>
             </Link>
+          </motion.div>
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden">
-              <button
-                role="button"
-                aria-label="Open the menu"
-                className="text-gray-500 hover:text-gray-800"
-                onClick={toggleMenu}
-              >
-                {menuOpen ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                    />
-                  </svg>
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Navigation Links */}
-          <div
-            className={`flex-1 pb-3 mt-8 md:pb-0 md:mt-0 md:block ${
-              menuOpen ? "" : "hidden"
-            }`}
-          >
-            <ul className="text-gray-700 justify-end items-center space-y-6 md:flex md:space-x-6 md:space-y-0 md:text-gray-600 md:font-medium">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-10">
+            <ul className="flex items-center gap-8 text-gray-600 font-medium">
               {navigation.map((item, idx) => (
-                <li key={idx} className="duration-150 hover:text-gray-900">
-                  <Link href={item.path} className="block">
+                <li key={idx}>
+                  <Link
+                    href={item.path}
+                    className={`hover:text-teal-600 transition-colors px-2 py-1 rounded-lg ${
+                      pathname === item.path
+                        ? "text-teal-600 font-semibold"
+                        : ""
+                    }`}
+                  >
                     {item.title}
                   </Link>
                 </li>
               ))}
-              <li>
+            </ul>
+            <NavLink
+              href="/Options-pricing"
+              variant="gradient"
+              className="px-6 py-2.5 text-sm"
+            >
+              Start Pricing
+            </NavLink>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={toggleMenu}
+            className="p-2 md:hidden text-gray-600 hover:text-teal-600 transition-colors"
+            aria-label="Toggle navigation menu"
+          >
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {menuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              initial="closed"
+              animate="open"
+              exit="closed"
+              variants={mobileMenuVariants}
+              transition={{ duration: 0.3 }}
+              className="md:hidden fixed inset-0 z-50 bg-white shadow-lg mt-16 p-6"
+            >
+              <ul className="space-y-6 text-lg text-gray-600 font-medium">
+                {navigation.map((item, idx) => (
+                  <motion.li
+                    key={idx}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                  >
+                    <Link
+                      href={item.path}
+                      className={`block px-4 py-2 rounded-lg transition-colors ${
+                        pathname === item.path
+                          ? "text-teal-600 font-semibold"
+                          : "hover:text-teal-600"
+                      }`}
+                    >
+                      {item.title}
+                    </Link>
+                  </motion.li>
+                ))}
+              </ul>
+              <div className="mt-6">
                 <NavLink
                   href="/Options-pricing"
-                  className="block font-medium text-sm text-white bg-gray-800 hover:bg-gray-600 active:bg-gray-900 md:inline"
+                  variant="gradient"
+                  className="w-full text-center py-3 text-sm"
                 >
-                  Options Pricing
+                  Start Pricing
                 </NavLink>
-              </li>
-            </ul>
-          </div>
-        </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
     </header>
   );
