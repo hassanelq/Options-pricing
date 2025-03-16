@@ -55,6 +55,7 @@ const PricingPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [compareResults, setCompareResults] = useState([]);
 
   useEffect(() => {
     // Automatically advance to the next step when selections are made
@@ -94,6 +95,49 @@ const PricingPage = () => {
     setActiveStep(Math.max(activeStep, 7));
   };
 
+  // Add new handler
+  const handleCompareMethods = async () => {
+    if (!approachData) return;
+
+    const solutions = approachData.solutions;
+    const results = [];
+
+    setIsCalculating(true);
+    try {
+      for (const solution of solutions) {
+        const PricingRequest = {
+          model_type: selectedApproach,
+          solution_type: solution.value,
+          option_type: parameters.option_type,
+          underlying_price: parameters.underlyingPrice,
+          strike_price: parameters.strikePrice,
+          yearsToExpiration: parameters.yearsToExpiration,
+          risk_free_rate: parameters.riskFreeRate / 100,
+          volatility: parameters.volatility,
+
+          ...(solution.value === "monteCarlo" && {
+            monte_carlo_simulations:
+              parameters.monte_carlo_simulations || 10000,
+          }),
+        };
+
+        const response = await priceOption(PricingRequest);
+        results.push({
+          method: solution.name,
+          desc: solution.desc,
+          result: response,
+        });
+      }
+      setCompareResults(results);
+      setPriceResult(null);
+    } catch (error) {
+      console.error("Comparison error:", error);
+      setCompareResults([]);
+    } finally {
+      setIsCalculating(false);
+    }
+  };
+
   const handleCalculatePrice = async () => {
     const PricingRequest = {
       model_type: selectedApproach,
@@ -115,7 +159,10 @@ const PricingPage = () => {
     setIsCalculating(true);
     try {
       const response = await priceOption(PricingRequest);
+
       setPriceResult(response);
+
+      setCompareResults([]); // Add this line
     } catch (error) {
       console.error("Error caught in component:", error);
       setPriceResult("Error calculating option price");
@@ -307,7 +354,7 @@ const PricingPage = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.6 }}
-            className="flex justify-center mt-6" // Changed from mt-12 to mt-6
+            className="flex justify-center gap-4 mt-6"
           >
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -362,19 +409,48 @@ const PricingPage = () => {
                 </>
               )}
             </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleCompareMethods}
+              disabled={isCalculating}
+              className={`px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-semibold rounded-lg shadow-md hover:from-purple-700 hover:to-indigo-700 transition-all flex items-center gap-2 ${
+                isCalculating ? "opacity-75" : ""
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+              Compare Methods
+            </motion.button>
           </motion.div>
         </div>
 
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{
-            opacity: priceResult ? 1 : 0,
-            height: priceResult ? "auto" : 0,
+            opacity: priceResult || compareResults.length > 0 ? 1 : 0,
+            height: priceResult || compareResults.length > 0 ? "auto" : 0,
           }}
           transition={{ duration: 0.4 }}
           className="mt-8"
         >
-          <PricingResult priceResult={priceResult} />
+          <PricingResult
+            priceResult={priceResult}
+            compareResults={compareResults}
+            market_price={parameters.market_price}
+          />
         </motion.div>
       </motion.div>
     </div>

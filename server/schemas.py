@@ -49,4 +49,4 @@ class OptionData(BaseModel):
 
 class PricingResult(BaseModel):
     price: float
-    methodology: str
+    model_config = ConfigDict(extra="allow")  # Allow extra fields if needed

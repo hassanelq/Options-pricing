@@ -94,6 +94,5 @@ async def calculate_price(request: PricingRequest):
         )
 
     return PricingResult(
-        price=result["price"],
-        methodology=result["methodology"],
+        **result,
     )
