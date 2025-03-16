@@ -8,12 +8,16 @@ const PricingResult = ({ priceResult }) => {
 
         {/* Print all what's in priceResult */}
         <div className="flex flex-col gap-2">
-          {Object.entries(priceResult).map(([key, value]) => (
-            <div key={key} className="flex justify-between">
-              <span className="text-teal-800">{key} :</span>
-              <span className="text-teal-900 font-bold">{value}</span>
-            </div>
-          ))}
+          {Object.entries(priceResult).map(([key, value]) => {
+            const displayValue =
+              key === "price" ? `${value.toFixed(2)} $` : value;
+            return (
+              <div key={key} className="flex justify-between">
+                <span className="text-teal-800">{key} :</span>
+                <span className="text-teal-900 font-bold">{displayValue}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
     )

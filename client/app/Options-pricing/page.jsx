@@ -102,7 +102,7 @@ const PricingPage = () => {
       underlying_price: parameters.underlyingPrice,
       strike_price: parameters.strikePrice,
       yearsToExpiration: parameters.yearsToExpiration,
-      risk_free_rate: parameters.riskFreeRate,
+      risk_free_rate: parameters.riskFreeRate / 100,
       volatility: parameters.volatility,
     };
 
