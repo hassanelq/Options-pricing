@@ -18,23 +18,23 @@ const CATEGORY_MAP = {
 const TickerSearch = ({ onSelect, selectedAssetType }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredTickers, setFilteredTickers] = useState([]);
+  const [availableTickers, setAvailableTickers] = useState([]);
 
   // Fetch tickers based on the selected asset type
   const getTickersByAssetType = () => {
     if (!selectedAssetType || !CATEGORY_MAP[selectedAssetType]) return [];
-    return rawData[CATEGORY_MAP[selectedAssetType]].map((item) => ({
-      Ticker: item.ticker,
-      Name: item.name,
-    }));
+    return (
+      rawData[CATEGORY_MAP[selectedAssetType]]?.map((item) => ({
+        Ticker: item.ticker,
+        Name: item.name,
+      })) || []
+    );
   };
-
-  const [availableTickers, setAvailableTickers] = useState(
-    getTickersByAssetType()
-  );
 
   // Update tickers when asset type changes
   useEffect(() => {
-    setAvailableTickers(getTickersByAssetType());
+    const tickers = getTickersByAssetType();
+    setAvailableTickers(tickers);
     setFilteredTickers([]); // Reset suggestions when asset type changes
     setSearchTerm(""); // Clear search input when changing asset type
   }, [selectedAssetType]);
@@ -102,7 +102,12 @@ const TickerSearch = ({ onSelect, selectedAssetType }) => {
           onChange={handleSearch}
           onFocus={() => setFilteredTickers(availableTickers)}
           className="w-full border border-indigo-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-transparent transition-all duration-200 shadow-sm"
-          placeholder={`Search ${selectedAssetType || "Asset"}...`}
+          placeholder={
+            availableTickers.length === 0
+              ? "No available tickers"
+              : `Search ${selectedAssetType || "Asset"}...`
+          }
+          disabled={availableTickers.length === 0} // Disable input if no tickers
         />
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-emerald-700">
           <svg

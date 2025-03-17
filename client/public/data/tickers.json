@@ -9,7 +9,45 @@
     { "ticker": "META", "name": "Meta Platforms Inc." },
     { "ticker": "NFLX", "name": "Netflix Inc." },
     { "ticker": "BABA", "name": "Alibaba Group Holding Ltd." },
-    { "ticker": "AMD", "name": "Advanced Micro Devices Inc." }
+    { "ticker": "AMD", "name": "Advanced Micro Devices Inc." },
+    { "ticker": "ASML", "name": "ASML Holding NV" },
+    { "ticker": "TSM", "name": "Taiwan Semiconductor Manufacturing Company" },
+    { "ticker": "AVGO", "name": "Broadcom Inc." },
+    { "ticker": "INTC", "name": "Intel Corporation" },
+    { "ticker": "MU", "name": "Micron Technology Inc." },
+    { "ticker": "NKE", "name": "Nike Inc." },
+    { "ticker": "MCD", "name": "McDonald's Corporation" },
+    { "ticker": "SBUX", "name": "Starbucks Corporation" },
+    { "ticker": "PEP", "name": "PepsiCo Inc." },
+    { "ticker": "COST", "name": "Costco Wholesale Corporation" },
+    { "ticker": "PYPL", "name": "PayPal Holdings Inc." },
+    { "ticker": "ADBE", "name": "Adobe Inc." },
+    { "ticker": "ORCL", "name": "Oracle Corporation" },
+    { "ticker": "CRM", "name": "Salesforce Inc." },
+    { "ticker": "CSCO", "name": "Cisco Systems Inc." },
+    { "ticker": "IBM", "name": "International Business Machines Corporation" },
+    { "ticker": "QCOM", "name": "Qualcomm Incorporated" },
+    { "ticker": "TXN", "name": "Texas Instruments Incorporated" },
+    { "ticker": "LRCX", "name": "Lam Research Corporation" },
+    { "ticker": "NOW", "name": "ServiceNow Inc." },
+    { "ticker": "SHOP", "name": "Shopify Inc." },
+    { "ticker": "UBER", "name": "Uber Technologies Inc." },
+    { "ticker": "LYFT", "name": "Lyft Inc." },
+    { "ticker": "ABNB", "name": "Airbnb Inc." },
+    { "ticker": "SNOW", "name": "Snowflake Inc." },
+    { "ticker": "DOCU", "name": "DocuSign Inc." },
+    { "ticker": "ZM", "name": "Zoom Video Communications Inc." },
+    { "ticker": "PLTR", "name": "Palantir Technologies Inc." },
+    { "ticker": "ROKU", "name": "Roku Inc." },
+    { "ticker": "DKNG", "name": "DraftKings Inc." },
+    { "ticker": "PINS", "name": "Pinterest Inc." },
+    { "ticker": "TWLO", "name": "Twilio Inc." },
+    { "ticker": "CRWD", "name": "CrowdStrike Holdings Inc." },
+    { "ticker": "MDB", "name": "MongoDB Inc." },
+    { "ticker": "PANW", "name": "Palo Alto Networks Inc." },
+    { "ticker": "ZS", "name": "Zscaler Inc." },
+    { "ticker": "TTD", "name": "The Trade Desk Inc." },
+    { "ticker": "FSLR", "name": "First Solar Inc." }
   ],
   "Indices": [
     { "ticker": "^SPX", "name": "S&P 500 Index" },
@@ -19,11 +57,8 @@
     { "ticker": "^CAC", "name": "CAC 40 Index" },
     { "ticker": "^HSI", "name": "Hang Seng Index" },
     { "ticker": "^ASX", "name": "ASX 200 Index" },
-
-    { "ticker": "^FTSE", "name": "FTSE 100 Index" },
-    { "ticker": "^STOXX50E", "name": "Euro Stoxx 50 Index" },
-    { "ticker": "^N225", "name": "Nikkei 225 Index" },
-    { "ticker": "^HSI", "name": "Hang Seng Index" }
+    { "ticker": "^RUT", "name": "Russell 2000 Index" },
+    { "ticker": "^VIX", "name": "CBOE Volatility Index" }
   ],
   "ETFs": [
     { "ticker": "SPY", "name": "SPDR S&P 500 ETF" },
@@ -38,7 +73,15 @@
       "ticker": "VXX",
       "name": "iPath Series B S&P 500 VIX Short-Term Futures ETN"
     },
-    { "ticker": "TLT", "name": "iShares 20+ Year Treasury Bond ETF" }
+    { "ticker": "TLT", "name": "iShares 20+ Year Treasury Bond ETF" },
+    { "ticker": "DIA", "name": "SPDR Dow Jones Industrial Average ETF" },
+    { "ticker": "XLV", "name": "Health Care Select Sector SPDR Fund" },
+    {
+      "ticker": "XLY",
+      "name": "Consumer Discretionary Select Sector SPDR Fund"
+    },
+    { "ticker": "XLU", "name": "Utilities Select Sector SPDR Fund" },
+    { "ticker": "ARKK", "name": "ARK Innovation ETF" }
   ],
   "FX": [],
   "Commodities": [],
