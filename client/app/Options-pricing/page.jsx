@@ -21,7 +21,7 @@ import { PRICING_CONFIG } from "../config";
 const fetchMarketData = async (symbol) => {
   try {
     // This points to the Next.js route at pages/api/market-data/[symbol].js
-    const response = await axios.get(`/api/market-data/${symbol}`);
+    const response = await axios.get(`/api/v1/market-data/${symbol}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching market data:", error);
@@ -32,7 +32,7 @@ const fetchMarketData = async (symbol) => {
 const priceOption = async (PricingRequest) => {
   try {
     // This hits the Next.js route at "/api/price"
-    const response = await axios.post("/api/price", PricingRequest);
+    const response = await axios.post("/api/v1/price", PricingRequest);
     return response.data;
   } catch (error) {
     if (error.response) {
