@@ -1,0 +1,89 @@
+{
+  "StockOptions": [
+    { "ticker": "AAPL", "name": "Apple Inc." },
+    { "ticker": "MSFT", "name": "Microsoft Corporation" },
+    { "ticker": "GOOGL", "name": "Alphabet Inc." },
+    { "ticker": "AMZN", "name": "Amazon.com Inc." },
+    { "ticker": "TSLA", "name": "Tesla Inc." },
+    { "ticker": "NVDA", "name": "NVIDIA Corporation" },
+    { "ticker": "META", "name": "Meta Platforms Inc." },
+    { "ticker": "NFLX", "name": "Netflix Inc." },
+    { "ticker": "BABA", "name": "Alibaba Group Holding Ltd." },
+    { "ticker": "AMD", "name": "Advanced Micro Devices Inc." }
+  ],
+  "Indices": [
+    { "ticker": "^SPX", "name": "S&P 500 Index" },
+    { "ticker": "^NDX", "name": "Nasdaq 100 Index" },
+    { "ticker": "^DJX", "name": "Dow Jones Industrial Average" },
+    { "ticker": "^DAX", "name": "DAX 30 Index" },
+    { "ticker": "^CAC", "name": "CAC 40 Index" },
+    { "ticker": "^HSI", "name": "Hang Seng Index" },
+    { "ticker": "^ASX", "name": "ASX 200 Index" },
+
+    { "ticker": "^FTSE", "name": "FTSE 100 Index" },
+    { "ticker": "^STOXX50E", "name": "Euro Stoxx 50 Index" },
+    { "ticker": "^N225", "name": "Nikkei 225 Index" },
+    { "ticker": "^HSI", "name": "Hang Seng Index" }
+  ],
+  "ETFs": [
+    { "ticker": "SPY", "name": "SPDR S&P 500 ETF" },
+    { "ticker": "QQQ", "name": "Invesco QQQ Trust" },
+    { "ticker": "IWM", "name": "iShares Russell 2000 ETF" },
+    { "ticker": "EFA", "name": "iShares MSCI EAFE ETF" },
+    { "ticker": "EWJ", "name": "iShares MSCI Japan ETF" },
+    { "ticker": "XLF", "name": "Financial Select Sector SPDR Fund" },
+    { "ticker": "XLK", "name": "Technology Select Sector SPDR Fund" },
+    { "ticker": "XLE", "name": "Energy Select Sector SPDR Fund" },
+    {
+      "ticker": "VXX",
+      "name": "iPath Series B S&P 500 VIX Short-Term Futures ETN"
+    },
+    { "ticker": "TLT", "name": "iShares 20+ Year Treasury Bond ETF" }
+  ],
+  "InterestRates": [
+    { "ticker": "EURIBOR", "name": "Euro Interbank Offered Rate" },
+    { "ticker": "LIBOR", "name": "London Interbank Offered Rate" },
+    { "ticker": "SOFR", "name": "Secured Overnight Financing Rate" },
+    { "ticker": "EONIA", "name": "Euro Overnight Index Average" },
+    { "ticker": "SONIA", "name": "Sterling Overnight Index Average" },
+    { "ticker": "TONAR", "name": "Tokyo Overnight Average Rate" },
+    { "ticker": "ESTR", "name": "Euro Short-Term Rate" },
+    { "ticker": "FEDFUNDS", "name": "Federal Funds Rate" },
+    { "ticker": "BOEBASE", "name": "Bank of England Base Rate" },
+    {
+      "ticker": "RBAOFFICIAL",
+      "name": "Reserve Bank of Australia Official Cash Rate"
+    }
+  ],
+  "Commodities": [
+    { "ticker": "GC=F", "name": "Gold Futures" },
+    { "ticker": "SI=F", "name": "Silver Futures" },
+    { "ticker": "HG=F", "name": "Copper Futures" },
+    { "ticker": "ZC=F", "name": "Corn Futures" },
+    { "ticker": "ZW=F", "name": "Wheat Futures" },
+    { "ticker": "ZS=F", "name": "Soybean Futures" },
+    { "ticker": "CT=F", "name": "Cotton Futures" },
+    { "ticker": "KC=F", "name": "Coffee Futures" },
+    { "ticker": "SB=F", "name": "Sugar Futures" },
+    { "ticker": "CC=F", "name": "Cocoa Futures" }
+  ],
+  "EnergyPrices": [
+    { "ticker": "CL", "name": "Crude Oil Futures" },
+    { "ticker": "NG", "name": "Natural Gas Futures" },
+    { "ticker": "HO", "name": "Heating Oil Futures" },
+    { "ticker": "RB", "name": "RBOB Gasoline Futures" },
+    { "ticker": "BRN", "name": "Brent Crude Oil Futures" }
+  ],
+  "FX": [
+    { "ticker": "EUR/USD", "name": "Euro/US Dollar" },
+    { "ticker": "GBP/USD", "name": "British Pound/US Dollar" },
+    { "ticker": "USD/JPY", "name": "US Dollar/Japanese Yen" },
+    { "ticker": "USD/CHF", "name": "US Dollar/Swiss Franc" },
+    { "ticker": "AUD/USD", "name": "Australian Dollar/US Dollar" },
+    { "ticker": "USD/CAD", "name": "US Dollar/Canadian Dollar" },
+    { "ticker": "NZD/USD", "name": "New Zealand Dollar/US Dollar" },
+    { "ticker": "EUR/GBP", "name": "Euro/British Pound" },
+    { "ticker": "EUR/JPY", "name": "Euro/Japanese Yen" },
+    { "ticker": "GBP/JPY", "name": "British Pound/Japanese Yen" }
+  ]
+}
