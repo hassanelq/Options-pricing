@@ -28,7 +28,7 @@ const CTA = () => (
                 new models, enhance existing ones, or improve the user
                 interface.
               </p>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3 md:ml-11">
                 <a
                   href="https://github.com/hassanelq/Simulations-MC-BrownMotion"
                   target="_blank"

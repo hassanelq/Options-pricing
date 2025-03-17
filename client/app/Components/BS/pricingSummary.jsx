@@ -9,11 +9,27 @@ const PricingSummary = ({
 }) => {
   return (
     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border border-indigo-100 shadow-sm mt-8 mb-4">
-      <h3 className="text-lg font-semibold text-teal-800 mb-3">
-        Pricing Configuration Summary
-      </h3>
+      <div className="flex items-center mb-6">
+        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-600 to-emerald-500 flex items-center justify-center text-white font-bold mr-3 shadow-md">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+            />
+          </svg>
+        </div>
+        <h2 className="text-xl font-semibold text-teal-800">Pricing Summary</h2>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:ml-11">
         <div className="space-y-2">
           <div className="flex justify-between border-b border-gray-200 pb-1">
             <span className="font-medium text-gray-700">Option Style:</span>

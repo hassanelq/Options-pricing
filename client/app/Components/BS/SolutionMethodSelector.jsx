@@ -240,7 +240,7 @@ const SolutionMethodSelector = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center mb-4">
+      <div className="flex items-center mb-6">
         <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 flex items-center justify-center text-white font-bold mr-3 shadow-md">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -262,7 +262,7 @@ const SolutionMethodSelector = ({
         </h2>
       </div>
 
-      <div className="flex flex-wrap gap-3 ml-11">
+      <div className="flex flex-wrap gap-3 md:ml-11 ">
         {approachData?.solutions.map((method, index) => (
           <motion.div
             key={method.name}

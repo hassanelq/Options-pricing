@@ -19,7 +19,7 @@ const KeyParametersInput = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
     >
-      <div className="flex items-center mb-4">
+      <div className="flex items-center mb-6">
         <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-600 to-emerald-500 flex items-center justify-center text-white font-bold mr-3 shadow-md">
           4
         </div>
@@ -28,7 +28,7 @@ const KeyParametersInput = ({
         </h2>
       </div>
 
-      <div className="mb-4 ml-11">
+      <div className="mb-4 md:ml-11">
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {selectedAssetType} Symbol

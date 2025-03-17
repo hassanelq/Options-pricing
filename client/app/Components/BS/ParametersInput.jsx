@@ -85,7 +85,7 @@ const ParametersInput = ({ parameters, setParameters }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center mb-4">
+      <div className="flex items-center mb-6">
         <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-600 to-emerald-500 flex items-center justify-center text-white font-bold mr-3 shadow-md">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -107,7 +107,7 @@ const ParametersInput = ({ parameters, setParameters }) => {
         </h2>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4 ml-11">
+      <div className="grid md:grid-cols-2 gap-4 md:ml-11">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

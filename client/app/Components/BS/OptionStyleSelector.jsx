@@ -16,7 +16,7 @@ const OptionStyleSelector = ({ selectedStyle, setSelectedStyle }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center mb-4">
+      <div className="flex items-center mb-6">
         <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-600 to-emerald-500 flex items-center justify-center text-white font-bold mr-3 shadow-md">
           1
         </div>
@@ -25,7 +25,7 @@ const OptionStyleSelector = ({ selectedStyle, setSelectedStyle }) => {
         </h2>
       </div>
 
-      <div className="flex flex-wrap gap-3 ml-11">
+      <div className="flex flex-wrap gap-3 md:ml-11 ">
         {optionStyles.map((style) => (
           <motion.label
             key={style.value}

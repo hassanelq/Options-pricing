@@ -91,7 +91,7 @@ const OptionList = ({ optionsData, handleAutoFill, isLoading, error }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center mb-4">
+      <div className="flex items-center mb-6">
         <h2 className="text-xl font-semibold text-teal-800">
           Available Options ({optionsData[0]?.symbol || "Unknown"})
         </h2>

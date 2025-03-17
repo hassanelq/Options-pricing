@@ -222,7 +222,7 @@ const PricingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-10 flex flex-col gap-10">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-1 md:px-4 py-10 flex flex-col gap-10">
       <motion.div
         className="text-center max-w-4xl mx-auto"
         initial={{ opacity: 0, y: -20 }}
@@ -239,7 +239,7 @@ const PricingPage = () => {
       </motion.div>
 
       <motion.div
-        className="w-full md:w-3/4 lg:w-2/3 bg-white p-8 rounded-2xl shadow-xl mx-auto border border-indigo-100"
+        className="w-full md:w-3/4 lg:w-2/3 bg-white px-3 py-6 md:p-8 rounded-2xl shadow-xl mx-auto border border-indigo-100"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
