@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+// Make sure you have this import or else `axios` won't be defined:
+import axios from "axios";
 import { motion } from "framer-motion";
 import OptionStyleSelector from "../Components/BS/OptionStyleSelector";
 import PricingApproachSelector from "../Components/BS/PricingModel";
@@ -11,10 +13,38 @@ import OptionList from "../Components/BS/OptionList";
 import ParametersInput from "../Components/BS/ParametersInput";
 import PricingSummary from "../Components/BS/pricingSummary";
 import PricingResult from "../Components/BS/PricingResult";
-import { fetchMarketData } from "./../api/marketData";
-import { priceOption } from "./../api/optionPricing";
 
+// import { priceOption } from "./../api/price"; // Your client-side function
 import { PRICING_CONFIG } from "../config";
+
+// -------------- 1A. FETCH MARKET DATA (CLIENT SIDE) -------------------
+const fetchMarketData = async (symbol) => {
+  try {
+    // This points to the Next.js route at pages/api/market-data/[symbol].js
+    const response = await axios.get(`/api/market-data/${symbol}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching market data:", error);
+    throw error;
+  }
+};
+
+const priceOption = async (PricingRequest) => {
+  try {
+    // This hits the Next.js route at "/api/price"
+    const response = await axios.post("/api/price", PricingRequest);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error("Error response:", error.response.data);
+    } else if (error.request) {
+      console.error("No response received:", error.request);
+    } else {
+      console.error("Request setup error:", error.message);
+    }
+    throw error;
+  }
+};
 
 const PricingPage = () => {
   const [selectedStyle, setSelectedStyle] = useState("European");
@@ -65,13 +95,14 @@ const PricingPage = () => {
     if (parameters.symbol) setActiveStep(Math.max(activeStep, 5));
   }, [selectedStyle, selectedApproach, selectedAssetType, parameters.symbol]);
 
+  // -------------- 1B. CALL fetchMarketData -------------------
   const handleFetchMarketData = async () => {
     setIsLoading(true);
     setError(false);
     try {
       const marketData = await fetchMarketData(parameters.symbol);
       setOptionsData(marketData);
-      setActiveStep(Math.max(activeStep, 6));
+      setActiveStep((prev) => Math.max(prev, 6));
     } catch (error) {
       console.error("Error caught in component:", error);
       setError(true);
@@ -95,14 +126,14 @@ const PricingPage = () => {
     setActiveStep(Math.max(activeStep, 7));
   };
 
-  // Add new handler
+  // -------------- 1C. COMPARE METHODS (LOOP POST REQUESTS) -------------------
   const handleCompareMethods = async () => {
     if (!approachData) return;
 
-    const solutions = approachData.solutions;
+    const { solutions } = approachData;
     const results = [];
-
     setIsCalculating(true);
+
     try {
       for (const solution of solutions) {
         const PricingRequest = {
@@ -114,7 +145,6 @@ const PricingPage = () => {
           yearsToExpiration: parameters.yearsToExpiration,
           risk_free_rate: parameters.riskFreeRate / 100,
           volatility: parameters.volatility,
-
           ...(solution.value === "monteCarlo" && {
             monte_carlo_simulations:
               parameters.monte_carlo_simulations || 10000,
@@ -138,6 +168,7 @@ const PricingPage = () => {
     }
   };
 
+  // -------------- 1D. CALCULATE PRICE (SINGLE POST REQUEST) -------------------
   const handleCalculatePrice = async () => {
     const PricingRequest = {
       model_type: selectedApproach,
@@ -151,18 +182,14 @@ const PricingPage = () => {
       monte_carlo_simulations:
         selectedSolution === "monteCarlo"
           ? parameters.monte_carlo_simulations
-          : undefined, // Only pass if Monte Carlo
+          : undefined,
     };
-
-    console.log("Sending PricingRequest:", PricingRequest);
 
     setIsCalculating(true);
     try {
       const response = await priceOption(PricingRequest);
-
       setPriceResult(response);
-
-      setCompareResults([]); // Add this line
+      setCompareResults([]);
     } catch (error) {
       console.error("Error caught in component:", error);
       setPriceResult("Error calculating option price");
