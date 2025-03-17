@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { fetchRiskFreeRate } from "../../api/riskFreeRate";
+import axios from "axios";
+
+async function fetchRiskFreeRate(years) {
+  // Goes to /api/v1/risk-free-rate/<years>, your Next.js route
+  const { data } = await axios.get(`/api/v1/risk-free-rate/${years}`);
+
+  // If there's an "error" key, throw it
+  if (data.error) {
+    throw new Error(data.error);
+  }
+
+  // Otherwise, data.value is your latestValue from FRED
+  return data.value;
+}
 
 const ParametersInput = ({ parameters, setParameters }) => {
   const [timeToExpiration, setTimeToExpiration] = useState(1);
