@@ -2,9 +2,13 @@ import axios from "axios";
 
 export const fetchMarketData = async (symbol) => {
   try {
+    // const response = await axios.get(
+    //   `http://127.0.0.1:8000/api/v1/market-data/${symbol}`
+    // );
     const response = await axios.get(
-      `http://127.0.0.1:8000/api/v1/market-data/${symbol}`
+      `http://152.67.66.102:8777/api/v1/market-data/${symbol}`
     );
+
     return response.data;
   } catch (error) {
     console.error("Error fetching market data:", error);

@@ -17,10 +17,10 @@ export const fetchRiskFreeRate = async (years) => {
     throw new Error("API Key is missing.");
   }
 
-  const url =
-    "https://thingproxy.freeboard.io/fetch/https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&api_key=0de8b88e8310c6ebbd66c2eaa2ccb03f&file_type=json";
+  // const url =
+  //   "https://thingproxy.freeboard.io/fetch/https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&api_key=0de8b88e8310c6ebbd66c2eaa2ccb03f&file_type=json";
 
-  //   const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${apiKey}&file_type=json`;
+  const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${apiKey}&file_type=json`;
 
   console.log("Fetching risk-free rate from:", url);
 

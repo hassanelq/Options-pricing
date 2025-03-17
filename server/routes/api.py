@@ -3,7 +3,6 @@ from models import black_scholes, heston, ornstein_uhlenbeck
 from schemas import PricingRequest, PricingResult
 import datetime
 from utils.fetch_data import get_market_data
-from schemas import PricingRequest, PricingResult
 
 router = APIRouter()
 
