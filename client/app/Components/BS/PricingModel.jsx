@@ -2,8 +2,12 @@ import React from "react";
 import { motion } from "framer-motion";
 import { PRICING_CONFIG } from "../../config";
 
-const PricingApproachSelector = ({ selectedApproach, setSelectedApproach }) => {
-  const availableApproaches = PRICING_CONFIG["European"] || [];
+const PricingApproachSelector = ({
+  selectedApproach,
+  setSelectedApproach,
+  selectedStyle,
+}) => {
+  const availableApproaches = PRICING_CONFIG[selectedStyle] || [];
 
   return (
     <motion.div

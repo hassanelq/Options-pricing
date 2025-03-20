@@ -12,11 +12,6 @@ export const PRICING_CONFIG = {
           desc: "(Fast, Exact)",
         },
         {
-          name: "Fourier Transform via Carr-Madan",
-          value: "fourier",
-          desc: "(Fast, Suitable for Characteristic Functions)",
-        },
-        {
           name: "Monte Carlo Simulation",
           value: "monteCarlo",
           desc: "(Slow, Flexible for Path-Dependent Options)",
@@ -66,6 +61,7 @@ export const PRICING_CONFIG = {
       ],
     },
   ],
+  // American: [],
 };
 
 export const ASSET_TYPES_MAP = {

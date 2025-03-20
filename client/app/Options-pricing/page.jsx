@@ -63,7 +63,7 @@ const PricingPage = () => {
   });
 
   // Get approach data from config
-  const approachData = PRICING_CONFIG["European"].find(
+  const approachData = PRICING_CONFIG[selectedStyle].find(
     (a) => a.value === selectedApproach
   );
 
@@ -294,6 +294,7 @@ const PricingPage = () => {
             <PricingApproachSelector
               selectedApproach={selectedApproach}
               setSelectedApproach={setSelectedApproach}
+              selectedStyle={selectedStyle}
               isActive={activeStep >= 2}
             />
           </motion.div>
@@ -355,6 +356,7 @@ const PricingPage = () => {
             transition={{ duration: 0.3, delay: 0.5 }}
           >
             <SolutionMethodSelector
+              selectedStyle={selectedStyle}
               selectedSolution={selectedSolution}
               setSelectedSolution={setSelectedSolution}
               approach={selectedApproach}

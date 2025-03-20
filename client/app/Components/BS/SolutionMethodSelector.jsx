@@ -3,13 +3,14 @@ import { motion } from "framer-motion";
 import { PRICING_CONFIG } from "../../config";
 
 const SolutionMethodSelector = ({
+  selectedStyle,
   selectedSolution,
   setSelectedSolution,
   approach,
   parameters,
   setParameters,
 }) => {
-  const approachData = PRICING_CONFIG["European"].find(
+  const approachData = PRICING_CONFIG[selectedStyle].find(
     (a) => a.value === approach
   );
 

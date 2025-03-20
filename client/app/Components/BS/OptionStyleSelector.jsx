@@ -1,13 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { PRICING_CONFIG } from "../../config";
 
 const OptionStyleSelector = ({ selectedStyle, setSelectedStyle }) => {
-  const optionStyles = [
-    { value: "European", label: "European" },
-    // { value: "American", label: "American" },
-    // { value: "Asian", label: "Asian" },
-    // { value: "Barrier", label: "Barrier" }
-  ];
+  // get the option styles from the config and make it an array
+  const optionStyles = Object.keys(PRICING_CONFIG);
 
   return (
     <motion.div
@@ -28,13 +25,13 @@ const OptionStyleSelector = ({ selectedStyle, setSelectedStyle }) => {
       <div className="flex flex-wrap gap-3 md:ml-11 ">
         {optionStyles.map((style) => (
           <motion.label
-            key={style.value}
+            key={style}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className={`
               px-4 py-2 rounded-lg cursor-pointer transition-all duration-200 flex items-center gap-2
               ${
-                selectedStyle === style.value
+                selectedStyle === style
                   ? "bg-gradient-to-r from-teal-600 to-emerald-500 text-white shadow-md"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }
@@ -43,12 +40,12 @@ const OptionStyleSelector = ({ selectedStyle, setSelectedStyle }) => {
             <input
               type="radio"
               name="optionStyle"
-              value={style.value}
-              checked={selectedStyle === style.value}
+              value={style}
+              checked={selectedStyle === style}
               onChange={(e) => setSelectedStyle(e.target.value)}
               className="hidden"
             />
-            {selectedStyle === style.value && (
+            {selectedStyle === style && (
               <motion.svg
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -65,7 +62,7 @@ const OptionStyleSelector = ({ selectedStyle, setSelectedStyle }) => {
                 />
               </motion.svg>
             )}
-            {style.label}
+            {style}
           </motion.label>
         ))}
       </div>

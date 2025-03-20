@@ -12,7 +12,7 @@ export default function Hero() {
   return (
     <section className="min-h-[85vh] flex items-center">
       <div className="custom-screen text-center flex flex-col gap-14 py-16">
-        <div className="space-y-8 max-w-4xl mx-auto">
+        <div className="space-y-2 md:space-y-8 max-w-4xl mx-auto">
           <motion.div
             className="flex justify-center"
             initial={{ opacity: 0, y: -20 }}
