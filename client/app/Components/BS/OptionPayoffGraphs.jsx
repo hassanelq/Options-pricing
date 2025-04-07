@@ -31,7 +31,7 @@ const OptionPayoffGraphs = ({ parameters, priceResult }) => {
     // Use actual premium if available, otherwise estimate it
     const premium =
       market_price ||
-      priceResult ||
+      priceResult.price ||
       (option_type === "call"
         ? Math.max(2, underlyingPrice * volatility * 0.4)
         : Math.max(2, underlyingPrice * volatility * 0.4));

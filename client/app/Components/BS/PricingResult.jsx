@@ -302,10 +302,7 @@ const PricingResult = ({
           </div>
         </div>
       )}
-      <OptionPayoffGraphs
-        parameters={parameters}
-        priceResult={priceResult.price}
-      />
+      <OptionPayoffGraphs parameters={parameters} priceResult={priceResult} />
     </motion.div>
   );
 };
