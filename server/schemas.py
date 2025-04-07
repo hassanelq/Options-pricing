@@ -23,7 +23,6 @@ class PricingRequest(BaseModel):
     theta: Optional[float] = None  # Long-term variance
     xi: Optional[float] = None  # Vol of vol
     rho: Optional[float] = None  # Correlation
-    v0: Optional[float] = None  # Initial variance
 
     # OU parameters
     theta_ou: Optional[float] = None  # Long-term mean
@@ -45,8 +44,28 @@ class OptionData(BaseModel):
     option_type: str
     market_price: float
     implied_volatility: float
+    volume: int
 
 
 class PricingResult(BaseModel):
     price: float
+    model_config = ConfigDict(extra="allow")  # Allow extra fields if needed
+
+
+class CalibrationRequest(BaseModel):
+    symbol: str
+    option_type: str
+    underlying_price: float
+    strike_price: float
+    expiration: str
+    YearsToExpiration: float
+    risk_free_rate: float
+    volatility: float
+
+
+class CalibrationResult(BaseModel):
+    kappa: float
+    theta: float
+    xi: float
+    rho: float
     model_config = ConfigDict(extra="allow")  # Allow extra fields if needed

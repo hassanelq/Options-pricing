@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 // Make sure you have this import or else `axios` won't be defined:
 import axios from "axios";
-import { motion } from "framer-motion";
+import { motion, time } from "framer-motion";
 import OptionStyleSelector from "../Components/BS/OptionStyleSelector";
 import PricingApproachSelector from "../Components/BS/PricingModel";
 import SolutionMethodSelector from "../Components/BS/SolutionMethodSelector";
@@ -16,6 +16,7 @@ import PricingResult from "../Components/BS/PricingResult";
 
 // import { priceOption } from "./../api/price"; // Your client-side function
 import { PRICING_CONFIG } from "../config";
+import { symbol } from "prop-types";
 
 // -------------- 1A. FETCH MARKET DATA (CLIENT SIDE) -------------------
 const fetchMarketData = async (symbol) => {
@@ -25,6 +26,23 @@ const fetchMarketData = async (symbol) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching market data:", error);
+    throw error;
+  }
+};
+
+const calibrateHeston = async (CalibrateRequest) => {
+  try {
+    // This hits the Next.js route at "/api/price"
+    const response = await axios.post(`/api/v1/calibrate`, CalibrateRequest);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error("Error response:", error.response.data);
+    } else if (error.request) {
+      console.error("No response received:", error.request);
+    } else {
+      console.error("Request setup error:", error.message);
+    }
     throw error;
   }
 };
@@ -85,6 +103,7 @@ const PricingPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [isCalibrating, setIsCalibrating] = useState(false);
   const [compareResults, setCompareResults] = useState([]);
 
   useEffect(() => {
@@ -137,6 +156,7 @@ const PricingPage = () => {
     try {
       for (const solution of solutions) {
         const PricingRequest = {
+          symbol: parameters.symbol,
           model_type: selectedApproach,
           solution_type: solution.value,
           option_type: parameters.option_type,
@@ -171,6 +191,7 @@ const PricingPage = () => {
   // -------------- 1D. CALCULATE PRICE (SINGLE POST REQUEST) -------------------
   const handleCalculatePrice = async () => {
     const PricingRequest = {
+      symbol: parameters.symbol,
       model_type: selectedApproach,
       solution_type: selectedSolution,
       option_type: parameters.option_type,
@@ -183,6 +204,10 @@ const PricingPage = () => {
         selectedSolution === "monteCarlo"
           ? parameters.monte_carlo_simulations
           : undefined,
+      kappa: selectedApproach === "heston" ? parameters.kappa : undefined,
+      theta: selectedApproach === "heston" ? parameters.theta : undefined,
+      xi: selectedApproach === "heston" ? parameters.xi : undefined,
+      rho: selectedApproach === "heston" ? parameters.rho : undefined,
     };
 
     setIsCalculating(true);
@@ -195,6 +220,36 @@ const PricingPage = () => {
       setPriceResult("Error calculating option price");
     } finally {
       setIsCalculating(false);
+    }
+  };
+
+  const handleCalibrateHeston = async () => {
+    const CalibrateRequest = {
+      symbol: parameters.symbol,
+      option_type: parameters.option_type,
+      underlying_price: parameters.underlyingPrice,
+      strike_price: parameters.strikePrice,
+      expiration: parameters.expiration,
+      YearsToExpiration: parameters.yearsToExpiration,
+      risk_free_rate: parameters.riskFreeRate / 100,
+      volatility: parameters.volatility,
+    };
+
+    setIsCalibrating(true);
+    try {
+      const response = await calibrateHeston(CalibrateRequest);
+      setParameters((prev) => ({
+        ...prev,
+        kappa: response.kappa,
+        theta: response.theta,
+        xi: response.xi,
+        rho: response.rho,
+      }));
+    } catch (error) {
+      console.error("Error caught in component:", error);
+      setPriceResult("Error calibrating Heston model");
+    } finally {
+      setIsCalibrating(false);
     }
   };
 
@@ -362,6 +417,8 @@ const PricingPage = () => {
               approach={selectedApproach}
               parameters={parameters}
               setParameters={setParameters}
+              handleCalibrateHeston={handleCalibrateHeston}
+              isCalibrating={isCalibrating}
               isActive={activeStep >= 7}
             />
           </motion.div>
@@ -479,6 +536,7 @@ const PricingPage = () => {
             priceResult={priceResult}
             compareResults={compareResults}
             market_price={parameters.market_price}
+            parameters={parameters}
           />
         </motion.div>
       </motion.div>

@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import OptionPayoffGraphs from "./OptionPayoffGraphs";
 
-const PricingResult = ({ priceResult, compareResults, market_price }) => {
-  const [activeTab, setActiveTab] = useState("details");
-  const [sortBy, setSortBy] = useState("price");
-  const [sortOrder, setSortOrder] = useState("desc");
+const PricingResult = ({
+  priceResult,
+  compareResults,
+  market_price,
+  parameters,
+}) => {
+  const [activeTab, setActiveTab] = useState("performance");
 
   if (!priceResult && (!compareResults || !compareResults.length)) return null;
 
@@ -13,20 +17,6 @@ const PricingResult = ({ priceResult, compareResults, market_price }) => {
     if (num === undefined || num === null) return "N/A";
     return typeof num === "number" ? Number(num).toFixed(precision) : num;
   };
-
-  // Sort comparison results
-  const sortedResults = compareResults
-    ? [...compareResults].sort((a, b) => {
-        const aValue = a.result[sortBy];
-        const bValue = b.result[sortBy];
-
-        if (aValue === undefined || aValue === null) return 1;
-        if (bValue === undefined || bValue === null) return -1;
-
-        const factor = sortOrder === "des" ? -1 : 1;
-        return (aValue - bValue) * factor;
-      })
-    : [];
 
   // Determine color based on price difference from market price
   const getPriceColor = (price) => {
@@ -96,6 +86,16 @@ const PricingResult = ({ priceResult, compareResults, market_price }) => {
             <nav className="flex" aria-label="Tabs">
               <button
                 className={`py-3 px-4 text-sm font-medium ${
+                  activeTab === "performance"
+                    ? "text-indigo-600 border-b-2 border-indigo-500"
+                    : "text-gray-500 hover:text-indigo-500"
+                }`}
+                onClick={() => setActiveTab("performance")}
+              >
+                Performance
+              </button>
+              <button
+                className={`py-3 px-4 text-sm font-medium ${
                   activeTab === "details"
                     ? "text-indigo-600 border-b-2 border-indigo-500"
                     : "text-gray-500 hover:text-indigo-500"
@@ -113,16 +113,6 @@ const PricingResult = ({ priceResult, compareResults, market_price }) => {
                 onClick={() => setActiveTab("greeks")}
               >
                 Greeks
-              </button>
-              <button
-                className={`py-3 px-4 text-sm font-medium ${
-                  activeTab === "performance"
-                    ? "text-indigo-600 border-b-2 border-indigo-500"
-                    : "text-gray-500 hover:text-indigo-500"
-                }`}
-                onClick={() => setActiveTab("performance")}
-              >
-                Performance
               </button>
             </nav>
           </div>
@@ -243,33 +233,11 @@ const PricingResult = ({ priceResult, compareResults, market_price }) => {
             </div>
           </div>
 
-          {/* Sorting Controls */}
-          <div className="p-4 bg-gray-50 border-b border-gray-200">
-            <div className="flex flex-wrap gap-2 items-center">
-              <span className="text-sm text-gray-600">Sort by:</span>
-              <select
-                className="py-1 px-3 bg-white border border-gray-300 rounded-md text-sm"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="price">Price</option>
-                <option value="calculation_time">Calculation Time</option>
-                {market_price && <option value="error">Error</option>}
-              </select>
-              <button
-                className="ml-2 py-1 px-2 bg-white border border-gray-300 rounded-md text-sm"
-                onClick={() =>
-                  setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-                }
-              >
-                {sortOrder === "asc" ? "↑ Ascending" : "↓ Descending"}
-              </button>
-            </div>
-          </div>
-
           {/* Comparison Results Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-            {sortedResults.map((item, index) => (
+          <div
+            className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${compareResults.length} gap-4 p-4`}
+          >
+            {compareResults.map((item, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -334,6 +302,10 @@ const PricingResult = ({ priceResult, compareResults, market_price }) => {
           </div>
         </div>
       )}
+      <OptionPayoffGraphs
+        parameters={parameters}
+        priceResult={priceResult.price}
+      />
     </motion.div>
   );
 };

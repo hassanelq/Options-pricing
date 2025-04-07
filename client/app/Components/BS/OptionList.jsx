@@ -108,6 +108,7 @@ const OptionList = ({ optionsData, handleAutoFill, isLoading, error }) => {
               <th className="p-2 text-center font-medium">Strike</th>
               <th className="p-2 text-center font-medium">Underlying</th>
               <th className="p-2 text-center font-medium">Expiration</th>
+              <th className="p-2 text-center font-medium">Volume</th>
               <th className="p-2 text-center font-medium">IV (%)</th>
               <th className="p-2 text-center font-medium">Price</th>
               <th className="p-2 text-center font-medium">Action</th>
@@ -143,6 +144,7 @@ const OptionList = ({ optionsData, handleAutoFill, isLoading, error }) => {
                     ? new Date(option.expiration).toLocaleDateString()
                     : "N/A"}
                 </td>
+                <td className="p-3 text-center">{option.volume || "N/A"}</td>
                 <td className="p-3 text-center">
                   {option.implied_volatility
                     ? (option.implied_volatility * 100).toFixed(2) + "%"

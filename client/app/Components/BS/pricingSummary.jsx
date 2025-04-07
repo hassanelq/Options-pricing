@@ -41,10 +41,10 @@ const PricingSummary = ({
             <span className="text-teal-700">
               {selectedApproach === "blackScholes"
                 ? "Black-Scholes"
-                : selectedApproach === "binomialTree"
-                ? "Binomial Tree"
-                : selectedApproach === "monteCarlo"
-                ? "Monte Carlo"
+                : selectedApproach === "heston"
+                ? "Heston"
+                : selectedApproach === "ou"
+                ? "Ornstein-Uhlenbeck"
                 : selectedApproach}
             </span>
           </div>
@@ -150,14 +150,6 @@ const PricingSummary = ({
                 <span className="text-gray-700">Correlation (ρ):</span>
                 <span className="text-teal-700">
                   {parameters.rho.toFixed(2)}
-                </span>
-              </div>
-            )}
-            {parameters.v0 && (
-              <div className="flex justify-between border-b border-gray-200 pb-1">
-                <span className="text-gray-700">Initial Variance (v₀):</span>
-                <span className="text-teal-700">
-                  {parameters.v0.toFixed(4)}
                 </span>
               </div>
             )}

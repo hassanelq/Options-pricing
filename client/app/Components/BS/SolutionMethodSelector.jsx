@@ -9,6 +9,8 @@ const SolutionMethodSelector = ({
   approach,
   parameters,
   setParameters,
+  handleCalibrateHeston,
+  isCalibrating,
 }) => {
   const approachData = PRICING_CONFIG[selectedStyle].find(
     (a) => a.value === approach
@@ -32,7 +34,6 @@ const SolutionMethodSelector = ({
         theta: prev.theta ?? 0.04, // Default Long-term Variance
         xi: prev.xi ?? 0.1, // Default Volatility of Volatility
         rho: prev.rho ?? -0.7, // Default Correlation
-        v0: prev.v0 ?? 0.04, // Default Initial Variance
       }));
     }
 
@@ -113,7 +114,6 @@ const SolutionMethodSelector = ({
                 min: -1,
                 max: 1,
               },
-              { label: "Initial Variance (v₀)", key: "v0", step: 0.01 },
             ].map((param, index) => (
               <motion.div
                 key={param.key}
@@ -161,6 +161,61 @@ const SolutionMethodSelector = ({
               </motion.div>
             )}
           </div>
+
+          {/* Calibrate Button */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleCalibrateHeston}
+            disabled={isCalibrating}
+            className={`px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-500 text-white font-semibold rounded-lg shadow-md hover:from-teal-700 hover:to-emerald-700 transition-all flex items-center gap-2 ${
+              isCalibrating ? "opacity-75" : ""
+            }`}
+          >
+            {isCalibrating ? (
+              <>
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Calibrating...
+              </>
+            ) : (
+              <>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                  />
+                </svg>
+                Calibrate Parameters
+              </>
+            )}
+          </motion.button>
         </motion.div>
       );
     }

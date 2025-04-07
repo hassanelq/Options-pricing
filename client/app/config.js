@@ -28,11 +28,6 @@ export const PRICING_CONFIG = {
           desc: "(Very Fast, Exact in Fourier Space)",
         },
         {
-          name: "Fourier Transform via Carr-Madan",
-          value: "fourier",
-          desc: "(Fast, Works Well for European Options)",
-        },
-        {
           name: "Monte Carlo Simulation",
           value: "monteCarlo",
           desc: "(Slow, Suitable for Complex Payoffs)",

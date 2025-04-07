@@ -182,7 +182,7 @@ const ParametersInput = ({ parameters, setParameters }) => {
           { label: "Underlying Price ($)", key: "underlyingPrice", step: "1" },
           { label: "Strike Price ($)", key: "strikePrice", step: "1" },
           {
-            label: "Volatility (%)",
+            label: "Implied Volatility (%)",
             key: "volatility",
             step: "0.5",
             isPercentage: true,
