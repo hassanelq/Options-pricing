@@ -103,202 +103,210 @@ const OptionPayoffGraphs = ({ parameters, priceResult }) => {
         Diagrams
       </h3>
 
-      {/* Long Position Graph - Increased height from 300 to 400 */}
+      {/* Long Position Graph */}
       <div className="mb-10 bg-white p-6 rounded-lg shadow-md">
         <h4 className="text-lg font-semibold mb-4 text-blue-600">
           Long {formatOptionType(parameters.option_type)}
         </h4>
-        <ComposedChart
-          width={800}
-          height={400}
-          data={graphData}
-          margin={{ top: 20, right: 40, left: 40, bottom: 40 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="spotPrice"
-            tickFormatter={numberFormatter}
-            label={{
-              value: "Spot Price",
-              position: "insideBottom",
-              offset: -20,
-            }}
-            domain={[range.min, range.max]}
-            tickCount={calculateTickCount()}
-          />
-          <YAxis
-            tickFormatter={numberFormatter}
-            label={{
-              value: "Profit/Loss",
-              angle: -90,
-              position: "insideLeft",
-              offset: -20,
-            }}
-          />
-          <Tooltip
-            formatter={(value) => [`$${numberFormatter(value)}`, "Value"]}
-            labelFormatter={(value) => `Spot Price: $${value}`}
-          />
-          <Legend verticalAlign="top" height={50} />
-          <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
-          <ReferenceLine
-            x={parameters.strikePrice}
-            stroke="#0088FE"
-            strokeDasharray="3 3"
-            label={{
-              value: `Strike: $${numberFormatter(parameters.strikePrice)}`,
-              position: "top",
-              fill: "#0088FE",
-              fontSize: 12,
-            }}
-          />
-          <ReferenceLine
-            x={parameters.underlyingPrice}
-            stroke="#00C49F"
-            strokeDasharray="3 3"
-            label={{
-              value: `Spot: $${numberFormatter(parameters.underlyingPrice)}`,
-              position: "insideTopRight",
-              fill: "#00C49F",
-              fontSize: 12,
-            }}
-          />
-          <Line
-            type="monotone"
-            dataKey="longPayoff"
-            stroke="#0088FE"
-            name="Payoff"
-            dot={false}
-            strokeWidth={2}
-          />
-          <Line
-            type="monotone"
-            dataKey="longProfit"
-            stroke="#00C49F"
-            name="Profit"
-            dot={false}
-            strokeWidth={2}
-          />
-          <ReferenceLine
-            y={-graphData[0].premium}
-            stroke="#8884d8"
-            strokeDasharray="3 3"
-            label={{
-              value: `Premium: $${numberFormatter(graphData[0].premium)}`,
-              position: "insideLeft",
-              fontSize: 12,
-            }}
-          />
+        {/* Scroll container for mobile */}
+        <div className="overflow-x-auto">
+          <ComposedChart
+            width={800} // Fixed width for desktop
+            height={400}
+            data={graphData}
+            margin={{ top: 20, right: 40, left: 40, bottom: 40 }}
+            className="mx-auto" // Center on desktop
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="spotPrice"
+              tickFormatter={numberFormatter}
+              label={{
+                value: "Spot Price",
+                position: "insideBottom",
+                offset: -20,
+              }}
+              domain={[range.min, range.max]}
+              tickCount={calculateTickCount()}
+            />
+            <YAxis
+              tickFormatter={numberFormatter}
+              label={{
+                value: "Profit/Loss",
+                angle: -90,
+                position: "insideLeft",
+                offset: -20,
+              }}
+            />
+            <Tooltip
+              formatter={(value) => [`$${numberFormatter(value)}`, "Value"]}
+              labelFormatter={(value) => `Spot Price: $${value}`}
+            />
+            <Legend verticalAlign="top" height={50} />
+            <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
+            <ReferenceLine
+              x={parameters.strikePrice}
+              stroke="#0088FE"
+              strokeDasharray="3 3"
+              label={{
+                value: `Strike: $${numberFormatter(parameters.strikePrice)}`,
+                position: "top",
+                fill: "#0088FE",
+                fontSize: 12,
+              }}
+            />
+            <ReferenceLine
+              x={parameters.underlyingPrice}
+              stroke="#00C49F"
+              strokeDasharray="3 3"
+              label={{
+                value: `Spot: $${numberFormatter(parameters.underlyingPrice)}`,
+                position: "insideTopRight",
+                fill: "#00C49F",
+                fontSize: 12,
+              }}
+            />
+            <Line
+              type="monotone"
+              dataKey="longPayoff"
+              stroke="#0088FE"
+              name="Payoff"
+              dot={false}
+              strokeWidth={2}
+            />
+            <Line
+              type="monotone"
+              dataKey="longProfit"
+              stroke="#00C49F"
+              name="Profit"
+              dot={false}
+              strokeWidth={2}
+            />
+            <ReferenceLine
+              y={-graphData[0].premium}
+              stroke="#8884d8"
+              strokeDasharray="3 3"
+              label={{
+                value: `Premium: $${numberFormatter(graphData[0].premium)}`,
+                position: "insideLeft",
+                fontSize: 12,
+              }}
+            />
 
-          {/* Profit & Loss Areas */}
-          <Area
-            type="monotone"
-            dataKey="longProfit"
-            fill="#00C49F"
-            stroke="none"
-            fillOpacity={0.3}
-            activeDot={false}
-          />
-        </ComposedChart>
+            {/* Profit & Loss Areas */}
+            <Area
+              type="monotone"
+              dataKey="longProfit"
+              fill="#00C49F"
+              stroke="none"
+              fillOpacity={0.3}
+              activeDot={false}
+            />
+          </ComposedChart>
+        </div>
       </div>
 
-      {/* Short Position Graph - Increased height from 300 to 400 */}
+      {/* Short Position Graph */}
       <div className="mb-6 bg-white p-6 rounded-lg shadow-md">
         <h4 className="text-lg font-semibold mb-4 text-red-600">
           Short {formatOptionType(parameters.option_type)}
         </h4>
-        <ComposedChart
-          width={800}
-          height={400}
-          data={graphData}
-          margin={{ top: 20, right: 40, left: 40, bottom: 40 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="spotPrice"
-            tickFormatter={numberFormatter}
-            label={{
-              value: "Spot Price",
-              position: "insideBottom",
-              offset: -20,
-            }}
-            domain={[range.min, range.max]}
-            tickCount={calculateTickCount()}
-          />
-          <YAxis
-            tickFormatter={numberFormatter}
-            label={{
-              value: "Profit/Loss",
-              angle: -90,
-              position: "insideLeft",
-              offset: -20,
-            }}
-          />
-          <Tooltip
-            formatter={(value) => [`$${numberFormatter(value)}`, "Value"]}
-            labelFormatter={(value) => `Spot Price: $${value}`}
-          />
-          <Legend verticalAlign="top" height={36} />
-          <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
-          <ReferenceLine
-            x={parameters.strikePrice}
-            stroke="#FF8042"
-            strokeDasharray="3 3"
-            label={{
-              value: `Strike: $${numberFormatter(parameters.strikePrice)}`,
-              position: "top",
-              fill: "#FF8042",
-              fontSize: 12,
-            }}
-          />
-          <ReferenceLine
-            x={parameters.underlyingPrice}
-            stroke="#FF8042"
-            strokeDasharray="3 3"
-            label={{
-              value: `Spot: $${numberFormatter(parameters.underlyingPrice)}`,
-              position: "insideBottomRight",
-              fill: "#FF8042",
-              fontSize: 12,
-            }}
-          />
-          <Line
-            type="monotone"
-            dataKey="shortPayoff"
-            stroke="#FF8042"
-            name="Payoff"
-            dot={false}
-            strokeWidth={2}
-          />
-          <Line
-            type="monotone"
-            dataKey="shortProfit"
-            stroke="#FF0000"
-            name="Profit"
-            dot={false}
-            strokeWidth={2}
-          />
-          <ReferenceLine
-            y={graphData[0].premium}
-            stroke="#8884d8"
-            strokeDasharray="3 3"
-            label={{
-              value: `Premium: $${numberFormatter(graphData[0].premium)}`,
-              position: "insideRight",
-              fontSize: 12,
-            }}
-          />
+        {/* Scroll container for mobile */}
+        <div className="overflow-x-auto">
+          <ComposedChart
+            width={800} // Fixed width for desktop
+            height={400}
+            data={graphData}
+            margin={{ top: 20, right: 40, left: 40, bottom: 40 }}
+            className="mx-auto" // Center on desktop
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="spotPrice"
+              tickFormatter={numberFormatter}
+              label={{
+                value: "Spot Price",
+                position: "insideBottom",
+                offset: -20,
+              }}
+              domain={[range.min, range.max]}
+              tickCount={calculateTickCount()}
+            />
+            <YAxis
+              tickFormatter={numberFormatter}
+              label={{
+                value: "Profit/Loss",
+                angle: -90,
+                position: "insideLeft",
+                offset: -20,
+              }}
+            />
+            <Tooltip
+              formatter={(value) => [`$${numberFormatter(value)}`, "Value"]}
+              labelFormatter={(value) => `Spot Price: $${value}`}
+            />
+            <Legend verticalAlign="top" height={36} />
+            <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
+            <ReferenceLine
+              x={parameters.strikePrice}
+              stroke="#FF8042"
+              strokeDasharray="3 3"
+              label={{
+                value: `Strike: $${numberFormatter(parameters.strikePrice)}`,
+                position: "top",
+                fill: "#FF8042",
+                fontSize: 12,
+              }}
+            />
+            <ReferenceLine
+              x={parameters.underlyingPrice}
+              stroke="#FF8042"
+              strokeDasharray="3 3"
+              label={{
+                value: `Spot: $${numberFormatter(parameters.underlyingPrice)}`,
+                position: "insideBottomRight",
+                fill: "#FF8042",
+                fontSize: 12,
+              }}
+            />
+            <Line
+              type="monotone"
+              dataKey="shortPayoff"
+              stroke="#FF8042"
+              name="Payoff"
+              dot={false}
+              strokeWidth={2}
+            />
+            <Line
+              type="monotone"
+              dataKey="shortProfit"
+              stroke="#FF0000"
+              name="Profit"
+              dot={false}
+              strokeWidth={2}
+            />
+            <ReferenceLine
+              y={graphData[0].premium}
+              stroke="#8884d8"
+              strokeDasharray="3 3"
+              label={{
+                value: `Premium: $${numberFormatter(graphData[0].premium)}`,
+                position: "insideRight",
+                fontSize: 12,
+              }}
+            />
 
-          {/* Profit & Loss Areas */}
-          <Area
-            type="monotone"
-            dataKey="shortProfit"
-            fill="#FF0000"
-            stroke="none"
-            fillOpacity={0.3}
-            activeDot={false}
-          />
-        </ComposedChart>
+            {/* Profit & Loss Areas */}
+            <Area
+              type="monotone"
+              dataKey="shortProfit"
+              fill="#FF0000"
+              stroke="none"
+              fillOpacity={0.3}
+              activeDot={false}
+            />
+          </ComposedChart>
+        </div>
       </div>
 
       <div className="mt-4 px-6 py-4 bg-gray-100 rounded-lg">
