@@ -4,8 +4,10 @@ import axios from "axios";
 export async function GET(request, { params }) {
   try {
     const { symbol } = params; // e.g., "AAPL"
-    const apiUrl = `http://152.67.66.102:8777/api/v1/market-data/${symbol}`;
+    // const apiUrl = `http://152.67.66.102:8777/api/v1/market-data/${symbol}`;
     // const apiUrl = `http://127.0.0.1:8000/api/v1/market-data/${symbol}`;
+
+    const apiUrl = "http://157.90.115.198:8000/api/v1/market-data/${symbol}";
 
     // Forward GET request
     const { data } = await axios.get(apiUrl);
