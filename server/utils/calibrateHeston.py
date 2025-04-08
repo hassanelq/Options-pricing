@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 from typing import Dict, Tuple, Optional, Any, Union, List
 from scipy.optimize import least_squares
-import matplotlib.pyplot as plt
+
+# import matplotlib.pyplot as plt
 
 
 def get_market_data(
@@ -413,98 +414,98 @@ def calibrate_heston(
         }
 
 
-def plot_calibration_results(
-    result: Dict[str, Any], title: str = "Heston Model Calibration Results"
-):
-    """
-    Plots the calibration results for visual inspection.
+# def plot_calibration_results(
+#     result: Dict[str, Any], title: str = "Heston Model Calibration Results"
+# ):
+#     """
+#     Plots the calibration results for visual inspection.
 
-    Parameters:
-    -----------
-    result : Dict[str, Any]
-        Calibration result dictionary from calibrate_heston
-    title : str
-        Plot title
-    """
-    if not result["success"]:
-        print(f"Calibration failed: {result['error']}")
-        return
+#     Parameters:
+#     -----------
+#     result : Dict[str, Any]
+#         Calibration result dictionary from calibrate_heston
+#     title : str
+#         Plot title
+#     """
+#     if not result["success"]:
+#         print(f"Calibration failed: {result['error']}")
+#         return
 
-    market_data = result["market_data"]
+#     market_data = result["market_data"]
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+#     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
 
-    # Price comparison plot
-    ax1.plot(
-        market_data["strike"], market_data["mid_price"], "o", label="Market Prices"
-    )
-    ax1.plot(
-        market_data["strike"], market_data["model_price"], "-", label="Model Prices"
-    )
-    ax1.set_xlabel("Strike Price")
-    ax1.set_ylabel("Option Price")
-    ax1.set_title("Market vs Model Prices")
-    ax1.legend()
-    ax1.grid(True)
+#     # Price comparison plot
+#     ax1.plot(
+#         market_data["strike"], market_data["mid_price"], "o", label="Market Prices"
+#     )
+#     ax1.plot(
+#         market_data["strike"], market_data["model_price"], "-", label="Model Prices"
+#     )
+#     ax1.set_xlabel("Strike Price")
+#     ax1.set_ylabel("Option Price")
+#     ax1.set_title("Market vs Model Prices")
+#     ax1.legend()
+#     ax1.grid(True)
 
-    # Error plot
-    ax2.bar(market_data["strike"], market_data["rel_error"], width=2.0)
-    ax2.set_xlabel("Strike Price")
-    ax2.set_ylabel("Relative Error (%)")
-    ax2.set_title(
-        f"Calibration Errors (RMSE: {result['calibration_metrics']['RMSE']:.6f})"
-    )
-    ax2.grid(True)
+#     # Error plot
+#     ax2.bar(market_data["strike"], market_data["rel_error"], width=2.0)
+#     ax2.set_xlabel("Strike Price")
+#     ax2.set_ylabel("Relative Error (%)")
+#     ax2.set_title(
+#         f"Calibration Errors (RMSE: {result['calibration_metrics']['RMSE']:.6f})"
+#     )
+#     ax2.grid(True)
 
-    plt.suptitle(title)
-    plt.tight_layout()
+#     plt.suptitle(title)
+#     plt.tight_layout()
 
-    # Print calibrated parameters
-    metrics = result["calibration_metrics"]
+#     # Print calibrated parameters
+#     metrics = result["calibration_metrics"]
 
-    print("\nCalibrated Heston Parameters:")
-    print(f"v0 (Initial variance): {result['v0']:.6f}")
-    print(f"kappa (Mean reversion): {result['kappa']:.6f}")
-    print(f"theta (Long-term variance): {result['theta']:.6f}")
-    print(f"xi (Vol of vol): {result['xi']:.6f}")
-    print(f"rho (Correlation): {result['rho']:.6f}")
+#     print("\nCalibrated Heston Parameters:")
+#     print(f"v0 (Initial variance): {result['v0']:.6f}")
+#     print(f"kappa (Mean reversion): {result['kappa']:.6f}")
+#     print(f"theta (Long-term variance): {result['theta']:.6f}")
+#     print(f"xi (Vol of vol): {result['xi']:.6f}")
+#     print(f"rho (Correlation): {result['rho']:.6f}")
 
-    print("\nCalibration Metrics:")
-    print(f"RMSE: {metrics['RMSE']:.6f}")
-    print(f"MAE: {metrics['MAE']:.6f}")
-    print(f"Mean Relative Error: {metrics['mean_rel_error']:.2f}%")
-    print(f"Function Evaluations: {metrics['n_iterations']}")
+#     print("\nCalibration Metrics:")
+#     print(f"RMSE: {metrics['RMSE']:.6f}")
+#     print(f"MAE: {metrics['MAE']:.6f}")
+#     print(f"Mean Relative Error: {metrics['mean_rel_error']:.2f}%")
+#     print(f"Function Evaluations: {metrics['n_iterations']}")
 
-    plt.show()
+#     plt.show()
 
 
-# Example usage
-if __name__ == "__main__":
-    # Example parameters
-    symbol = "AAPL"
-    option_type = "call"
-    expiration = "2026-06-18"  # Format: YYYY-MM-DD
-    S = 172.42  # Current spot price
-    T = 1.19  # Time to maturity in years
-    r = 0.0382  # Risk-free rate
+# # Example usage
+# if __name__ == "__main__":
+#     # Example parameters
+#     symbol = "AAPL"
+#     option_type = "call"
+#     expiration = "2026-06-18"  # Format: YYYY-MM-DD
+#     S = 172.42  # Current spot price
+#     T = 1.19  # Time to maturity in years
+#     r = 0.0382  # Risk-free rate
 
-    # Run calibration
-    result = calibrate_heston(
-        symbol=symbol,
-        option_type=option_type,
-        expiration=expiration,
-        S=S,
-        T=T,
-        r=r,
-        v0=0.04,  # Initial variance
-        use_lm=False,  # Set to True to use Levenberg-Marquardt
-        verbose=True,
-    )
+#     # Run calibration
+#     result = calibrate_heston(
+#         symbol=symbol,
+#         option_type=option_type,
+#         expiration=expiration,
+#         S=S,
+#         T=T,
+#         r=r,
+#         v0=0.04,  # Initial variance
+#         use_lm=False,  # Set to True to use Levenberg-Marquardt
+#         verbose=True,
+#     )
 
-    # Plot results
-    if result["success"]:
-        plot_calibration_results(
-            result, f"Heston Calibration for {symbol} {option_type.capitalize()}s"
-        )
-    else:
-        print(f"Calibration failed: {result['error']}")
+#     # Plot results
+#     if result["success"]:
+#         plot_calibration_results(
+#             result, f"Heston Calibration for {symbol} {option_type.capitalize()}s"
+#         )
+#     else:
+#         print(f"Calibration failed: {result['error']}")
