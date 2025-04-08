@@ -34,6 +34,7 @@ const SolutionMethodSelector = ({
         theta: prev.theta ?? 0.04, // Default Long-term Variance
         xi: prev.xi ?? 0.1, // Default Volatility of Volatility
         rho: prev.rho ?? -0.7, // Default Correlation
+        v0: prev.v0 ?? 0.04, // Default Initial Variance
       }));
     }
 
@@ -114,6 +115,7 @@ const SolutionMethodSelector = ({
                 min: -1,
                 max: 1,
               },
+              { label: "Initial Variance (v0)", key: "v0", step: 0.01 },
             ].map((param, index) => (
               <motion.div
                 key={param.key}

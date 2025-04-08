@@ -3,7 +3,7 @@ from models import black_scholes, heston, ornstein_uhlenbeck
 from schemas import PricingRequest, PricingResult, CalibrationResult, CalibrationRequest
 import datetime
 from utils.fetch_data import get_market_data
-from utils.calibrateHeston import Calibrate
+from utils.calibrateHeston import calibrate_heston
 
 router = APIRouter()
 
@@ -18,22 +18,44 @@ async def get_options(symbol: str, total_results: int = 12):
 
 @router.post("/calibrate", response_model=CalibrationResult)
 async def Calibrate_Heston(request: CalibrationRequest):
-    calibrate_params = {
-        "symbol": request.symbol,
-        "option_type": request.option_type,
-        "K": request.strike_price,
-        "expiration": request.expiration,
-        "T": request.YearsToExpiration,
-        "S": request.underlying_price,
-        "r": request.risk_free_rate,
-        "v0": request.volatility,  # Initial volatility guess
-    }
-    result = Calibrate(**calibrate_params)
-    if "error" in result:
-        raise HTTPException(status_code=400, detail=result["error"])
-    return CalibrationResult(
-        **result,
-    )
+    try:
+        # Convert input volatility if needed
+        volatility = request.volatility
+        if volatility > 1.0:
+            volatility = volatility / 100.0  # Assuming input is percentage
+
+        # Setup parameters for calibration
+        calibrate_params = {
+            "symbol": request.symbol,
+            "option_type": request.option_type,
+            "expiration": request.expiration,
+            "T": request.YearsToExpiration,
+            "S": request.underlying_price,
+            "r": request.risk_free_rate,
+            "v0": volatility * volatility,  # Convert to variance
+            "use_lm": True,  # Use Levenberg-Marquardt as requested
+            "verbose": False,
+        }
+
+        # Call calibration function
+        result = calibrate_heston(**calibrate_params)
+
+        # Check for errors
+        if "error" in result and result["success"] == False:
+            raise HTTPException(status_code=400, detail=result["error"])
+
+        # Return successful result
+        return CalibrationResult(
+            kappa=result["kappa"],
+            theta=result["theta"],
+            xi=result["xi"],
+            rho=result["rho"],
+            v0=result["v0"],
+            calibration_metrics=result["calibration_metrics"],
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/price", response_model=PricingResult)
@@ -70,6 +92,7 @@ async def calculate_price(request: PricingRequest):
                     "theta": request.theta,  # Long-term variance
                     "xi": request.xi,  # Volatility of volatility
                     "rho": request.rho,  # Correlation
+                    "v0": request.v0,  # Initial variance
                 }
             )
 

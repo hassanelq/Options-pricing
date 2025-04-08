@@ -75,7 +75,7 @@ const PricingPage = () => {
     strikePrice: 100,
     expiration: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
     yearsToExpiration: 1,
-    riskFreeRate: 0.045,
+    riskFreeRate: 3.5,
     volatility: 0.1,
     market_price: null,
   });
@@ -208,6 +208,7 @@ const PricingPage = () => {
       theta: selectedApproach === "heston" ? parameters.theta : undefined,
       xi: selectedApproach === "heston" ? parameters.xi : undefined,
       rho: selectedApproach === "heston" ? parameters.rho : undefined,
+      v0: selectedApproach === "heston" ? parameters.v0 : undefined,
     };
 
     setIsCalculating(true);
@@ -228,7 +229,6 @@ const PricingPage = () => {
       symbol: parameters.symbol,
       option_type: parameters.option_type,
       underlying_price: parameters.underlyingPrice,
-      strike_price: parameters.strikePrice,
       expiration: parameters.expiration,
       YearsToExpiration: parameters.yearsToExpiration,
       risk_free_rate: parameters.riskFreeRate / 100,
@@ -244,6 +244,7 @@ const PricingPage = () => {
         theta: response.theta,
         xi: response.xi,
         rho: response.rho,
+        v0: response.v0,
       }));
     } catch (error) {
       console.error("Error caught in component:", error);

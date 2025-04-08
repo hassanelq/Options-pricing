@@ -34,27 +34,27 @@ export const PRICING_CONFIG = {
         },
       ],
     },
-    {
-      label: "Ornstein-Uhlenbeck (OU)",
-      value: "ou",
-      solutions: [
-        {
-          name: "Analytical Solution via Fokker-Planck Equation",
-          value: "fokkerPlanck",
-          desc: "(Fast, Exact for Simple Cases)",
-        },
-        {
-          name: "Fast Fourier Transform (FFT)",
-          value: "fft",
-          desc: "(Fast, Spectral Approach)",
-        },
-        {
-          name: "Monte Carlo Simulation",
-          value: "monteCarlo",
-          desc: "(Slow, Useful for Stochastic Interest Rate Models)",
-        },
-      ],
-    },
+    // {
+    //   label: "Ornstein-Uhlenbeck (OU)",
+    //   value: "ou",
+    //   solutions: [
+    //     {
+    //       name: "Analytical Solution via Fokker-Planck Equation",
+    //       value: "fokkerPlanck",
+    //       desc: "(Fast, Exact for Simple Cases)",
+    //     },
+    //     {
+    //       name: "Fast Fourier Transform (FFT)",
+    //       value: "fft",
+    //       desc: "(Fast, Spectral Approach)",
+    //     },
+    //     {
+    //       name: "Monte Carlo Simulation",
+    //       value: "monteCarlo",
+    //       desc: "(Slow, Useful for Stochastic Interest Rate Models)",
+    //     },
+    //   ],
+    // },
   ],
   // American: [],
 };
