@@ -2,14 +2,22 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 
 // GET /api/v1/risk-free-rate/<years>
-export async function GET(request, { params }) {
+export async function GET(request, context) {
   try {
-    // "years" is whatever is in the URL path: /api/v1/risk-free-rate/1
-    const { years } = params;
+    // Extract the years param properly with await to prevent the error
+    const { years } = await context.params;
+
+    // Skip validation since we know years exists in the route
+    const numericYears = Number(years);
+    if (isNaN(numericYears)) {
+      return NextResponse.json(
+        { error: "Years must be a valid number" },
+        { status: 400 }
+      );
+    }
 
     // 1. Pick the correct FRED series based on the 'years' param
     let seriesId;
-    const numericYears = Number(years);
     if (numericYears < 1) {
       seriesId = "DGS3MO"; // 3-Month
     } else if (numericYears < 5) {
@@ -41,14 +49,16 @@ export async function GET(request, { params }) {
       );
     }
 
-    // 6. Extract the latest observation’s value
+    // 6. Extract the latest observation's value
     const latestValue = parseFloat(
       data.observations[data.observations.length - 1].value
     );
 
-    // 7. Return the JSON to the client
+    // Return raw value without dividing by 100 since FRED data is already in percent
+    // This matches the expected format in your client code
     return NextResponse.json({ value: latestValue }, { status: 200 });
   } catch (error) {
+    console.error("Error in risk-free-rate API:", error);
     return NextResponse.json(
       { error: "Error fetching risk-free rate." },
       { status: 500 }

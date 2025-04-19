@@ -81,8 +81,7 @@ export default function Hero() {
               Multiple Models
             </h3>
             <p className="text-gray-600">
-              Black-Scholes, Heston, and Ornstein-Uhlenbeck models with various
-              solving methods.
+              Black-Scholes and Heston models with various solving methods.
             </p>
           </div>
 

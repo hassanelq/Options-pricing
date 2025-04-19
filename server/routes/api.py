@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from models import black_scholes, heston, ornstein_uhlenbeck
+from models import black_scholes, heston
 from schemas import PricingRequest, PricingResult, CalibrationResult, CalibrationRequest
 import datetime
 from utils.fetch_data import get_market_data
@@ -101,25 +101,6 @@ async def calculate_price(request: PricingRequest):
             elif request.solution_type == "monteCarlo":
                 heston_params["num_simulations"] = request.monte_carlo_simulations
                 result = heston.Heston.monte_carlo(**heston_params)
-
-        elif request.model_type == "ou":
-            # OU-specific parameters
-            ou_params = base_params.copy()
-            ou_params.update(
-                {
-                    "theta": request.theta_ou,  # Long-term mean
-                    "kappa": request.kappa_ou,  # Mean reversion rate
-                    "xi": request.xi_ou,  # Volatility parameter
-                }
-            )
-
-            if request.solution_type == "fokkerPlanck":
-                result = ornstein_uhlenbeck.OrnsteinUhlenbeck.fokker_planck(**ou_params)
-            elif request.solution_type == "fft":
-                result = ornstein_uhlenbeck.OrnsteinUhlenbeck.fft(**ou_params)
-            elif request.solution_type == "monteCarlo":
-                ou_params["num_simulations"] = request.monte_carlo_simulations
-                result = ornstein_uhlenbeck.OrnsteinUhlenbeck.monte_carlo(**ou_params)
 
         else:
             raise HTTPException(status_code=400, detail="Invalid model type")

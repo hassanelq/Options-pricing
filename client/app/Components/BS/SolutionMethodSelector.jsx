@@ -37,15 +37,6 @@ const SolutionMethodSelector = ({
         v0: prev.v0 ?? 0.04, // Default Initial Variance
       }));
     }
-
-    if (approach === "ou") {
-      setParameters((prev) => ({
-        ...prev,
-        kappa_ou: prev.kappa_ou ?? 1.5, // Default Mean Reversion Speed
-        theta_ou: prev.theta_ou ?? 0.05, // Default Long-term Mean
-        xi_ou: prev.xi_ou ?? 0.02, // Default Volatility
-      }));
-    }
   }, [selectedSolution, approach, setParameters]);
 
   // Get current solution type from selected solution name
@@ -221,73 +212,6 @@ const SolutionMethodSelector = ({
         </motion.div>
       );
     }
-
-    // OU Model Parameters
-    if (approach === "ou") {
-      return (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="mt-8 space-y-4 p-4 bg-indigo-50 rounded-xl"
-        >
-          <h3 className="text-lg font-semibold text-teal-800">
-            OU Process Parameters
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { label: "Mean Reversion (κ)", key: "kappa_ou", step: 0.1 },
-              { label: "Long-term Mean (θ)", key: "theta_ou", step: 0.1 },
-              { label: "Volatility (ξ)", key: "xi_ou", step: 0.1 },
-            ].map((param, index) => (
-              <motion.div
-                key={param.key}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-              >
-                <label className={labelStyle}>{param.label}</label>
-                <input
-                  type="number"
-                  value={parameters[param.key] || ""}
-                  onChange={(e) =>
-                    setParameters({
-                      ...parameters,
-                      [param.key]: parseFloat(e.target.value),
-                    })
-                  }
-                  className={inputStyle}
-                  step={param.step}
-                />
-              </motion.div>
-            ))}
-            {selectedSolution === "monteCarlo" && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <label className={labelStyle}>Simulations</label>
-                <input
-                  type="number"
-                  value={parameters.monte_carlo_simulations || 10000}
-                  onChange={(e) =>
-                    setParameters({
-                      ...parameters,
-                      monte_carlo_simulations: parseInt(e.target.value),
-                    })
-                  }
-                  className={inputStyle}
-                  min="1000"
-                  step="1000"
-                />
-              </motion.div>
-            )}
-          </div>
-        </motion.div>
-      );
-    }
-
     return null;
   };
 

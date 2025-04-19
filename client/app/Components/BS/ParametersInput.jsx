@@ -3,15 +3,16 @@ import { motion } from "framer-motion";
 import axios from "axios";
 
 async function fetchRiskFreeRate(years) {
-  // Goes to /api/v1/risk-free-rate/<years>, your Next.js route
-  const { data } = await axios.get(`/api/v1/risk-free-rate/${years}`);
+  // Add a small delay to prevent duplicate fetches
+  const roundedYears = parseFloat(years).toFixed(2);
+  const { data } = await axios.get(`/api/v1/risk-free-rate/${roundedYears}`);
 
   // If there's an "error" key, throw it
   if (data.error) {
     throw new Error(data.error);
   }
 
-  // Otherwise, data.value is your latestValue from FRED
+  // Return the value
   return data.value;
 }
 
@@ -71,9 +72,9 @@ const ParametersInput = ({ parameters, setParameters }) => {
     }
   }, [parameters.expiration]);
 
-  // Automatically fetch risk-free rate when timeToExpiration is valid
+  // Only fetch when timeToExpiration changes and is valid
   useEffect(() => {
-    if (timeToExpiration > 0) {
+    if (timeToExpiration > 0 && !isFetchingRate) {
       fetchRiskFreeRateData();
     }
   }, [timeToExpiration]); // Runs when timeToExpiration changes

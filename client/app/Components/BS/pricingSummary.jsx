@@ -43,8 +43,6 @@ const PricingSummary = ({
                 ? "Black-Scholes"
                 : selectedApproach === "heston"
                 ? "Heston"
-                : selectedApproach === "ou"
-                ? "Ornstein-Uhlenbeck"
                 : selectedApproach}
             </span>
           </div>
@@ -150,39 +148,6 @@ const PricingSummary = ({
                 <span className="text-gray-700">Correlation (ρ):</span>
                 <span className="text-teal-700">
                   {parameters.rho.toFixed(2)}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Show OU parameters if they exist */}
-        {selectedApproach === "ou" && (
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <h4 className="font-medium text-teal-800 mb-2">
-              OU Process Parameters
-            </h4>
-            {parameters.kappa_ou && (
-              <div className="flex justify-between border-b border-gray-200 pb-1">
-                <span className="text-gray-700">Mean Reversion (κ):</span>
-                <span className="text-teal-700">
-                  {parameters.kappa_ou.toFixed(2)}
-                </span>
-              </div>
-            )}
-            {parameters.theta_ou && (
-              <div className="flex justify-between border-b border-gray-200 pb-1">
-                <span className="text-gray-700">Long-term Mean (θ):</span>
-                <span className="text-teal-700">
-                  {parameters.theta_ou.toFixed(2)}
-                </span>
-              </div>
-            )}
-            {parameters.xi_ou && (
-              <div className="flex justify-between border-b border-gray-200 pb-1">
-                <span className="text-gray-700">Volatility (ξ):</span>
-                <span className="text-teal-700">
-                  {parameters.xi_ou.toFixed(3)}
                 </span>
               </div>
             )}
