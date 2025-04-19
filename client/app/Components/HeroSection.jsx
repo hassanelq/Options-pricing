@@ -32,9 +32,9 @@ export default function Hero() {
               Option Pricing Dashboard
             </h1>
             <p className="max-w-2xl mx-auto text-lg text-gray-600">
-              Calculate option prices and Greeks using different pricing models
-              with our advanced financial modeling tools. Fetch market data,
-              compare methods, and visualize results in real-time.
+              A comprehensive toolkit for financial professionals and researchers to price options 
+              using industry-standard models. Combine sophisticated mathematical methods with 
+              user-friendly interfaces to gain valuable insights into option valuation.
             </p>
             <div className="flex items-center justify-center gap-x-4 font-medium">
               <NavLink
@@ -81,7 +81,7 @@ export default function Hero() {
               Multiple Models
             </h3>
             <p className="text-gray-600">
-              Black-Scholes and Heston models with various solving methods.
+              Support for Black-Scholes, Heston, and Ornstein-Uhlenbeck models with mathematical rigor and precision.
             </p>
           </div>
 
@@ -106,8 +106,7 @@ export default function Hero() {
               Method Comparison
             </h3>
             <p className="text-gray-600">
-              Compare different pricing methods side-by-side to find the most
-              suitable approach.
+              Analyze pricing differences between numerical methods, closed-form solutions, and Monte Carlo simulations.
             </p>
           </div>
 
@@ -132,8 +131,7 @@ export default function Hero() {
               Live Market Data
             </h3>
             <p className="text-gray-600">
-              Fetch real-time option data from the market for accurate pricing
-              and analysis.
+              Integrate with market APIs to fetch real-time option data, calculate implied volatilities, and calibrate models.
             </p>
           </div>
         </motion.div>
