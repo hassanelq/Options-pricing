@@ -3,7 +3,7 @@ import axios from "axios";
 // This handles GET requests to /api/v1/market-data/<symbol>
 export async function GET(request, { params }) {
   try {
-    const { symbol } = params; // e.g., "AAPL"
+    const { symbol } = await params; // e.g., "AAPL"
     // const apiUrl = `http://152.67.66.102:8777/api/v1/market-data/${symbol}`;
     // const apiUrl = `http://127.0.0.1:8000/api/v1/market-data/${symbol}`;
 
