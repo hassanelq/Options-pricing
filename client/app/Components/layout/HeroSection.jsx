@@ -1,10 +1,10 @@
 "use client";
-import NavLink from "./ui/NavLink";
+import NavLink from "../ui/NavLink";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-const LottieAnimation = dynamic(() => import("./ui/LootieAnimation"), {
+const LottieAnimation = dynamic(() => import("../ui/LootieAnimation"), {
   ssr: false,
 });
 
@@ -32,9 +32,10 @@ export default function Hero() {
               Option Pricing Dashboard
             </h1>
             <p className="max-w-2xl mx-auto text-lg text-gray-600">
-              A comprehensive toolkit for financial professionals and researchers to price options 
-              using industry-standard models. Combine sophisticated mathematical methods with 
-              user-friendly interfaces to gain valuable insights into option valuation.
+              A comprehensive toolkit for financial professionals and
+              researchers to price options using industry-standard models.
+              Combine sophisticated mathematical methods with user-friendly
+              interfaces to gain valuable insights into option valuation.
             </p>
             <div className="flex items-center justify-center gap-x-4 font-medium">
               <NavLink
@@ -81,7 +82,8 @@ export default function Hero() {
               Multiple Models
             </h3>
             <p className="text-gray-600">
-              Support for Black-Scholes, Heston, and Ornstein-Uhlenbeck models with mathematical rigor and precision.
+              Support for Black-Scholes, Heston, and Ornstein-Uhlenbeck models
+              with mathematical rigor and precision.
             </p>
           </div>
 
@@ -106,7 +108,8 @@ export default function Hero() {
               Method Comparison
             </h3>
             <p className="text-gray-600">
-              Analyze pricing differences between numerical methods, closed-form solutions, and Monte Carlo simulations.
+              Analyze pricing differences between numerical methods, closed-form
+              solutions, and Monte Carlo simulations.
             </p>
           </div>
 
@@ -131,7 +134,8 @@ export default function Hero() {
               Live Market Data
             </h3>
             <p className="text-gray-600">
-              Integrate with market APIs to fetch real-time option data, calculate implied volatilities, and calibrate models.
+              Integrate with market APIs to fetch real-time option data,
+              calculate implied volatilities, and calibrate models.
             </p>
           </div>
         </motion.div>

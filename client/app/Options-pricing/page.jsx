@@ -4,15 +4,15 @@ import React, { useState, useEffect } from "react";
 // Make sure you have this import or else `axios` won't be defined:
 import axios from "axios";
 import { motion, time } from "framer-motion";
-import OptionStyleSelector from "../Components/BS/OptionStyleSelector";
-import PricingApproachSelector from "../Components/BS/PricingModel";
-import SolutionMethodSelector from "../Components/BS/SolutionMethodSelector";
-import AssetTypeSelector from "../Components/BS/AssetTypeSelector";
-import KeyParametersInput from "../Components/BS/KeyParametersInput";
-import OptionList from "../Components/BS/OptionList";
-import ParametersInput from "../Components/BS/ParametersInput";
-import PricingSummary from "../Components/BS/pricingSummary";
-import PricingResult from "../Components/BS/PricingResult";
+import OptionStyleSelector from "../Components/options/OptionStyleSelector";
+import PricingApproachSelector from "../Components/options/PricingModel";
+import SolutionMethodSelector from "../Components/options/SolutionMethodSelector";
+import AssetTypeSelector from "../Components/options/AssetTypeSelector";
+import KeyParametersInput from "../Components/market-data/KeyParametersInput";
+import OptionList from "../Components/market-data/OptionList";
+import ParametersInput from "../Components/options/ParametersInput";
+import PricingSummary from "../Components/results/pricingSummary";
+import PricingResult from "../Components/results/PricingResult";
 
 // import { priceOption } from "./../api/price"; // Your client-side function
 import { PRICING_CONFIG } from "../config";

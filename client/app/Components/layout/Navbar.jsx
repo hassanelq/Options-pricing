@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import NavLink from "./ui/NavLink";
+import NavLink from "../ui/NavLink";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
