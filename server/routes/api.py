@@ -29,20 +29,20 @@ async def Calibrate_Heston(request: CalibrationRequest):
             "symbol": request.symbol,
             "option_type": request.option_type,
             "expiration": request.expiration,
-            "T": request.YearsToExpiration,
-            "S": request.underlying_price,
-            "r": request.risk_free_rate,
-            "v0": volatility * volatility,  # Convert to variance
-            "use_lm": True,  # Use Levenberg-Marquardt as requested
-            "verbose": False,
+            "YearsToExpiration": request.YearsToExpiration,
+            "underlying_price": request.underlying_price,
+            "risk_free_rate": request.risk_free_rate,
+            "volatility": volatility,
         }
 
         # Call calibration function
         result = calibrate_heston(**calibrate_params)
 
         # Check for errors
-        if "error" in result and result["success"] == False:
-            raise HTTPException(status_code=400, detail=result["error"])
+        if not result["success"]:
+            raise HTTPException(
+                status_code=400, detail=result.get("error", "Calibration failed")
+            )
 
         # Return successful result
         return CalibrationResult(
@@ -52,6 +52,8 @@ async def Calibrate_Heston(request: CalibrationRequest):
             rho=result["rho"],
             v0=result["v0"],
             calibration_metrics=result["calibration_metrics"],
+            market_data=result.get("market_data"),
+            success=True,
         )
 
     except Exception as e:

@@ -1,10 +1,6 @@
 import numpy as np
-from math import exp, log, pi
-from scipy.integrate import quad
-from numpy.lib.scimath import sqrt
-from typing import Dict, Tuple, Optional, Any, Union, List
-from scipy.optimize import least_squares
-from utils.calibrateHeston import fft_option_price
+from typing import Dict, Any
+from utils.calibrateHeston import CallHestonCForm, PutHestonCForm
 
 
 class Heston:
@@ -30,19 +26,15 @@ class Heston:
         rho = heston_params.get("rho")
         xi = heston_params.get("xi")
 
-        price = fft_option_price(
-            S=S,
-            K=K,
-            T=T,
-            r=r,
-            v0=v0**2,  # Convert to variance
-            kappa=kappa,
-            theta=theta,
-            xi=xi,
-            rho=rho,
-            option_type=option_type.lower(),
-        )
-        return {"price": price, "methodology": "Heston Characteristic Function"}
+        if option_type.lower() == "call":
+            price = CallHestonCForm(S, K, T, r, kappa, rho, xi, theta, v0, 0)
+        else:
+            price = PutHestonCForm(S, T, r, kappa, rho, xi, theta, v0, 0, K)
+
+        return {
+            "price": price,
+            "methodology": "Heston Characteristic Function (Heston 1993)",
+        }
 
     @staticmethod
     def monte_carlo(

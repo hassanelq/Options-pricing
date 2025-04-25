@@ -25,11 +25,6 @@ class PricingRequest(BaseModel):
     rho: Optional[float] = None  # Correlation
     v0: Optional[float] = None  # Initial variance
 
-    # OU parameters
-    theta_ou: Optional[float] = None  # Long-term mean
-    kappa_ou: Optional[float] = None  # Mean reversion rate
-    xi_ou: Optional[float] = None  # Volatility
-
     # Monte Carlo parameters
     monte_carlo_simulations: Optional[int] = None
 

@@ -23,7 +23,7 @@ export const PRICING_CONFIG = {
       value: "heston",
       solutions: [
         {
-          name: "Heston Characteristic Function",
+          name: "Heston semi-closed form solution",
           value: "characteristicFunction",
           desc: "(Very Fast, Exact in Fourier Space)",
         },
@@ -40,5 +40,5 @@ export const PRICING_CONFIG = {
 
 export const ASSET_TYPES_MAP = {
   blackScholes: ["Stocks", "Indices", "ETFs"],
-  heston: ["Stocks", "Commodities", "FX"],
+  heston: ["Indices", "ETFs", "Stocks", "Commodities", "FX"],
 };

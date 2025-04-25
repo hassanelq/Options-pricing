@@ -4,7 +4,6 @@ import axios from "axios";
 export async function POST(request) {
   try {
     const body = await request.json(); // Read the JSON body from the request
-    // const apiUrl = "http://152.67.66.102:8777/api/v1/calibrate";
     // const apiUrl = "http://127.0.0.1:8000/api/v1/calibrate";
 
     const apiUrl = "http://157.90.115.198:8000/api/v1/calibrate";
