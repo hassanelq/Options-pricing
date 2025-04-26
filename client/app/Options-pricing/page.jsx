@@ -67,9 +67,9 @@ const priceOption = async (PricingRequest) => {
 const PricingPage = () => {
   const [selectedStyle, setSelectedStyle] = useState("European");
   const [selectedApproach, setSelectedApproach] = useState("blackScholes");
-  const [selectedAssetType, setSelectedAssetType] = useState("Stocks");
+  const [selectedAssetType, setSelectedAssetType] = useState("Indices");
   const [parameters, setParameters] = useState({
-    symbol: "AAPL",
+    symbol: "^SPX",
     option_type: "call",
     underlyingPrice: 100,
     strikePrice: 100,
@@ -227,12 +227,9 @@ const PricingPage = () => {
   const handleCalibrateHeston = async () => {
     const CalibrateRequest = {
       symbol: parameters.symbol,
-      option_type: parameters.option_type,
       underlying_price: parameters.underlyingPrice,
       expiration: parameters.expiration,
-      YearsToExpiration: parameters.yearsToExpiration,
       risk_free_rate: parameters.riskFreeRate / 100,
-      volatility: parameters.volatility,
     };
 
     setIsCalibrating(true);
@@ -258,9 +255,9 @@ const PricingPage = () => {
     setSelectedStyle("European");
     setSelectedApproach("blackScholes");
     setSelectedSolution("closedForm");
-    setSelectedAssetType("Stocks");
+    setSelectedAssetType("Indices");
     setParameters({
-      symbol: "AAPL",
+      symbol: "^SPX",
       option_type: "call",
       underlyingPrice: 100,
       strikePrice: 100,

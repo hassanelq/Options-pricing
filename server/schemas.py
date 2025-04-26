@@ -50,12 +50,9 @@ class PricingResult(BaseModel):
 
 class CalibrationRequest(BaseModel):
     symbol: str
-    option_type: str
     underlying_price: float
     expiration: str
-    YearsToExpiration: float
     risk_free_rate: float
-    volatility: float
 
 
 class CalibrationResult(BaseModel):

@@ -19,20 +19,12 @@ async def get_options(symbol: str, total_results: int = 12):
 @router.post("/calibrate", response_model=CalibrationResult)
 async def Calibrate_Heston(request: CalibrationRequest):
     try:
-        # Convert input volatility if needed
-        volatility = request.volatility
-        if volatility > 1.0:
-            volatility = volatility / 100.0  # Assuming input is percentage
-
         # Setup parameters for calibration
         calibrate_params = {
             "symbol": request.symbol,
-            "option_type": request.option_type,
             "expiration": request.expiration,
-            "YearsToExpiration": request.YearsToExpiration,
             "underlying_price": request.underlying_price,
             "risk_free_rate": request.risk_free_rate,
-            "volatility": volatility,
         }
 
         # Call calibration function
@@ -44,15 +36,15 @@ async def Calibrate_Heston(request: CalibrationRequest):
                 status_code=400, detail=result.get("error", "Calibration failed")
             )
 
-        # Return successful result
+        # Return successful result - FIX PARAMETER NAMES HERE
         return CalibrationResult(
             kappa=result["kappa"],
             theta=result["theta"],
-            xi=result["xi"],
+            xi=result["volvol"],  # Changed from xi to volvol
             rho=result["rho"],
-            v0=result["v0"],
+            v0=result["var0"],  # Changed from v0 to var0
             calibration_metrics=result["calibration_metrics"],
-            market_data=result.get("market_data"),
+            market_data=result.get("market_data_used"),  # May need to change this too
             success=True,
         )
 

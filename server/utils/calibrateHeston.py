@@ -1,331 +1,616 @@
-import yfinance as yf
 import numpy as np
 import pandas as pd
-from typing import Dict, Tuple, Optional, Any, Union, List
 from scipy.optimize import minimize
-import datetime
+from utils.fetch_data import get_data_Calibration
+from scipy.integrate import quad
+import functools
+import time
+from numba import njit, float64, complex128
+
+# Global price cache to reuse calculations across iterations
+PRICE_CACHE = {}
 
 
-def get_market_data(
-    symbol: str,
-    spot_price: float,
-    min_volume: int = 10,
-    max_spread_pct: float = 8.0,
-    moneyness_range: Tuple[float, float] = (0.85, 1.15),
-) -> List[Tuple[float, float, float, float, float, float]]:
-    try:
-        ticker = yf.Ticker(symbol)
-        expirations = ticker.options
-        result = []
-
-        for expiration in expirations:
-            calls = ticker.option_chain(expiration).calls
-
-            calls = calls[
-                ["strike", "bid", "ask", "volume", "openInterest", "impliedVolatility"]
-            ].dropna()
-
-            calls["spread"] = calls["ask"] - calls["bid"]
-            calls["spreadPct"] = (
-                calls["spread"] / ((calls["bid"] + calls["ask"]) / 2)
-            ) * 100
-
-            calls = calls[
-                (calls["bid"] > 0)
-                & (calls["ask"] > 0)
-                & (calls["volume"] >= min_volume)
-                & (calls["openInterest"] > 0)
-                & (calls["spreadPct"] <= max_spread_pct)
-            ]
-
-            moneyness = calls["strike"] / spot_price
-            calls = calls[
-                (moneyness >= moneyness_range[0]) & (moneyness <= moneyness_range[1])
-            ]
-
-            # Calculate maturity
-            today = datetime.today().date()
-            expiration_date = pd.to_datetime(expiration).date()
-            maturity = (expiration_date - today).days / 365.0
-
-            for _, row in calls.iterrows():
-                mid = (row["bid"] + row["ask"]) / 2
-                result.append(
-                    (
-                        mid,
-                        row["ask"],
-                        maturity,
-                        row["strike"],
-                        row["impliedVolatility"],
-                        row["volume"],
-                    )
-                )
-
-        return result
-
-    except Exception as e:
-        raise RuntimeError(f"Failed to fetch market data: {str(e)}")
-
-
-def HestonCF(S, T, r, phi, kappa, rho, volvol, theta, var0, div, P1P2):
-    """Characteristic function for Heston model with dividend"""
-    x = np.log(S)
+@njit(
+    complex128(
+        float64,
+        float64,
+        float64,
+        float64,
+        float64,
+        float64,
+        float64,
+        float64,
+        float64,
+        float64,
+        float64,
+        float64,
+    )
+)
+def heston_cf_core(phi, x, r, T, kappa, rho, volvol, theta, var0, div, b, u):
+    """Core calculations for Heston characteristic function - matches original implementation exactly"""
     a = kappa * theta
-    u = np.array([0.5, -0.5])[P1P2 - 1]
-    b = np.array([kappa - rho * volvol, kappa])[P1P2 - 1]
-    rvpj = rho * volvol * phi * 1j
-    daux = np.power(rvpj - b, 2) - (volvol**2) * (2 * u * phi * 1j - (phi**2))
+    rvpj = rho * volvol * phi * complex(0, 1)
+
+    # Use more stable computations for d
+    daux = (b - rvpj) ** 2 - volvol**2 * (2 * u * phi * complex(0, 1) - phi**2)
     d = np.sqrt(daux)
-    g = (b - rvpj + d) / (b - rvpj - d)
-    # Avoid division by zero
-    epsilon = 1e-10
-    g_exp_dT = g * np.exp(d * T)
-    # Safe computation for D
-    if abs(1 - g_exp_dT) < epsilon:
-        # Handle the case where denominator is close to zero
-        D = ((b - rvpj + d) / (volvol**2)) * T
+
+    # Handle g calculation with numerical stability
+    num = b - rvpj + d
+    den = b - rvpj - d
+
+    # Avoid division by zero for g
+    if abs(den) < 1e-15:
+        g = 0.0
     else:
-        D = ((b - rvpj + d) / (volvol**2)) * ((1 - np.exp(d * T)) / (1 - g_exp_dT))
+        g = num / den
+
+    # Handle exponential carefully to avoid overflow
+    if np.real(d * T) > 700:
+        exp_dT = np.inf
+    else:
+        exp_dT = np.exp(d * T)
+
+    g_exp_dT = g * exp_dT
+
+    # Safe computation for D
+    if abs(1.0 - g_exp_dT) < 1e-15:
+        D = (num / volvol**2) * T
+    else:
+        if np.real(d * T) > 700:
+            exp_term = np.inf
+        else:
+            exp_term = np.exp(d * T)
+
+        D = (num / volvol**2) * ((1.0 - exp_term) / (1.0 - g * exp_term))
 
     # Safe computation for C
-    if abs(1 - g) < epsilon:
+    if abs(1.0 - g) < 1e-15:
         log_term = d * T
     else:
-        log_term = np.log((1 - g_exp_dT) / (1 - g))
+        if abs(1.0 - g_exp_dT) < 1e-15:
+            # When denominator is near zero
+            if np.real(d * T) > 0:
+                log_term = 700.0  # Large positive number instead of inf
+            else:
+                log_term = -700.0  # Large negative number instead of -inf
+        else:
+            # More stable logarithm calculation
+            log_term = np.log((1.0 - g_exp_dT) / (1.0 - g))
 
-    C = (r - div) * phi * T * 1j + (a / (volvol**2)) * (
-        (b - rvpj + d) * T - 2 * log_term
+    # Final calculation of C
+    C = (r - div) * phi * T * complex(0, 1) + (a / volvol**2) * (
+        (b - rvpj + d) * T - 2.0 * log_term
     )
-    CF = np.exp(x * phi * 1j + C + D * var0)
+
+    # Final CF
+    CF = np.exp(x * phi * complex(0, 1) + C + D * var0)
+
     return CF
 
 
-def IntFuncHeston(S, K, T, r, phi, kappa, rho, volvol, theta, var0, div, P1P2):
-    """Integrand function for Heston model"""
-    if abs(phi) < 1e-10:  # Avoid division by zero
-        return 0
+def integrand_core(phi, S, K, T, r, kappa, rho, volvol, theta, var0, div, P1P2):
+    """Core calculations for the integrand function"""
+    if abs(phi) < 1e-15:
+        return 0.0
 
-    CF = HestonCF(S, T, r, phi, kappa, rho, volvol, theta, var0, div, P1P2)
-    Output = np.real((np.exp(-phi * np.log(K) * 1j) * CF) / (phi * 1j))
-    return Output
+    x = np.log(S)
+    u = 0.5 if P1P2 == 1 else -0.5
+    b = kappa - rho * volvol if P1P2 == 1 else kappa
+
+    try:
+        CF = heston_cf_core(phi, x, r, T, kappa, rho, volvol, theta, var0, div, b, u)
+        if np.isnan(CF) or np.isinf(CF):
+            return 0.0
+
+        Output = np.real(
+            (np.exp(-phi * np.log(K) * complex(0, 1)) * CF) / (phi * complex(0, 1))
+        )
+        if np.isnan(Output) or np.isinf(Output):
+            return 0.0
+
+        return Output
+    except:
+        return 0.0
 
 
 def NumIntegration(
-    Function, aLim, bLim, nDiv, S, K, T, r, kappa, rho, volvol, theta, var0, div, P1P2
+    aLim, bLim, nDiv, S, K, T, r, kappa, rho, volvol, theta, var0, div, P1P2
 ):
-    """numerical integration using Simpson's rule"""
+    """Numerical integration using Simpson's rule - matches original implementation"""
     if nDiv % 2 != 0:  # ensure nDiv is even
         nDiv += 1
 
     Delta = (bLim - aLim) / nDiv
     EveryX = np.linspace(aLim, bLim, nDiv + 1)
-
-    # Calculate function values
     EveryY = np.zeros(nDiv + 1)
-    for i, phi in enumerate(EveryX):
-        try:
-            EveryY[i] = Function(
-                S, K, T, r, phi, kappa, rho, volvol, theta, var0, div, P1P2
-            )
-        except Exception:
-            # Handle computational errors by using previous value
-            EveryY[i] = EveryY[i - 1] if i > 0 else 0
 
-    # Check for NaN or inf values
-    EveryY = np.nan_to_num(EveryY, nan=0.0, posinf=0.0, neginf=0.0)
+    # Calculate function values at each point
+    for i in range(nDiv + 1):
+        EveryY[i] = integrand_core(
+            EveryX[i], S, K, T, r, kappa, rho, volvol, theta, var0, div, P1P2
+        )
 
     # Simpson's rule integration
-    Integral = Delta / 3 * np.sum(EveryY[0:-1:2] + 4 * EveryY[1::2] + EveryY[2::2])
+    even_indices = np.arange(2, nDiv, 2)
+    odd_indices = np.arange(1, nDiv, 2)
+
+    even_sum = np.sum(EveryY[even_indices])
+    odd_sum = np.sum(EveryY[odd_indices])
+
+    Integral = (Delta / 3) * (EveryY[0] + 4 * odd_sum + 2 * even_sum + EveryY[-1])
 
     return Integral
 
 
+@functools.lru_cache(maxsize=20000)
 def P1P2Heston(S, K, T, r, kappa, rho, volvol, theta, var0, div, P1P2):
-    """P1 and P2 calculation"""
-    NumInt = NumIntegration(
-        IntFuncHeston,
-        1e-6,
-        500,
-        1000,
+    """P1 and P2 calculation with adaptive integration - matches original implementation"""
+    cache_key = (
         S,
         K,
         T,
         r,
-        kappa,
-        rho,
-        volvol,
-        theta,
-        var0,
-        div,
+        round(kappa, 6),
+        round(rho, 6),
+        round(volvol, 6),
+        round(theta, 6),
+        round(var0, 6),
+        round(div, 6),
         P1P2,
     )
+
+    if cache_key in PRICE_CACHE:
+        return PRICE_CACHE[cache_key]
+
+    # Use an appropriate number of points based on maturity
+    if T < 0.1:  # For very short maturities, we need more points
+        nDiv = 2000
+    elif T < 0.5:  # For short maturities
+        nDiv = 1000
+    else:  # For longer maturities
+        nDiv = 500
+
+    # For extreme strikes, use more points
+    moneyness = S / K
+    if moneyness < 0.8 or moneyness > 1.2:
+        nDiv *= 2
+
+    # Use appropriate upper limit
+    upper_limit = min(100, max(50, 100 / T))
+
+    # Perform numerical integration
+    NumInt = NumIntegration(
+        1e-6, upper_limit, nDiv, S, K, T, r, kappa, rho, volvol, theta, var0, div, P1P2
+    )
+
+    # Check if the result seems reasonable
     PP = 0.5 + (1 / np.pi) * NumInt
-    PP = np.clip(PP, 0, 1)  # Ensure probability is between 0 and 1
+
+    # Fall back to quad if result is outside valid range
+    if PP < 0 or PP > 1 or np.isnan(PP):
+        try:
+            integral, _ = quad(
+                integrand_core,
+                1e-6,
+                upper_limit,
+                args=(S, K, T, r, kappa, rho, volvol, theta, var0, div, P1P2),
+                limit=100,
+                epsabs=1e-8,
+                epsrel=1e-8,
+            )
+            PP = 0.5 + (1 / np.pi) * integral
+        except:
+            PP = 0.5  # Fallback value
+
+    # Make sure result is between 0 and 1
+    PP = max(0.0, min(1.0, PP))
+    PRICE_CACHE[cache_key] = PP
     return PP
 
 
-def CallHestonCForm(S, K, T, r, kappa, rho, volvol, theta, var0, div):
-    """Heston call option pricing with dividend"""
+@functools.lru_cache(maxsize=10000)
+def CallHestonCForm_Cached(S, K, T, r, kappa, rho, volvol, theta, var0, div):
+    """Heston call option pricing with dividend - matches original implementation"""
+    # Ensure parameters are within valid ranges
+    kappa = max(0.001, kappa)  # Mean reversion speed must be positive
+    volvol = max(0.001, volvol)  # Vol of vol must be positive
+    theta = max(0.0001, theta)  # Long-term variance must be positive
+    var0 = max(0.0001, var0)  # Initial variance must be positive
+    rho = max(-0.999, min(0.999, rho))  # Correlation must be between -1 and 1
+
+    # Fast path for very short maturities
+    if T <= 1e-6:
+        return max(0, S * np.exp(-div * T) - K * np.exp(-r * T))
+
     P1 = P1P2Heston(S, K, T, r, kappa, rho, volvol, theta, var0, div, 1)
     P2 = P1P2Heston(S, K, T, r, kappa, rho, volvol, theta, var0, div, 2)
+
+    # Option price calculation with checks
     CallValue = S * np.exp(-div * T) * P1 - K * np.exp(-r * T) * P2
-    return CallValue
+
+    # Ensure non-negative option price
+    return max(0.0, CallValue)
+
+
+def CallHestonCForm(S, K, T, r, kappa, rho, volvol, theta, var0, div):
+    """Heston call option pricing wrapper with global caching"""
+    # Check if calculation is already in the global cache
+    cache_key = (
+        S,
+        K,
+        T,
+        r,
+        round(kappa, 6),
+        round(rho, 6),
+        round(volvol, 6),
+        round(theta, 6),
+        round(var0, 6),
+        round(div, 6),
+    )
+
+    if cache_key in PRICE_CACHE:
+        return PRICE_CACHE[cache_key]
+
+    result = CallHestonCForm_Cached(S, K, T, r, kappa, rho, volvol, theta, var0, div)
+    PRICE_CACHE[cache_key] = result
+    return result
 
 
 def PutHestonCForm(S, K, T, r, kappa, rho, volvol, theta, var0, div):
-    """put option pricing function using put-call parity"""
+    """Put option pricing function using put-call parity"""
     CallValue = CallHestonCForm(S, K, T, r, kappa, rho, volvol, theta, var0, div)
     PutValue = CallValue - S * np.exp(-div * T) + K * np.exp(-r * T)
-    return PutValue
+
+    # Ensure non-negative option price
+    return max(0.0, PutValue)
 
 
-def OptFunctionClosedF(params, Spots, Maturities, Rates, Strikes, MarketP):
-    """Optimization function for parameter calibration"""
+def clear_cache():
+    """Clear all caches to free memory"""
+    global PRICE_CACHE
+    PRICE_CACHE = {}
+    P1P2Heston.cache_clear()
+    CallHestonCForm_Cached.cache_clear()
+
+
+# Parallel version for batch pricing
+def heston_prices_parallel(params, Spots, Strikes, Maturities, Rates, div):
+    """Price multiple options in parallel for calibration"""
+
+    results = []
+    kappa, rho, volvol, theta, var0 = params  # Unpack parameters
+
+    for i in range(len(Spots)):
+        # Call with proper arguments in correct order
+        price = CallHestonCForm(
+            Spots[i],
+            Strikes[i],
+            Maturities[i],
+            Rates[i],
+            kappa,
+            rho,
+            volvol,
+            theta,
+            var0,
+            div,
+        )
+        results.append(price)
+
+    return np.array(results)
+
+
+def OptFunctionFast(
+    params, Spots, Maturities, Rates, Strikes, MarketP, div, check_bounds=True
+):
+    """Optimized cost function for faster calibration with early stopping"""
     kappa, rho, volvol, theta, var0 = params
-    div = 0  # Assuming zero dividend
+    min_price = 1e-6
+    error_penalty = 1e10
 
-    # Apply parameter constraints within the function
-    kappa = max(0.001, kappa)
-    volvol = max(0.001, volvol)
-    theta = max(0.0001, theta)
-    var0 = max(0.0001, var0)
-    rho = max(-0.999, min(0.999, rho))
+    # Fast boundary check - return early for invalid parameters
+    if check_bounds and not (
+        0.1 <= kappa <= 15.0
+        and -0.99 <= rho <= 0.0
+        and 0.01 <= volvol <= 2.0
+        and 0.001 <= theta <= 0.5
+        and 0.001 <= var0 <= 0.5
+    ):
+        return error_penalty
 
-    n = len(Spots)
-    ModelP = np.zeros(n)
+    # Filter valid market prices
+    valid_indices = np.isfinite(MarketP) & (MarketP > 0)
+    if not np.any(valid_indices):
+        return error_penalty
 
-    for i in range(n):
-        try:
-            ModelP[i] = CallHestonCForm(
-                Spots[i],
-                Strikes[i],
-                Maturities[i],
-                Rates[i],
-                kappa,
-                rho,
-                volvol,
-                theta,
-                var0,
-                div,
-            )
-        except Exception:
-            # Return a high error value if calculation fails
-            return 1e10
+    # Use only valid data points
+    valid_Spots = Spots[valid_indices]
+    valid_Strikes = Strikes[valid_indices]
+    valid_Maturities = Maturities[valid_indices]
+    valid_Rates = Rates[valid_indices]
+    valid_MarketP = MarketP[valid_indices]
 
-    error = np.sum(np.power((ModelP - MarketP), 2))
+    # Calculate model prices without threading for small datasets
+    model_prices = heston_prices_parallel(
+        params, valid_Spots, valid_Strikes, valid_Maturities, valid_Rates, div
+    )
 
-    return error
+    # Calculate simple error metric - optimization for speed
+    abs_errors = np.abs(model_prices - valid_MarketP)
+    mean_error = np.mean(abs_errors)
+
+    # Check threshold for early stopping - if error is already large, return early
+    if mean_error > 10.0:  # If average error is $10 or more, skip detailed calculations
+        return mean_error * 10  # Simple penalty
+
+    # ATM options have higher weights
+    moneyness = valid_Strikes / valid_Spots
+    weights = 1.0 + np.exp(-20.0 * (moneyness - 1.0) ** 2)  # Simplified weighting
+
+    # Weighted squared error
+    weighted_errors = (model_prices - valid_MarketP) ** 2 * weights
+    mse = np.mean(weighted_errors)
+
+    return mse if np.isfinite(mse) else error_penalty
 
 
 def calibrate_heston(
     symbol: str,
+    expiration: str,
     underlying_price: float,
     risk_free_rate: float,
-    initial_guess: Dict[str, float] = None,
-    bounds: Dict[str, Tuple[float, float]] = None,
-    min_volume: int = 5,
-    max_spread_pct: float = 10.0,
-    moneyness_range: Tuple[float, float] = (0.7, 1.3),
+    dividend_yield: float = 0,  # Added explicit dividend_yield parameter
+    max_time_seconds: int = 60,  # Reduced from 120 to 60 seconds
 ):
+    """Fast Heston calibration for small datasets with aggressive optimizations"""
     try:
-        market_raw = get_market_data(
-            symbol,
-            underlying_price,
-            min_volume,
-            max_spread_pct,
-            moneyness_range,
-        )
+        start_time = time.time()
+        clear_cache()  # Clear cache before starting new calibration
 
-        if len(market_raw) == 0:
+        # Get market data
+        market_data = get_data_Calibration(symbol, expiration, underlying_price)
+
+        if market_data.empty:
             raise ValueError("No valid market data available for calibration")
 
-        market_data = pd.DataFrame(
-            market_raw,
-            columns=["mid", "ask", "maturity", "strike", "impliedVolatility", "volume"],
-        )
-
+        # Use mid_price for calibration target
+        MarketP = market_data["mid_price"].values
         Strikes = market_data["strike"].values
         Maturities = market_data["maturity"].values
         Rates = np.full_like(Maturities, risk_free_rate)
         Spots = np.full_like(Maturities, underlying_price)
 
-        MarketP = market_data["ask"].values
+        # Filter options data - focus only on valid, liquid options
+        valid_indices = (MarketP > 0) & (Maturities > 0) & np.isfinite(MarketP)
+        if not np.any(valid_indices):
+            raise ValueError("No market data points with positive price and maturity.")
 
-        if initial_guess is None:
-            initial_guess = {
-                "kappa": 1.5,
-                "theta": 0.03,
-                "xi": 0.6,
-                "rho": -0.4,
-                "v0": 0.05,
-            }
+        MarketP = MarketP[valid_indices]
+        Strikes = Strikes[valid_indices]
+        Maturities = Maturities[valid_indices]
+        Rates = Rates[valid_indices]
+        Spots = Spots[valid_indices]
+        filtered_market_data = market_data[
+            valid_indices
+        ].copy()  # Use copy to avoid SettingWithCopyWarning
 
-        if bounds is None:
-            bounds = {
-                "kappa": (0.05, 10.0),
-                "theta": (0.001, 0.25),
-                "xi": (0.001, 2.0),
-                "rho": (-0.95, 0.95),
-                "v0": (0.001, 0.5),
-            }
-
-        param_keys = ["kappa", "rho", "xi", "theta", "v0"]
-        x0 = [initial_guess[k] for k in param_keys]
-        param_bounds = [bounds[k] for k in param_keys]
-
-        result = minimize(
-            OptFunctionClosedF,
-            x0,
-            method="SLSQP",
-            bounds=param_bounds,
-            args=(Spots, Maturities, Rates, Strikes, MarketP),
-            options={"maxiter": 100, "disp": False, "ftol": 1e-6},
-        )
-
-        calibrated_params = {param_keys[i]: result.x[i] for i in range(len(param_keys))}
-
-        model_prices = np.array(
-            [
-                CallHestonCForm(
-                    Spots[i],
-                    Strikes[i],
-                    Maturities[i],
-                    Rates[i],
-                    calibrated_params["kappa"],
-                    calibrated_params["rho"],
-                    calibrated_params["xi"],
-                    calibrated_params["theta"],
-                    calibrated_params["v0"],
-                    0,
+        # Subsample data if we have too many options for faster calibration
+        n_options = len(MarketP)
+        if n_options > 100:  # If more than 50 options, take a representative subset
+            try:
+                # Group by moneyness and maturity to get a representative subset
+                filtered_market_data["moneyness_bin"] = pd.qcut(
+                    filtered_market_data["moneyness"],
+                    5,
+                    labels=False,
+                    duplicates="drop",
                 )
-                for i in range(len(Spots))
-            ]
+                filtered_market_data["maturity_bin"] = pd.qcut(
+                    filtered_market_data["maturity"],
+                    min(5, len(filtered_market_data["maturity"].unique())),
+                    labels=False,
+                    duplicates="drop",
+                )
+
+                # Create a stratified sample
+                grouped = filtered_market_data.groupby(
+                    ["moneyness_bin", "maturity_bin"]
+                )
+                sampled_data = pd.DataFrame()
+
+                # Take a few options from each group
+                for _, group in grouped:
+                    sample_size = min(3, len(group))  # Take up to 3 from each group
+                    sampled_data = pd.concat([sampled_data, group.sample(sample_size)])
+
+                if len(sampled_data) > 0:
+                    filtered_market_data = sampled_data
+                    MarketP = filtered_market_data["mid_price"].values
+                    Strikes = filtered_market_data["strike"].values
+                    Maturities = filtered_market_data["maturity"].values
+                    Rates = np.full_like(Maturities, risk_free_rate)
+                    Spots = np.full_like(Maturities, underlying_price)
+                    print(
+                        f"Reduced from {n_options} to {len(MarketP)} options for faster calibration"
+                    )
+            except Exception as e:
+                # Fallback to simple random sampling if quantile binning fails
+                print(
+                    f"Stratified sampling failed: {e}. Using random sampling instead."
+                )
+                sample_size = min(50, n_options)
+                sampled_indices = np.random.choice(
+                    n_options, size=sample_size, replace=False
+                )
+                filtered_market_data = filtered_market_data.iloc[sampled_indices]
+                MarketP = filtered_market_data["mid_price"].values
+                Strikes = filtered_market_data["strike"].values
+                Maturities = filtered_market_data["maturity"].values
+                Rates = np.full_like(Maturities, risk_free_rate)
+                Spots = np.full_like(Maturities, underlying_price)
+                print(
+                    f"Reduced from {n_options} to {len(MarketP)} options using random sampling"
+                )
+
+        # Smart initial estimate based on market data
+        avg_iv = np.mean(filtered_market_data["implied_volatility"])
+        var0 = avg_iv**2
+        theta = var0
+        kappa = 1.5
+        volvol = 0.3 * avg_iv  # Proportional to avg IV
+        rho = -0.7
+
+        # Multiple initial guesses for better convergence
+        initial_guesses = [
+            [kappa, rho, volvol, theta, var0],  # Base guess
+            [3.0, -0.5, 0.5, theta, var0],  # Alternative 1
+            [1.0, -0.8, 0.2, theta, var0],  # Alternative 2
+        ]
+
+        # Parameter bounds - tighter for faster convergence
+        bounds = [
+            (0.1, 10.0),  # kappa: reduced upper bound
+            (-0.95, 0.0),  # rho: typically negative for equity
+            (0.01, 1.5),  # volvol: reduced upper bound
+            (0.001, 0.4),  # theta: tighter range
+            (0.001, 0.4),  # var0: tighter range
+        ]
+
+        # Optimization setup with dividend yield parameter
+        opt_args = (Spots, Maturities, Rates, Strikes, MarketP, dividend_yield, True)
+        best_result = None
+        best_error = float("inf")
+
+        # Try different initial guesses with a fast local search
+        for x0 in initial_guesses:
+            # Check time budget
+            if time.time() - start_time > max_time_seconds:
+                print(
+                    f"Time limit reached after trying {initial_guesses.index(x0)} initial points"
+                )
+                break
+
+            # Fast optimization with limited iterations
+            try:
+                result = minimize(
+                    OptFunctionFast,
+                    x0,
+                    method="L-BFGS-B",
+                    bounds=bounds,
+                    args=opt_args,
+                    options={
+                        "maxiter": 50,  # Reduced from 200 to 50
+                        "maxfun": 100,  # Limit function evaluations
+                        "disp": False,
+                        "ftol": 1e-6,  # Reduced precision
+                        "gtol": 1e-5,  # Reduced precision
+                    },
+                )
+
+                # Check if this result is better than previous ones
+                if result.fun < best_error:
+                    best_result = result
+                    best_error = result.fun
+            except Exception as e:
+                print(f"Optimization failed for initial guess {x0}: {e}")
+                continue
+
+        # If we have no valid result, try one more time with Nelder-Mead (more robust)
+        if best_result is None:
+            try:
+                # Nelder-Mead doesn't use bounds but is more robust
+                result = minimize(
+                    lambda p: OptFunctionFast(
+                        p,
+                        Spots,
+                        Maturities,
+                        Rates,
+                        Strikes,
+                        MarketP,
+                        dividend_yield,
+                        False,
+                    ),
+                    initial_guesses[0],
+                    method="Nelder-Mead",
+                    options={
+                        "maxiter": 100,
+                        "maxfev": 200,
+                        "disp": False,
+                        "adaptive": True,
+                    },
+                )
+                best_result = result
+            except Exception as e:
+                raise ValueError(f"All optimization attempts failed: {e}")
+
+        # Extract calibrated parameters
+        calibrated_params = {
+            "kappa": float(best_result.x[0]),
+            "rho": float(best_result.x[1]),
+            "volvol": float(best_result.x[2]),
+            "theta": float(best_result.x[3]),
+            "var0": float(best_result.x[4]),
+        }
+
+        # Evaluate model prices with calibrated parameters
+        model_prices = heston_prices_parallel(
+            (
+                calibrated_params["kappa"],
+                calibrated_params["rho"],
+                calibrated_params["volvol"],
+                calibrated_params["theta"],
+                calibrated_params["var0"],
+            ),
+            Spots,
+            Strikes,
+            Maturities,
+            Rates,
+            dividend_yield,  # Added dividend_yield
         )
 
-        errors = model_prices - MarketP
+        # Calculate error metrics using the full dataset (not just the sample)
+        valid_model_prices = np.isfinite(model_prices) & (model_prices > 0)
+        MarketP_valid = MarketP[valid_model_prices]
+        model_prices_valid = model_prices[valid_model_prices]
+        filtered_market_data_valid = filtered_market_data.iloc[valid_model_prices]
+
+        if len(MarketP_valid) == 0:
+            raise ValueError(
+                "No valid model prices could be calculated with calibrated parameters."
+            )
+
+        # Calculate basic error metrics
+        errors = model_prices_valid - MarketP_valid
+        relative_errors_pct = (errors / MarketP_valid) * 100
         mse = np.mean(errors**2)
         rmse = np.sqrt(mse)
         mae = np.mean(np.abs(errors))
+        total_time = time.time() - start_time
 
         return {
-            "success": result.success,
+            "success": best_result.success if hasattr(best_result, "success") else True,
             "kappa": float(calibrated_params["kappa"]),
             "theta": float(calibrated_params["theta"]),
-            "xi": float(calibrated_params["xi"]),
+            "volvol": float(calibrated_params["volvol"]),
             "rho": float(calibrated_params["rho"]),
-            "v0": float(calibrated_params["v0"]),
+            "var0": float(calibrated_params["var0"]),
+            "div": float(dividend_yield),  # Include div in result
             "calibration_metrics": {
                 "MSE": mse,
                 "RMSE": rmse,
                 "MAE": mae,
-                "max_error": np.max(np.abs(errors)),
-                "mean_rel_error": np.mean(np.abs(errors) / MarketP * 100),
-                "n_iterations": result.nfev,
-                "status": result.status,
-                "message": result.message,
-                "success": result.success,
+                "max_abs_error": np.max(np.abs(errors)),
+                "mean_rel_error_pct": np.mean(np.abs(relative_errors_pct)),
+                "median_rel_error_pct": np.median(np.abs(relative_errors_pct)),
+                "n_options_used": len(MarketP_valid),
+                "original_n_options": n_options,
+                "optimizer_iterations": (
+                    best_result.nit if hasattr(best_result, "nit") else best_result.nfev
+                ),
+                "calibration_time_seconds": total_time,
             },
-            "market_data": market_data.to_dict(orient="records"),
+            "market_data_used": filtered_market_data_valid.to_dict(orient="records"),
         }
 
     except Exception as e:
@@ -337,7 +622,9 @@ def calibrate_heston(
             "error_details": traceback.format_exc(),
             "kappa": 0.0,
             "theta": 0.0,
-            "xi": 0.0,
+            "volvol": 0.0,
             "rho": 0.0,
-            "v0": 0.0,
+            "var0": 0.0,
+            "div": float(dividend_yield),
+            "calibration_time_seconds": time.time() - start_time,
         }

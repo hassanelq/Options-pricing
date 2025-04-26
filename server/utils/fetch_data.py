@@ -1,7 +1,8 @@
 import yfinance as yf
-import numpy as np
-from concurrent.futures import ThreadPoolExecutor
-from typing import List, Dict, Any
+import pandas as pd
+from typing import Dict, Tuple, Any, List
+from datetime import datetime
+import bisect
 
 
 def get_market_data(symbol: str, total_results: int = 12) -> List[Dict[str, Any]]:
@@ -182,3 +183,131 @@ def get_market_data(symbol: str, total_results: int = 12) -> List[Dict[str, Any]
         return combined_results[:total_results]
     except Exception as e:
         return {"error": str(e)}
+
+
+def get_data_Calibration(
+    symbol: str,
+    target_expiration: str,  # Format 'YYYY-MM-DD'
+    underlying_price: float,
+) -> pd.DataFrame:
+    try:
+        # Fixed tuple definitions - remove the trailing commas
+        min_volume: int = 5
+        max_spread_pct: float = 10.0
+        moneyness_range: Tuple[float, float] = (0.85, 1.15)
+        num_expirations: int = 5  # Number of expirations we want on each side
+
+        ticker = yf.Ticker(symbol)
+        all_expirations = ticker.options
+        result = []
+
+        # Convert all expirations to datetime for comparison
+        expiration_dates = [pd.to_datetime(exp).date() for exp in all_expirations]
+        target_date = pd.to_datetime(target_expiration).date()
+
+        # Find the index of the closest expiration to the target date
+        closest_idx = bisect.bisect_left(expiration_dates, target_date)
+        if closest_idx >= len(expiration_dates):
+            closest_idx = len(expiration_dates) - 1
+
+        # If the closest date is after the target, look one before
+        if closest_idx > 0 and (
+            abs((expiration_dates[closest_idx - 1] - target_date).days)
+            < abs((expiration_dates[closest_idx] - target_date).days)
+        ):
+            closest_idx -= 1
+
+        # Calculate how many dates we can get before the target
+        available_before = closest_idx
+        # Calculate how many dates we can get after the target (including the closest)
+        available_after = len(expiration_dates) - closest_idx
+
+        # Calculate how many we should get from each side
+        to_take_before = min(available_before, num_expirations)
+        to_take_after = min(available_after, num_expirations)
+
+        # If we can't get enough from one side, get more from the other side
+        extra_before = 0
+        extra_after = 0
+
+        if to_take_before < num_expirations:
+            # We need to get extra from after side
+            extra_after = min(
+                available_after - to_take_after, num_expirations - to_take_before
+            )
+
+        if to_take_after < num_expirations:
+            # We need to get extra from before side
+            extra_before = min(
+                available_before - to_take_before, num_expirations - to_take_after
+            )
+
+        # Calculate final indices
+        start_idx = max(0, closest_idx - to_take_before - extra_before)
+        end_idx = min(len(expiration_dates), closest_idx + to_take_after + extra_after)
+
+        # Get the selected expirations
+        selected_expirations = all_expirations[start_idx:end_idx]
+
+        for expiration in selected_expirations:
+
+            options = ticker.option_chain(expiration).calls
+
+            options = options[
+                ["strike", "bid", "ask", "volume", "openInterest", "impliedVolatility"]
+            ].dropna()
+
+            options["spread"] = options["ask"] - options["bid"]
+            options["spreadPct"] = (
+                options["spread"] / ((options["bid"] + options["ask"]) / 2)
+            ) * 100
+
+            options = options[
+                (options["bid"] > 0)
+                & (options["ask"] > 0)
+                & (options["volume"] >= min_volume)
+                & (options["openInterest"] > 0)
+                & (options["spreadPct"] <= max_spread_pct)
+            ]
+
+            moneyness = options["strike"] / underlying_price
+            options = options[
+                (moneyness >= moneyness_range[0]) & (moneyness <= moneyness_range[1])
+            ]
+
+            options = options[
+                (options["impliedVolatility"] > 0.01)
+                & (options["impliedVolatility"] < 3)
+            ]
+
+            # Calculate maturity
+            today = datetime.today().date()
+            expiration_date = pd.to_datetime(expiration).date()
+            maturity = (expiration_date - today).days / 365.25
+
+            for _, row in options.iterrows():
+                mid = (row["bid"] + row["ask"]) / 2
+                result.append(
+                    {
+                        "mid_price": mid,
+                        "ask_price": row["ask"],
+                        "maturity": maturity,
+                        "strike": row["strike"],
+                        "implied_volatility": row["impliedVolatility"],
+                        "volume": row["volume"],
+                        "expiration": expiration_date,
+                        "moneyness": row["strike"] / underlying_price,
+                    }
+                )
+
+        # Convert the list of dictionaries to a DataFrame
+        df = pd.DataFrame(result)
+
+        # Sort by expiration and strike
+        if not df.empty:
+            df = df.sort_values(["expiration", "strike"])
+
+        return df
+
+    except Exception as e:
+        raise RuntimeError(f"Failed to fetch market data: {str(e)}")

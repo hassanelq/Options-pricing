@@ -30,9 +30,9 @@ const SolutionMethodSelector = ({
     if (approach === "heston") {
       setParameters((prev) => ({
         ...prev,
-        kappa: prev.kappa ?? 2.0, // Default Mean Reversion Speed
+        kappa: prev.kappa ?? 1.5, // Default Mean Reversion Speed
         theta: prev.theta ?? 0.04, // Default Long-term Variance
-        xi: prev.xi ?? 0.1, // Default Volatility of Volatility
+        xi: prev.xi ?? 0.3, // Default Volatility of Volatility
         rho: prev.rho ?? -0.7, // Default Correlation
         v0: prev.v0 ?? 0.04, // Default Initial Variance
       }));
