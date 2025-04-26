@@ -397,7 +397,7 @@ def calibrate_heston(
 
         # Subsample data if we have too many options for faster calibration
         n_options = len(MarketP)
-        if n_options > 100:  # If more than 50 options, take a representative subset
+        if n_options > 150:  # If more than 50 options, take a representative subset
             try:
                 # Group by moneyness and maturity to get a representative subset
                 filtered_market_data["moneyness_bin"] = pd.qcut(
