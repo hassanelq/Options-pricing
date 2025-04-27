@@ -360,8 +360,8 @@ def calibrate_heston(
     expiration: str,
     underlying_price: float,
     risk_free_rate: float,
-    dividend_yield: float = 0,  # Added explicit dividend_yield parameter
-    max_time_seconds: int = 60,  # Reduced from 120 to 60 seconds
+    dividend_yield: float = 0,
+    # max_time_seconds: int = 120,
 ):
     """Fast Heston calibration for small datasets with aggressive optimizations"""
     try:
@@ -485,11 +485,11 @@ def calibrate_heston(
         # Try different initial guesses with a fast local search
         for x0 in initial_guesses:
             # Check time budget
-            if time.time() - start_time > max_time_seconds:
-                print(
-                    f"Time limit reached after trying {initial_guesses.index(x0)} initial points"
-                )
-                break
+            # if time.time() - start_time > max_time_seconds:
+            #     print(
+            #         f"Time limit reached after trying {initial_guesses.index(x0)} initial points"
+            #     )
+            #     break
 
             # Fast optimization with limited iterations
             try:

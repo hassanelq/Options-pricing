@@ -30,7 +30,7 @@ const CTA = () => (
               </p>
               <div className="flex flex-wrap gap-3 md:ml-11">
                 <a
-                  href="https://github.com/hassanelq/Simulations-MC-BrownMotion"
+                  href="https://github.com/hassanelq/Options-pricing"
                   target="_blank"
                   className="inline-flex justify-center items-center gap-2 font-medium text-white bg-gradient-to-r from-slate-800 to-slate-500 hover:from-slate-700 hover:to-slate-500 py-2.5 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
                 >

@@ -45,7 +45,7 @@ export default function Hero() {
                 Start Pricing Options
               </NavLink>
               <NavLink
-                href="https://github.com/hassanelq/Simulations-MC-BrownMotion"
+                href="https://github.com/hassanelq/Options-pricing"
                 target="_blank"
                 className="border border-indigo-200 text-indigo-700 hover:bg-indigo-50 px-6 py-3"
               >

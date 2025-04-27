@@ -114,9 +114,7 @@ export default function Documentation() {
                     </h3>
                     <ol className="list-decimal ml-5 text-gray-700 space-y-2">
                       <li>Select an option style (European)</li>
-                      <li>
-                        Choose a pricing model (Black-Scholes, Heston, etc.)
-                      </li>
+                      <li>Choose a pricing model (Black-Scholes or Heston)</li>
                       <li>Select the underlying asset type</li>
                       <li>Enter the symbol to fetch market data (optional)</li>
                       <li>Input or auto-fill option parameters</li>
@@ -172,9 +170,8 @@ export default function Documentation() {
                 </h2>
                 <div className="space-y-4">
                   <p className="text-gray-700">
-                    The application supports multiple pricing models, each with
-                    their own characteristics and applicable scenarios. Here's a
-                    brief overview of each model:
+                    The application supports the following pricing models, each
+                    with its own characteristics and applicable scenarios:
                   </p>
 
                   <div className="overflow-x-auto">
@@ -202,52 +199,50 @@ export default function Documentation() {
                           </td>
                           <td className="py-3 px-4 border-b">
                             <ul className="list-disc ml-4 text-sm">
-                              <li>Constant volatility</li>
-                              <li>Geometric Brownian motion</li>
-                              <li>Closed-form solution</li>
+                              <li>Assumes constant volatility</li>
+                              <li>
+                                Underlying follows Geometric Brownian Motion
+                              </li>
+                              <li>Provides a closed-form solution</li>
+                              <li>Industry standard benchmark</li>
                             </ul>
                           </td>
                           <td className="py-3 px-4 border-b text-sm">
-                            European vanilla options on non-dividend stocks
+                            European vanilla options on non-dividend or
+                            continuously-dividend paying stocks
                           </td>
                           <td className="py-3 px-4 border-b text-sm">
-                            Cannot capture volatility smiles or skews
+                            Cannot capture volatility smiles or skews; assumes
+                            constant interest rates and volatility.
                           </td>
                         </tr>
                         <tr>
                           <td className="py-3 px-4 border-b font-medium">
-                            Heston
+                            Heston (1993)
                           </td>
                           <td className="py-3 px-4 border-b">
                             <ul className="list-disc ml-4 text-sm">
-                              <li>Stochastic volatility</li>
-                              <li>Mean-reverting variance</li>
-                              <li>Correlation parameter</li>
+                              <li>Models volatility as a stochastic process</li>
+                              <li>
+                                Variance follows a mean-reverting process (CIR)
+                              </li>
+                              <li>
+                                Allows correlation between asset and variance
+                              </li>
+                              <li>
+                                Semi-closed form solution via Characteristic
+                                Functions
+                              </li>
                             </ul>
                           </td>
                           <td className="py-3 px-4 border-b text-sm">
-                            Capturing volatility smiles and term structures
+                            Capturing volatility smiles/skews and term
+                            structures; pricing options where volatility
+                            dynamics are important.
                           </td>
                           <td className="py-3 px-4 border-b text-sm">
-                            More complex, requires calibration
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="py-3 px-4 border-b font-medium">
-                            Ornstein-Uhlenbeck
-                          </td>
-                          <td className="py-3 px-4 border-b">
-                            <ul className="list-disc ml-4 text-sm">
-                              <li>Mean-reverting process</li>
-                              <li>Models interest rates</li>
-                              <li>Suitable for commodities</li>
-                            </ul>
-                          </td>
-                          <td className="py-3 px-4 border-b text-sm">
-                            Interest rate options, commodity options
-                          </td>
-                          <td className="py-3 px-4 border-b text-sm">
-                            Can produce negative values (unlike GBM)
+                            More complex; requires calibration of 5 parameters;
+                            computationally more intensive than Black-Scholes.
                           </td>
                         </tr>
                       </tbody>
@@ -330,12 +325,24 @@ export default function Documentation() {
                         </li>
                         <li className="grid grid-cols-1 md:grid-cols-3 gap-2">
                           <div className="font-medium text-gray-800">
-                            Volatility (σ)
+                            Volatility (σ or Implied Volatility)
                           </div>
                           <div className="col-span-2 text-gray-700">
-                            A measure of the underlying asset's price
-                            variability, represented as an annualized standard
-                            deviation of returns. Can be historical or implied.
+                            For Black-Scholes: A measure of the underlying
+                            asset's price variability (annualized standard
+                            deviation). For Heston: Used as the initial variance
+                            `v0 = σ²` if `v0` is not provided directly. Can be
+                            historical or implied from market prices.
+                          </div>
+                        </li>
+                        <li className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                          <div className="font-medium text-gray-800">
+                            Dividend Yield (q or div)
+                          </div>
+                          <div className="col-span-2 text-gray-700">
+                            The annualized continuous dividend yield of the
+                            underlying asset. Enter 0 if the asset pays no
+                            dividends.
                           </div>
                         </li>
                         <li className="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -364,45 +371,49 @@ export default function Documentation() {
                             Initial Variance (v0)
                           </div>
                           <div className="col-span-2 text-gray-700">
-                            The starting value for the variance process,
-                            typically set close to the squared volatility.
+                            The starting value for the variance process at time
+                            t=0. Often initialized as the square of the current
+                            implied volatility (`σ²`). Must be positive.
                           </div>
                         </li>
                         <li className="grid grid-cols-1 md:grid-cols-3 gap-2">
                           <div className="font-medium text-gray-800">
-                            Mean Reversion Speed (κ)
+                            Mean Reversion Speed (κ - kappa)
                           </div>
                           <div className="col-span-2 text-gray-700">
-                            How quickly the variance reverts to its long-term
-                            mean. Higher values indicate faster reversion.
+                            Rate at which the variance `v(t)` reverts towards
+                            the long-term mean `θ`. Higher `κ` means faster
+                            reversion. Must be positive.
                           </div>
                         </li>
                         <li className="grid grid-cols-1 md:grid-cols-3 gap-2">
                           <div className="font-medium text-gray-800">
-                            Long-term Variance (θ)
+                            Long-term Variance (θ - theta)
                           </div>
                           <div className="col-span-2 text-gray-700">
-                            The long-term average level to which variance
-                            reverts over time.
+                            The long-term average level that the variance
+                            process tends toward. Must be positive.
                           </div>
                         </li>
                         <li className="grid grid-cols-1 md:grid-cols-3 gap-2">
                           <div className="font-medium text-gray-800">
-                            Volatility of Volatility (ξ)
+                            Volatility of Volatility (ξ - xi or volvol)
                           </div>
                           <div className="col-span-2 text-gray-700">
-                            Controls how volatile the variance process itself
-                            is.
+                            Measures the volatility of the variance process
+                            itself. Higher `ξ` means variance changes more
+                            rapidly. Must be positive.
                           </div>
                         </li>
                         <li className="grid grid-cols-1 md:grid-cols-3 gap-2">
                           <div className="font-medium text-gray-800">
-                            Correlation (ρ)
+                            Correlation (ρ - rho)
                           </div>
                           <div className="col-span-2 text-gray-700">
-                            Correlation between the returns of the asset and its
-                            variance. Typically negative for equity markets
-                            (leverage effect).
+                            Correlation between the asset's returns (`dW^1_t`)
+                            and its variance process (`dW^2_t`). Typically
+                            negative for equities (leverage effect). Must be
+                            between -1 and 1.
                           </div>
                         </li>
                       </ul>
@@ -513,8 +524,8 @@ export default function Documentation() {
                         Closed-Form Solution
                       </h3>
                       <p className="text-gray-700 mb-3">
-                        Analytical formulas that provide exact answers for
-                        specific models.
+                        Analytical formulas providing exact answers (within
+                        model assumptions).
                       </p>
                       <ul className="text-sm text-gray-600 space-y-1">
                         <li className="flex items-start">
@@ -553,13 +564,14 @@ export default function Documentation() {
                         Monte Carlo Simulation
                       </h3>
                       <p className="text-gray-700 mb-3">
-                        Simulates many random price paths to estimate option
-                        values.
+                        Simulates thousands of random price paths for the
+                        underlying asset and its variance (for Heston) to
+                        estimate the option value.
                       </p>
                       <ul className="text-sm text-gray-600 space-y-1">
                         <li className="flex items-start">
                           <span className="text-teal-500 mr-2">✓</span>
-                          Works with virtually any model
+                          Versatile: Works with complex models like Heston.
                         </li>
                         <li className="flex items-start">
                           <span className="text-teal-500 mr-2">✓</span>
@@ -594,73 +606,29 @@ export default function Documentation() {
                         </svg>
                       </div>
                       <h3 className="text-lg font-medium text-gray-800 mb-2">
-                        Fourier Transform
+                        Characteristic Function (Fourier Transform)
                       </h3>
                       <p className="text-gray-700 mb-3">
-                        Uses characteristic functions and numerical integration
-                        for models like Heston.
+                        Uses the model's characteristic function and numerical
+                        integration (often via FFT) to find the option price.
+                        Primary method for Heston.
                       </p>
                       <ul className="text-sm text-gray-600 space-y-1">
                         <li className="flex items-start">
                           <span className="text-teal-500 mr-2">✓</span>
-                          Efficient for models with known characteristic
-                          functions
+                          Efficient and accurate for models like Heston.
                         </li>
                         <li className="flex items-start">
                           <span className="text-teal-500 mr-2">✓</span>
-                          More accurate than Monte Carlo for many cases
+                          Often faster than Monte Carlo for standard options.
                         </li>
                         <li className="flex items-start">
                           <span className="text-red-500 mr-2">✗</span>
-                          Requires careful numerical integration
+                          Requires the characteristic function to be known.
                         </li>
                         <li className="flex items-start">
                           <span className="text-red-500 mr-2">✗</span>
-                          Limited to certain option types
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                      <div className="bg-amber-100 w-10 h-10 rounded-full flex items-center justify-center mb-3">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-amber-700"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                          />
-                        </svg>
-                      </div>
-                      <h3 className="text-lg font-medium text-gray-800 mb-2">
-                        Finite Difference
-                      </h3>
-                      <p className="text-gray-700 mb-3">
-                        Discretizes the pricing PDE on a grid to solve
-                        numerically.
-                      </p>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        <li className="flex items-start">
-                          <span className="text-teal-500 mr-2">✓</span>
-                          Can handle early exercise (American options)
-                        </li>
-                        <li className="flex items-start">
-                          <span className="text-teal-500 mr-2">✓</span>
-                          Provides prices at all grid points simultaneously
-                        </li>
-                        <li className="flex items-start">
-                          <span className="text-red-500 mr-2">✗</span>
-                          Grid resolution affects accuracy
-                        </li>
-                        <li className="flex items-start">
-                          <span className="text-red-500 mr-2">✗</span>
-                          Implementation complexity increases with dimensions
+                          Numerical integration needs careful implementation.
                         </li>
                       </ul>
                     </div>
@@ -695,42 +663,47 @@ export default function Documentation() {
                       </p>
                       <div className="bg-slate-100 p-3 rounded-lg font-mono text-sm mb-4">
                         <pre>
-                          {`// Request 
+                          {`// Request
 {
-  "symbol": "AAPL",          // Optional
-  "model_type": "blackScholes",  // "blackScholes", "heston", "ou"
-  "solution_type": "closedForm", // "closedForm", "monteCarlo", "fourier"
+  "symbol": "AAPL",          // Optional: For context, not used in calculation
+  "model_type": "heston",    // "blackScholes", "heston"
+  "solution_type": "fourier",// "closedForm" (BS), "monteCarlo" (Heston), "fourier" (Heston)
   "option_type": "call",     // "call" or "put"
-  "underlying_price": 100,
-  "strike_price": 100,
-  "yearsToExpiration": 1,
+  "underlying_price": 175.0,
+  "strike_price": 180.0,
+  "yearsToExpiration": 0.25,
   "risk_free_rate": 0.05,
-  "volatility": 0.2,
-  
-  // Optional parameters based on model and solution
-  "monte_carlo_simulations": 10000,
-  "kappa": 2.0,
-  "theta": 0.04,
-  "xi": 0.1,
-  "rho": -0.7,
-  "v0": 0.04
+  "volatility": 0.25,        // Required for BS, used for v0 in Heston if v0 absent
+  "dividend_yield": 0.01,    // Continuous dividend yield (use 0 if none)
+
+  // --- Heston Specific (Required if model_type="heston") ---
+  "kappa": 2.0,              // Mean reversion speed
+  "theta": 0.0625,           // Long-term variance (0.25^2)
+  "xi": 0.3,                 // Volatility of variance (volvol)
+  "rho": -0.7,               // Correlation
+  "v0": 0.0625,              // Initial variance (optional, defaults to volatility^2)
+
+  // --- Monte Carlo Specific (Required if solution_type="monteCarlo") ---
+  "monte_carlo_simulations": 10000, // Number of paths
+  "n_steps": 100             // Number of time steps in simulation
 }`}
                         </pre>
                       </div>
 
                       <div className="bg-slate-100 p-3 rounded-lg font-mono text-sm">
                         <pre>
-                          {`// Response
+                          {`// Response (Example for Heston Fourier)
 {
-  "price": 10.45,
-  "methodology": "Black-Scholes Closed-Form",
-  "calculation_time": 0.25,  // milliseconds
-  "delta": 0.6,
-  "gamma": 0.02,
-  "theta": -0.05,
-  "vega": 0.3,
-  "rho": 0.5
-  // Additional fields depending on method...
+  "price": 7.85,
+  "methodology": "Heston Characteristic Function (Heston 1993)",
+  "calculation_time": 15.3, // milliseconds
+  // Greeks might be included depending on calculation method
+  "delta": 0.55,
+  "gamma": 0.015,
+  "theta": -0.04,
+  "vega": 0.28, // Note: Vega in Heston is complex, this might be simplified
+  "rho": 0.45
+  // Monte Carlo response would include "stderr"
 }`}
                         </pre>
                       </div>
@@ -782,39 +755,63 @@ export default function Documentation() {
                         POST /api/v1/calibrate
                       </h4>
                       <p className="text-gray-700 mb-3">
-                        Calibrate model parameters (e.g., Heston) to market
-                        data.
+                        Calibrate Heston model parameters to market option
+                        prices for a specific symbol and expiration date.
                       </p>
                       <div className="bg-slate-100 p-3 rounded-lg font-mono text-sm mb-4">
                         <pre>
-                          {`// Request 
+                          {`// Request
 {
-  "symbol": "AAPL",
-  "option_type": "call",
-  "underlying_price": 175.5,
-  "expiration": "2023-12-15",
-  "YearsToExpiration": 0.25,
-  "risk_free_rate": 0.05,
-  "volatility": 0.25
+  "symbol": "AAPL",            // Ticker symbol
+  "expiration": "2023-12-15",  // Expiration date (YYYY-MM-DD)
+  "underlying_price": 175.5,   // Current underlying price
+  "risk_free_rate": 0.05,      // Annualized risk-free rate
+  "dividend_yield": 0.01       // Optional: Annualized dividend yield (default 0)
 }`}
                         </pre>
                       </div>
 
                       <div className="bg-slate-100 p-3 rounded-lg font-mono text-sm">
                         <pre>
-                          {`// Response
+                          {`// Response (Success Example)
 {
-  "kappa": 1.5,
-  "theta": 0.04,
-  "xi": 0.3,
-  "rho": -0.65,
-  "v0": 0.06,
+  "success": true,
+  "kappa": 1.85,
+  "theta": 0.058,
+  "volvol": 0.32, // xi (Volatility of Variance)
+  "rho": -0.68,
+  "var0": 0.061,  // Initial Variance
+  "div": 0.01,    // Dividend yield used
   "calibration_metrics": {
-    "RMSE": 0.015,
-    "MAE": 0.012,
-    "mean_rel_error": 3.5,
-    "n_iterations": 150
-  }
+    "MSE": 0.00025,
+    "RMSE": 0.0158,
+    "MAE": 0.0115,
+    "max_abs_error": 0.045,
+    "mean_rel_error_pct": 3.2,
+    "median_rel_error_pct": 2.5,
+    "n_options_used": 45,
+    "original_n_options": 120,
+    "optimizer_iterations": 85,
+    "calibration_time_seconds": 25.6
+  },
+  "market_data_used": [ // Array of market data points used in calibration
+    { "strike": 170, "mid_price": 10.5, "maturity": 0.25, ... },
+    ...
+  ]
+}
+
+// Response (Failure Example)
+{
+  "success": false,
+  "error": "No valid market data available for calibration",
+  "error_details": "Traceback...", // Optional traceback
+  "kappa": 0.0,
+  "theta": 0.0,
+  "volvol": 0.0,
+  "rho": 0.0,
+  "var0": 0.0,
+  "div": 0.01,
+  "calibration_time_seconds": 1.2
 }`}
                         </pre>
                       </div>
@@ -876,23 +873,36 @@ export default function Documentation() {
                       </div>
                       <div className="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 border-b border-gray-200 bg-gray-50">
                         <dt className="text-sm font-medium text-gray-800">
-                          Heston calibration fails
+                          Heston calibration fails or gives poor results
                         </dt>
                         <dd className="mt-1 text-sm text-gray-600 sm:mt-0 sm:col-span-2">
                           <ul className="list-disc ml-4 space-y-1">
                             <li>
-                              Ensure you have sufficient market data for
-                              calibration
+                              Ensure sufficient liquid market data (bid/ask
+                              spreads, volume) across various strikes and the
+                              specific expiration. Calibration needs rich data.
                             </li>
                             <li>
-                              Try with different initial parameter guesses
+                              Market data quality is crucial. Outliers or stale
+                              prices can heavily skew results.
                             </li>
                             <li>
-                              Reduce the range of strikes to focus calibration
+                              The optimizer might get stuck in local minima. The
+                              backend tries multiple initial guesses, but
+                              complex market conditions can still be
+                              challenging.
                             </li>
                             <li>
-                              Some market conditions may be difficult to
-                              calibrate
+                              Check the reported calibration metrics (RMSE,
+                              MAE). High errors indicate a poor fit.
+                            </li>
+                            <li>
+                              Consider if the Heston model is appropriate for
+                              the current market regime.
+                            </li>
+                            <li>
+                              Calibration is time-limited; complex scenarios
+                              might require more time than allocated.
                             </li>
                           </ul>
                         </dd>
@@ -926,16 +936,22 @@ export default function Documentation() {
                         </dt>
                         <dd className="mt-1 text-sm text-gray-600 sm:mt-0 sm:col-span-2">
                           <ul className="list-disc ml-4 space-y-1">
-                            <li>Volatility must be positive</li>
-                            <li>Time to expiration must be positive</li>
+                            <li>Volatility (`σ`) must be positive.</li>
+                            <li>Time to expiration (`T`) must be positive.</li>
+                            <li>Strike price (`K`) must be positive.</li>
                             <li>
-                              For Heston, kappa, theta, and xi should be
-                              positive
+                              For Heston: `kappa (κ)`, `theta (θ)`, `xi (ξ)`,
+                              and `v0` must be positive.
                             </li>
-                            <li>For Heston, rho must be between -1 and 1</li>
                             <li>
-                              Some combinations of Heston parameters may be
-                              unstable
+                              For Heston: `rho (ρ)` must be between -1 and 1
+                              (typically -0.99 to 0 for calibration stability).
+                            </li>
+                            <li>
+                              The Feller condition (`2κθ &lt; ξ²`) ensures
+                              variance stays positive, though it's not strictly
+                              enforced in all pricing implementations. Violating
+                              it can sometimes lead to instability.
                             </li>
                           </ul>
                         </dd>
@@ -961,7 +977,7 @@ export default function Documentation() {
                       </Link>
                       <span className="text-gray-400">•</span>
                       <a
-                        href="https://github.com/hassanelq/Simulations-MC-BrownMotion"
+                        href="https://github.com/hassanelq/Options-pricing"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-800 font-medium"

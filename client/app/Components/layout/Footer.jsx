@@ -82,7 +82,7 @@ const Footer = () => (
             <ul className="space-y-2">
               <li>
                 <a
-                  href="https://github.com/hassanelq/Simulations-MC-BrownMotion"
+                  href="https://github.com/hassanelq/Options-pricing"
                   className="text-gray-600 hover:text-teal-600 transition text-sm"
                   target="_blank"
                   rel="noopener"
