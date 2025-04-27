@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Dict, Any
-from utils.calibrateHeston import CallHestonCForm, PutHestonCForm
+from utils.calibrateHeston import heston_call_price, heston_put_price
 
 
 class Heston:
@@ -27,9 +27,9 @@ class Heston:
         xi = heston_params.get("xi")
 
         if option_type.lower() == "call":
-            price = CallHestonCForm(S, K, T, r, kappa, rho, xi, theta, v0, 0)
+            price = heston_put_price(S, K, T, r, kappa, rho, xi, theta, v0, 0)
         else:
-            price = PutHestonCForm(S, T, r, kappa, rho, xi, theta, v0, 0, K)
+            price = heston_put_price(S, K, T, r, kappa, rho, xi, theta, v0, 0)
 
         return {
             "price": price,

@@ -44,7 +44,6 @@ async def Calibrate_Heston(request: CalibrationRequest):
             rho=result["rho"],
             v0=result["var0"],  # Changed from v0 to var0
             calibration_metrics=result["calibration_metrics"],
-            market_data=result.get("market_data_used"),  # May need to change this too
             success=True,
         )
 

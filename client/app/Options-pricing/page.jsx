@@ -67,9 +67,9 @@ const priceOption = async (PricingRequest) => {
 const PricingPage = () => {
   const [selectedStyle, setSelectedStyle] = useState("European");
   const [selectedApproach, setSelectedApproach] = useState("blackScholes");
-  const [selectedAssetType, setSelectedAssetType] = useState("Indices");
+  const [selectedAssetType, setSelectedAssetType] = useState("ETFs");
   const [parameters, setParameters] = useState({
-    symbol: "^SPX",
+    symbol: "SPY",
     option_type: "call",
     underlyingPrice: 100,
     strikePrice: 100,
@@ -255,9 +255,9 @@ const PricingPage = () => {
     setSelectedStyle("European");
     setSelectedApproach("blackScholes");
     setSelectedSolution("closedForm");
-    setSelectedAssetType("Indices");
+    setSelectedAssetType("ETFs");
     setParameters({
-      symbol: "^SPX",
+      symbol: "SPY",
       option_type: "call",
       underlyingPrice: 100,
       strikePrice: 100,
