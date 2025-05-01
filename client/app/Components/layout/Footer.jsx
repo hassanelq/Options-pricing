@@ -31,7 +31,7 @@ const Footer = () => (
                 Hassan EL QADI
               </h3>
               <p className="text-sm text-gray-600">
-                Financial Engineer & Developer
+                Financial Engineering student
               </p>
             </div>
           </div>

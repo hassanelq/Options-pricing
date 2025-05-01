@@ -46,7 +46,7 @@ export default function AboutMe() {
               </h3>
 
               <p className="text-gray-700">
-                I'm a Financial Engineer and Developer with a passion for
+                I'm a Financial Engineering student with a passion for
                 quantitative finance and computational methods. My work focuses
                 on building sophisticated mathematical models and making them
                 accessible through intuitive user interfaces.

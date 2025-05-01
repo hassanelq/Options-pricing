@@ -165,10 +165,15 @@ const PricingPage = () => {
           yearsToExpiration: parameters.yearsToExpiration,
           risk_free_rate: parameters.riskFreeRate / 100,
           volatility: parameters.volatility,
-          ...(solution.value === "monteCarlo" && {
-            monte_carlo_simulations:
-              parameters.monte_carlo_simulations || 10000,
-          }),
+          monte_carlo_simulations:
+            selectedSolution === "monteCarlo"
+              ? parameters.monte_carlo_simulations
+              : undefined,
+          kappa: selectedApproach === "heston" ? parameters.kappa : undefined,
+          theta: selectedApproach === "heston" ? parameters.theta : undefined,
+          xi: selectedApproach === "heston" ? parameters.xi : undefined,
+          rho: selectedApproach === "heston" ? parameters.rho : undefined,
+          v0: selectedApproach === "heston" ? parameters.v0 : undefined,
         };
 
         const response = await priceOption(PricingRequest);
@@ -339,18 +344,7 @@ const PricingPage = () => {
               isActive={activeStep >= 1}
             />
           </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: activeStep >= 2 ? 1 : 0.6, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-          >
-            <PricingApproachSelector
-              selectedApproach={selectedApproach}
-              setSelectedApproach={setSelectedApproach}
-              selectedStyle={selectedStyle}
-              isActive={activeStep >= 2}
-            />
-          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: activeStep >= 3 ? 1 : 0.6, y: 0 }}
@@ -401,6 +395,18 @@ const PricingPage = () => {
               parameters={parameters}
               setParameters={setParameters}
               isActive={activeStep >= 6}
+            />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: activeStep >= 2 ? 1 : 0.6, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            <PricingApproachSelector
+              selectedApproach={selectedApproach}
+              setSelectedApproach={setSelectedApproach}
+              selectedStyle={selectedStyle}
+              isActive={activeStep >= 2}
             />
           </motion.div>
           <motion.div

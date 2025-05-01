@@ -116,7 +116,6 @@ class BlackScholes:
         discounted_payoff = exp(-r * T) * payoff
         price = np.mean(discounted_payoff)
         std_error = np.std(discounted_payoff) / sqrt(num_simulations)
-        conf_interval = 1.96 * std_error  # 95% confidence interval
 
         elapsed_time = time.perf_counter() - start_time
 
@@ -133,6 +132,5 @@ class BlackScholes:
             "calculation_time": round(elapsed_time * 1000, 5),
             "num_simulations": num_simulations,
             "standard_error": round(std_error, 6),
-            "confidence_interval": round(conf_interval, 6),
             "bs_difference": round(price - bs_result["price"], 6),
         }
