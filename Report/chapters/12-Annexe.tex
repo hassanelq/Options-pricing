@@ -1,0 +1,354 @@
+
+\chapter{Démonstrations de Black-Scholes}
+
+\section{Démonstration de l'équation différentielle partielle de Black-Scholes}
+\label{app:BS edp}
+
+Soit $X_t = f(t, S_t)$, où $(S_t)_{t\geq0}$ suit l'équation différentielle stochastique :
+\begin{equation}
+    dS_t = \mu S_t dt + \sigma S_t dW_t.
+\end{equation}
+
+En appliquant le lemme d'Itô, nous avons :
+\begin{equation}
+    dX_t = \frac{\partial f}{\partial t} dt + \frac{\partial f}{\partial S_t} dS_t + \frac{1}{2} \frac{\partial^2 f}{\partial S_t^2} (dS_t)^2.
+\end{equation}
+
+Utilisant la relation $(dS_t)^2 = \sigma^2 S_t^2 dt$, on obtient :
+\begin{align}
+    dX_t &= \frac{\partial f}{\partial t} dt + \frac{\partial f}{\partial S_t} (\mu S_t dt + \sigma S_t dW_t) + \frac{1}{2} \frac{\partial^2 f}{\partial S_t^2} S_t^2 \sigma^2 dt \\
+    &= \left( \frac{\partial f}{\partial t} + \mu S_t \frac{\partial f}{\partial S_t} + \frac{1}{2} \sigma^2 S_t^2 \frac{\partial^2 f}{\partial S_t^2} \right) dt + \sigma S_t \frac{\partial f}{\partial S_t} dW_t.
+\end{align}
+
+Considérons un produit dérivé dont le payoff à l'échéance $T$ est donné par $V(T, S_T)$. Supposons que sa valeur en un instant $t<T$ soit une fonction $V(t, S)$. 
+
+Considérons un portefeuille formé par l'achat d'une unité du produit dérivé et la vente à découvert de $a$ unités de l'actif sous-jacent. La valeur du portefeuille est :
+\begin{equation}
+    \Pi_t = V(t, S_t) - a S_t.
+\end{equation}
+Son évolution infinitésimale est donnée par :
+\begin{equation}
+    d\Pi_t = dV_t - a dS_t.
+\end{equation}
+En utilisant l'équation obtenue précédemment :
+\begin{equation}
+    dV_t = \left( \frac{\partial V}{\partial t} + \mu S_t \frac{\partial V}{\partial S_t} + \frac{1}{2} \sigma^2 S_t^2 \frac{\partial^2 V}{\partial S_t^2} \right) dt + \sigma S_t \frac{\partial V}{\partial S_t} dW_t.
+\end{equation}
+
+Ainsi, on a :
+\begin{equation}
+    d\Pi_t = \left( \frac{\partial V}{\partial t} + \mu S_t \frac{\partial V}{\partial S_t} + \frac{1}{2} \sigma^2 S_t^2 \frac{\partial^2 V}{\partial S_t^2} - a \mu S_t \right) dt + \left( \sigma S_t \frac{\partial V}{\partial S_t} - a \sigma S_t \right) dW_t.
+\end{equation}
+
+Pour éliminer le terme stochastique, on impose :
+\begin{equation}
+    a = \frac{\partial V}{\partial S_t}.
+\end{equation}
+Ainsi, la variation du portefeuille devient :
+\begin{equation}
+    d\Pi_t = \left( \frac{\partial V}{\partial t} + \frac{1}{2} \sigma^2 S_t^2 \frac{\partial^2 V}{\partial S_t^2} \right) dt.
+\end{equation}
+
+Puisque le portefeuille est sans risque, son rendement doit être égal au taux sans risque $r$ :
+\begin{equation}
+    d\Pi_t = r \Pi_t dt = r \left(V - S_t \frac{\partial V}{\partial S_t} \right) dt.
+\end{equation}
+
+En égalisant les deux expressions de $d\Pi_t$, on obtient l'équation de Black-Scholes :
+\begin{equation}
+    \frac{\partial V}{\partial t} + \frac{1}{2} \sigma^2 S^2 \frac{\partial^2 V}{\partial S^2} + r S \frac{\partial V}{\partial S} - rV = 0.
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Démonstration de la formule Black-Scholes}
+\label{app:BS closedForm}
+
+Sous la mesure risque-neutre \( Q \) :
+\begin{equation}
+    dS_t = rS_t dt + \sigma S_t dB_t^Q \quad \text{(Mouvement brownien géométrique)}
+\end{equation}
+
+Solution via le lemme d'Itô :
+\begin{equation}
+    S_T = S_0 \exp\left(\left(r - \frac{1}{2}\sigma^2\right)T + \sigma B_T^Q\right)
+\end{equation}
+
+
+Payoff actualisé :
+\begin{equation}
+    C = e^{-rT} \mathbb{E}^Q\left[(S_T - K)^+\right]
+\end{equation}
+
+Décomposition de l'espérance :
+\begin{equation}
+    \mathbb{E}^Q\left[(S_T - K)^+\right] = \underbrace{\mathbb{E}^Q\left[S_T \mathbf{1}_{\{S_T > K\}}\right]}_{\text{Terme 1}} - K \underbrace{Q(S_T > K)}_{\text{Terme 2}}
+\end{equation}
+
+
+\textbf{Terme 1} (Changement de mesure via Girsanov) :
+\begin{align}
+    \mathbb{E}^Q\left[S_T \mathbf{1}_{\{S_T > K\}}\right] &= S_0 e^{rT} N(d_1) \\
+    d_1 &= \frac{\ln(S_0/K) + (r + \frac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}
+\end{align}
+
+\textbf{Terme 2} (Probabilité risque-neutre) :
+\begin{align}
+    Q(S_T > K) &= N(d_2) \\
+    d_2 &= d_1 - \sigma\sqrt{T}
+\end{align}
+
+\subsubsection*{Formule finale}
+\begin{equation}
+    \boxed{
+    C = S_0 N(d_1) - Ke^{-rT}N(d_2)
+    }
+\end{equation}
+
+\begin{itemize}
+    \item \( N(\cdot) \) : Fonction de répartition de la loi normale centrée réduite
+    \item \( S_0 \) : Prix spot, \( K \) : Prix d'exercice
+    \item \( T \) : Maturité, \( r \) : Taux sans risque
+    \item \( \sigma \) : Volatilité du sous-jacent
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Démonstrations de Heston}
+\section{Démonstration de l'équation différentielle partielle de Heston}
+\label{app:heston edp}
+
+Dans le cas de Black-Scholes, la seule source d’incertitude vient du prix du stock, qui peut se couvrir avec le stock. Dans le cas de Heston, il faut aussi couvrir l’incertitude venant du caractère stochastique de la volatilité pour créer un portefeuille sans risque. Imaginons ainsi un portefeuille \( \Pi \) contenant l’option dont on cherche à déterminer le prix noté \( V(S, v, t) \), la quantité \( \Delta \) de stock et la quantité \( \Delta_1 \) d’un autre actif, de valeur \( V_1 \) dépendant de la volatilité. On a ainsi :
+
+\[
+\Pi = V + \Delta S + \Delta_1 V_1
+\]
+
+Nous obtenons, grâce à la formule d’Itô :
+
+\begin{equation} \label{heston ito edp}
+\begin{split}
+d\Pi & = \left\{ \frac{\partial V}{\partial t} + \frac{1}{2} v S^2(t) \frac{\partial^2 V}{\partial S^2} + \rho \sigma v S(t) \frac{\partial^2 V}{\partial S \partial v} + \frac{1}{2} \sigma^2 v \frac{\partial^2 V}{\partial v^2} \right\} dt \\
+ & + \Delta_1 \left\{ \frac{\partial V_1}{\partial t} + \frac{1}{2} v S^2(t) \frac{\partial^2 V_1}{\partial S^2} + \rho \sigma v S(t) \frac{\partial^2 V_1}{\partial S \partial v} + \frac{1}{2} \sigma^2 v \frac{\partial^2 V_1}{\partial v^2} \right\} dt\\
+ & + \left\{ \frac{\partial V}{\partial S} + \Delta_1 \frac{\partial V_1}{\partial S} + \Delta \right\} dS + \left\{ \frac{\partial V}{\partial v} +\Delta_1 \frac{\partial V_1}{\partial v} \right\} dv
+\end{split}
+\end{equation}
+
+
+Pour que le portefeuille soit sans risque, il est nécessaire d’éliminer les termes en \( dS \) et \( dv \), ce qui donne :
+
+\[
+ \frac{\partial V}{\partial S} + \Delta_1 \frac{\partial V_1}{\partial S} + \Delta  = 0
+\]
+
+\[
+\frac{\partial V}{\partial v} + \Delta_1 \frac{\partial V_1}{\partial v} = 0
+\]
+
+d’où l’on tire les quantités :
+\[
+\Delta_1 = -\frac{\frac{\partial V}{\partial v}}{\frac{\partial V_1}{\partial v}}
+\]
+
+\[
+\Delta = -\left( \frac{\partial V}{\partial S} + \Delta_1 \frac{\partial V_1}{\partial S} \right)
+\]
+
+Le rendement d’un portefeuille sans risque devant être égal au taux sans risque \( r \) (supposé constant), sans quoi il y aurait une opportunité d’arbitrage, nous avons :
+
+\[
+d\Pi = r \Pi dt
+\]
+
+car les termes \( dS \) et \( dv \) ne sont plus :
+
+\[
+d\Pi = r (V + \Delta S + \Delta_1 V_1) dt
+\]
+
+En utilisant (\ref{heston ito edp}), la dernière équation peut se réécrire :
+
+\begin{equation} \label{}
+\begin{split}
+ & \frac{1}{\frac{\partial V}{\partial v}} \left\{ \frac{\partial V}{\partial t} + \frac{1}{2} v S^2(t) \frac{\partial^2 V}{\partial S^2} + \rho \sigma v S(t) \frac{\partial^2 V}{\partial S \partial v} + \frac{1}{2} \sigma^2 v \frac{\partial^2 V}{\partial v^2} + r S \frac{\partial V}{\partial S} - r V \right\} dt \\
+ & = \frac{1}{\frac{\partial V_1}{\partial v}} \left\{ \frac{\partial V_1}{\partial t} + \frac{1}{2} v S^2(t) \frac{\partial^2 V_1}{\partial S^2} + \rho \sigma v S(t) \frac{\partial^2 V_1}{\partial S \partial v} + \frac{1}{2} \sigma^2 v \frac{\partial^2 V_1}{\partial v^2} + r S \frac{\partial V_1}{\partial S} - r V_1 \right\} dt
+\end{split}
+\end{equation}
+
+Le membre de gauche de l'équation précédente ne dépend que de $V$, tandis que celui de droite ne dépend que de $V_1$. Cela implique que les deux membres peuvent être écrits sous la forme d'une fonction $f(S, v, t)$. En suivant Heston, nous spécifions cette fonction comme suit :
+\begin{equation}
+ f(S, v, t) = \kappa(\theta - v) - \lambda(S, v, t),
+\end{equation}
+ où $\lambda(S, v, t)$ représente le prix du risque de volatilité.
+
+L'équation de Heston sous forme de PDE en fonction du prix $S$ :
+\begin{equation} \label{heston edp}
+\begin{split}
+& \frac{\partial V}{\partial t} + \frac{1}{2} v S^2 \frac{\partial^2 V}{\partial S^2} + \rho \sigma v S \frac{\partial^2 V}{\partial v \partial S} + \frac{1}{2} \sigma^2 v \frac{\partial^2 V}{\partial v^2} \\
+&  - rU + rS \frac{\partial V}{\partial S} - [\kappa(\theta - v) - \lambda(S, v, t)] \frac{\partial V}{\partial v} = 0
+ \end{split}
+\end{equation}
+\\
+\textbf{L'EDP en termes du Log Prix :}\\
+
+Soit $x = \ln S$, et exprimons l'EDP en termes de $x$, $t$ et $v$ au lieu de $S$, $t$ et $v$.
+Cette transformation conduit à une forme plus simple de l'EDP. Nous avons besoin des dérivées suivantes, qui sont simples à établir :
+\begin{equation}
+    \frac{\partial V}{\partial S}, \quad \frac{\partial^2 V}{\partial v \partial S}, \quad \frac{\partial^2 V}{\partial S^2}
+\end{equation}
+
+En remplaçant ces expressions dans l'EDP de Heston (A.2), tous les termes en $S$ s'annulent, et nous obtenons l'EDP de Heston en termes du log prix $x = \ln S$ :
+
+\begin{equation} \label{heston edp log}
+\begin{split}
+& \frac{\partial V}{\partial t} + \frac{1}{2} v \frac{\partial^2 V}{\partial x^2} + \left(r - \frac{1}{2} v\right) \frac{\partial V}{\partial x} + \rho \sigma v \frac{\partial^2 V}{\partial v \partial x} \\
+&  + \frac{1}{2} \sigma^2 v \frac{\partial^2 V}{\partial v^2} - rV + \left(\kappa (\theta - v) - \lambda v\right) \frac{\partial V}{\partial v} = 0
+ \end{split}
+\end{equation}
+
+où, comme dans le modèle de Heston, nous avons exprimé le prix du risque de marché comme une fonction linéaire de la volatilité, de sorte que $\lambda(S, v, t) = \lambda v$.
+
+Cette transformation simplifie l'équation, la rendant plus adaptée aux solutions numériques et analytiques.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Démonstration de la Solution Semi-Analytique de Heston}
+\label{app:heston semiAnalytique}
+
+Dans cette section, nous présentons une dérivation complète et rigoureuse de la solution du modèle de Heston, en suivant l'approche montrée dans les images.
+
+\subsection{Le Prix d'une Option d'Achat}
+
+Le prix d'une option d'achat est de la forme
+\begin{equation}
+\begin{split}
+& C_T(K) = e^{-r\tau}E\left[(S_T - K)^+\right]\\
+& = e^{x_t}P_1(x,v,\tau) - e^{-r\tau}KP_2(x,v,\tau)
+\end{split}
+\end{equation}
+
+Dans cette expression, $P_j(x,v,\tau)$ représente chacune la probabilité que l'option expire dans la monnaie, conditionnellement à la valeur $x_t = \ln S_t$ de l'action et à la valeur $v_t$ de la volatilité au temps $t$, où $\tau = T-t$ est le temps jusqu'à l'expiration.
+
+\subsection{L'EDP pour $P_1$ et $P_2$}
+
+Le prix de l'option d'achat $C$ suit l'EDP:
+\begin{equation}
+-\frac{\partial C}{\partial \tau} + \frac{1}{2}v\frac{\partial^2 C}{\partial x^2} + \left(r - \frac{1}{2}v\right)\frac{\partial C}{\partial x} + \rho\sigma v\frac{\partial^2 C}{\partial v \partial x} + \frac{1}{2}\sigma^2 v\frac{\partial^2 C}{\partial v^2} - rC + [\kappa(\theta - v) - \lambda v]\frac{\partial C}{\partial v} = 0.
+\end{equation}
+
+Les dérivées de $C$ s'expriment en termes de $P_1$ et $P_2$. En substituant ces dérivées dans l'EDP et en regroupant les termes, nous obtenons les EDPs pour $P_1$ et $P_2$. Pour la commodité de notation, nous combinons les EDPs pour $P_1$ et $P_2$ en une seule expression:
+
+\begin{equation}
+-\frac{\partial P_j}{\partial \tau} + \rho\sigma v\frac{\partial^2 P_j}{\partial x \partial v} + \frac{1}{2}v\frac{\partial^2 P_j}{\partial x^2} + \frac{1}{2}v\sigma^2\frac{\partial^2 P_j}{\partial v^2} + (r + u_j v)\frac{\partial P_j}{\partial x} + (a - b_j v)\frac{\partial P_j}{\partial v} = 0
+\end{equation}
+
+pour $j = 1, 2$ et où $u_1 = \frac{1}{2}$, $u_2 = -\frac{1}{2}$, $a = \kappa\theta$, $b_1 = \kappa + \lambda - \rho\sigma$, et $b_2 = \kappa + \lambda$.
+
+\subsection{Obtention des Fonctions Caractéristiques}
+
+Heston suppose que les fonctions caractéristiques pour le logarithme du prix terminal de l'action, $x = \ln S_T$, sont de la forme
+\begin{equation}
+f_j(\phi; x, v) = \exp(C_j(\tau, \phi) + D_j(\tau, \phi)v_0 + i\phi x)
+\end{equation}
+
+où $C_j$ et $D_j$ sont des coefficients et $\tau = T - t$ est le temps jusqu'à la maturité. Les fonctions caractéristiques $f_j$ suivront l'EDP:
+
+\begin{equation}
+-\frac{\partial f_j}{\partial \tau} + \rho\sigma v\frac{\partial^2 f_j}{\partial x \partial v} + \frac{1}{2}v\frac{\partial^2 f_j}{\partial x^2} + \frac{1}{2}v\sigma^2\frac{\partial^2 f_j}{\partial v^2} + (r + u_j v)\frac{\partial f_j}{\partial x} + (a - b_j v)\frac{\partial f_j}{\partial v} = 0.
+\end{equation}
+
+Pour évaluer cette EDP pour la fonction caractéristique, nous avons besoin des dérivées suivantes:
+
+\begin{align}
+\frac{\partial f_j}{\partial \tau} &= f_j \left(-\frac{\partial C_j}{\partial \tau} - \frac{\partial D_j}{\partial \tau} v \right) \\
+\frac{\partial f_j}{\partial x} &= i\phi f_j \\
+\frac{\partial^2 f_j}{\partial x^2} &= -\phi^2 f_j \\
+\frac{\partial f_j}{\partial v} &= D_j f_j \\
+\frac{\partial^2 f_j}{\partial v^2} &= D_j^2 f_j \\
+\frac{\partial^2 f_j}{\partial x \partial v} &= i\phi D_j f_j
+\end{align}
+
+En substituant ces dérivées dans l'EDP, en supprimant les termes $f_j$ et en réarrangeant, nous obtenons deux équations différentielles:
+
+\begin{align}
+\frac{\partial D_j}{\partial \tau} &= \rho\sigma i\phi D_j - \frac{1}{2}\phi^2 + \frac{1}{2}\sigma^2 D_j^2 + u_j i\phi - b_j D_j \\
+\frac{\partial C_j}{\partial \tau} &= ri\phi + aD_j
+\end{align}
+
+Ce sont les équations (A7) dans Heston [2]. Heston spécifie les conditions initiales $D_j(0, \phi) = 0$ et $C_j(0, \phi) = 0$. La première équation est une équation de Riccati en $D_j$ tandis que la seconde est une EDO pour $C_j$ qui peut être résolue par intégration directe une fois que $D_j$ est obtenu.
+
+\subsection{Résolution de l'Équation de Riccati de Heston}
+
+À partir de ce qui précède, l'équation de Riccati de Heston est
+\begin{equation}
+\frac{\partial D_j}{\partial \tau} = P_j - Q_j D_j + R D_j^2
+\end{equation}
+
+où nous identifions $P_j = u_j i\phi - \frac{1}{2}\phi^2$, $Q_j = b_j - \rho\sigma i\phi$, et $R = \frac{1}{2}\sigma^2$.
+
+L'EDO du second ordre correspondante est
+\begin{equation}
+w'' + Q_j w' + P_j R = 0
+\end{equation}
+
+La solution de l'équation de Riccati de Heston est donc
+\begin{equation}
+D_j = -\frac{1}{R}\left(\frac{K\alpha e^{\alpha\tau} + \beta e^{\beta\tau}}{Ke^{\alpha\tau} + e^{\beta\tau}}\right)
+\end{equation}
+
+En utilisant la condition initiale $D_j(0, \phi) = 0$, nous obtenons la solution pour $D_j$:
+\begin{equation}
+D_j = \frac{b_j - \rho\sigma i\phi + d_j}{\sigma^2}\left(\frac{1 - e^{d_j\tau}}{1 - g_j e^{d_j\tau}}\right)
+\end{equation}
+
+où
+\begin{equation}
+d_j = \sqrt{(\rho\sigma i\phi - b_j)^2 - \sigma^2(2u_j i\phi - \phi^2)}
+\end{equation}
+
+\begin{equation}
+g_j = \frac{b_j - \rho\sigma i\phi + d_j}{b_j - \rho\sigma i\phi - d_j}
+\end{equation}
+
+La solution pour $C_j$ est trouvée en intégrant la seconde équation dans notre système:
+\begin{equation}
+C_j = \int_0^{\tau} ri\phi dy + a\left(\frac{Q_j + d_j}{2R}\right)\int_0^{\tau}\left(\frac{1 - e^{d_j y}}{1 - g_j e^{d_j y}}\right)dy + K_1
+\end{equation}
+
+où $K_1$ est une constante. En intégrant et en appliquant la condition initiale $C_j(0, \phi) = 0$, et en substituant pour $d_j$, $Q_j$, et $g_j$, nous obtenons la solution pour $C_j$:
+\begin{equation}
+C_j = ri\phi\tau + \frac{a}{\sigma^2}\left[(b_j - \rho\sigma i\phi + d_j)\tau - 2\ln\left(\frac{1 - g_j e^{d_j\tau}}{1 - g_j}\right)\right]
+\end{equation}
+
+où $a = \kappa\theta$.
+
+\subsection{Forme Finale de la Fonction Caractéristique}
+
+En combinant nos résultats, la fonction caractéristique pour le modèle de Heston est:
+\begin{equation}
+f_j(\phi) = \exp\left(i\phi x + C_j(\tau, \phi) + D_j(\tau, \phi)v\right)
+\end{equation}
+
+où $C_j$ et $D_j$ sont tels que dérivés ci-dessus.
+
+\subsection{Calcul du Prix d'Option}
+
+Le prix de l'option d'achat est donné par:
+\begin{equation}
+C(S_0, K, T) = S_0 P_1 - Ke^{-rT} P_2
+\end{equation}
+
+où les probabilités $P_1$ et $P_2$ sont calculées en utilisant:
+\begin{equation}
+P_j = \frac{1}{2} + \frac{1}{\pi}\int_0^{\infty}\text{Re}\left[\frac{e^{-i\phi\ln(K)}f_j(\phi)}{i\phi}\right]d\phi, \quad j=1,2
+\end{equation}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

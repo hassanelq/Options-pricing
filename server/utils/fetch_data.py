@@ -185,61 +185,96 @@ def get_market_data(symbol: str, total_results: int = 12) -> List[Dict[str, Any]
         return {"error": str(e)}
 
 
-def get_data_Calibration(symbol, expiration, s0, max_options=50, min_maturity_days=5):
-    tk = yf.Ticker(symbol)
-    all_expirations = pd.to_datetime(tk.options).date
-    tgt_date = pd.to_datetime(expiration).date()
-    today = datetime.now(timezone.utc).date()
+import yfinance as yf
+from math import exp
+import requests
 
-    i = np.searchsorted(all_expirations, tgt_date)
-    selected_exps = all_expirations[max(0, i - 3) : i + 4]  # pick expiries before/after
+FRED_API_KEY = ""
+FRED_SERIES = {
+    "1M": "DGS1MO",
+    "3M": "DGS3MO",
+    "6M": "DGS6MO",
+    "1Y": "DGS1",
+    "2Y": "DGS2",
+}
 
-    parts = []
-    for expiry in selected_exps:
-        chain = tk.option_chain(expiry.isoformat()).calls
-        chain = chain.dropna(
-            subset=["bid", "ask", "impliedVolatility", "volume", "openInterest"]
-        )
-        chain = chain[(chain.bid > 0) & (chain.ask > 0)]
 
-        mid = (chain.bid + chain.ask) / 2.0
-        spread_pct = (chain.ask - chain.bid) / mid * 100
-        maturity = (expiry - today).days / 365.25
-        moneyness = chain.strike / s0
+def fetch_fred_rates():
+    rates = {}
+    for label, sid in FRED_SERIES.items():
+        url = f"https://api.stlouisfed.org/fred/series/observations?series_id={sid}&api_key=0de8b88e8310c6ebbd66c2eaa2ccb03f&file_type=json&sort_order=desc&limit=1"
+        try:
+            val = requests.get(url).json()["observations"][0]["value"]
+            if val != ".":
+                rates[label] = float(val) / 100
+        except:
+            continue
+    return rates
 
-        df = chain.assign(
-            mid=mid, spread_pct=spread_pct, maturity=maturity, moneyness=moneyness
-        )
-        df = df[
-            (df.spread_pct < 10.0)
-            & (0.85 <= df.moneyness)
-            & (df.moneyness <= 1.15)
-            & (df.maturity > min_maturity_days / 365.25)
-        ]
 
-        if not df.empty:
-            parts.append(df[["strike", "mid", "maturity", "impliedVolatility"]])
-
-    if not parts:
-        return pd.DataFrame()
-
-    df = pd.concat(parts, ignore_index=True)
-
-    # NEW: Group options by expiry maturity buckets
-    df = df.sort_values(by=["maturity", "strike"]).reset_index(drop=True)
-
-    # Limit to max_options but **diversify maturities**:
-    unique_maturities = df.maturity.unique()
-    selected = []
-
-    for mat in unique_maturities:
-        subset = df[df.maturity == mat]
-        n_select = min(len(subset), max(1, max_options // len(unique_maturities)))
-        selected.append(subset.head(n_select))
-
-    final_df = (
-        pd.concat(selected)
-        .sort_values(by=["maturity", "strike"])
-        .reset_index(drop=True)
+def get_rate_key(T):
+    return (
+        "1M"
+        if T <= 1 / 12
+        else "3M" if T <= 0.25 else "6M" if T <= 0.5 else "1Y" if T <= 1 else "2Y"
     )
-    return final_df
+
+
+def get_option_calibration_data(
+    symbol, target_expiration_str, max_main=20, max_side=15
+):
+    tk = yf.Ticker(symbol)
+    expirations = pd.to_datetime(tk.options).date
+    target_exp = pd.to_datetime(target_expiration_str).date()
+    if target_exp not in expirations:
+        raise ValueError("Target expiration not available.")
+
+    idx = np.where(expirations == target_exp)[0][0]
+    selected_dates = [
+        expirations[i] for i in range(idx - 3, idx + 4) if 0 <= i < len(expirations)
+    ]
+
+    spot = tk.history(period="1d")["Close"].iloc[-1]
+    rates = fetch_fred_rates()
+    today = datetime.today().date()
+    data = []
+
+    for expiry in selected_dates:
+        try:
+            df = tk.option_chain(expiry.isoformat()).calls
+            df = df.dropna(
+                subset=["bid", "ask", "impliedVolatility", "volume", "openInterest"]
+            )
+            df = df[(df.bid > 0) & (df.ask > 0)].copy()
+            df["midPrice"] = (df.bid + df.ask) / 2
+
+            T = (expiry - today).days / 365
+            rate = rates.get(get_rate_key(T), 0.0)
+            F = spot * exp(rate * T)
+
+            atm_strike = df.loc[(df.strike - F).abs().idxmin(), "strike"]
+            df["moneyness"] = (df.strike - atm_strike).abs()
+            n = max_main if expiry == target_exp else max_side
+
+            selected = df.nsmallest(n, "moneyness").copy()
+            selected["maturityDate"] = expiry
+            selected["maturity"] = T
+            selected["rate"] = rate
+            selected["forward"] = F
+            data.append(
+                selected[
+                    [
+                        "maturityDate",
+                        "maturity",
+                        "strike",
+                        "midPrice",
+                        "impliedVolatility",
+                        "forward",
+                        "rate",
+                    ]
+                ]
+            )
+        except:
+            continue
+
+    return pd.concat(data).reset_index(drop=True) if data else pd.DataFrame()

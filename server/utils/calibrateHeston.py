@@ -6,7 +6,7 @@ from scipy.optimize import minimize, least_squares
 import yfinance as yf
 from scipy.integrate import quad
 
-from utils.fetch_data import get_data_Calibration
+from utils.fetch_data import get_option_calibration_data
 
 
 # --- Heston Pricing Functions ---
@@ -110,141 +110,95 @@ def OptFunctionFast(
     return np.mean(weighted_errors) if np.isfinite(np.mean(weighted_errors)) else 1e10
 
 
-# --- Calibration Function ---
-def calibrate_heston(
-    symbol: str,
-    expiration: str,
-    underlying_price: float,
-    risk_free_rate: float,
-    dividend_yield: float = 0,
-    max_options=100,
-    max_time=300,
-    methods=["LM"],
+def OptFunctionFast(
+    params, Spots, Maturities, Rates, Strikes, MarketP, div, check_bounds=True
 ):
+    kappa, rho, volvol, theta, var0 = params
+    if check_bounds and not (
+        0.1 <= kappa <= 15
+        and -0.99 <= rho <= 0
+        and 0.01 <= volvol <= 2
+        and 0.001 <= theta <= 0.5
+        and 0.001 <= var0 <= 0.5
+    ):
+        return 1e10
 
-    if methods is None:
-        methods = [
-            # local gradient-based
-            # "L-BFGS-B",
-            # constrained gradient
-            # "SLSQP",
-            # Levenberg-Marquardt (least_squares, NO bounds)
-            "LM",
-        ]
+    mask = np.isfinite(MarketP) & (MarketP > 0)
+    if not np.any(mask):
+        return 1e10
 
-    start = time.time()
-
-    data = get_data_Calibration(
-        symbol, expiration, underlying_price, max_options, min_maturity_days=5
+    S, T, r, K, Pmkt = (
+        Spots[mask],
+        Maturities[mask],
+        Rates[mask],
+        Strikes[mask],
+        MarketP[mask],
     )
+    Pmodel = heston_prices_parallel(params, S, K, T, r, div)
 
-    print(f"Data loaded in {time.time() - start:.2f} seconds")
-    print(f"Market data used: {len(data)} options")
+    # Plain Squared Erro
+    err = np.mean((Pmodel - Pmkt) ** 2)
+
+    return err if np.isfinite(err) else 1e10
+
+
+def Feller(x):
+    kappa, rho, volvol, theta, var0 = x
+    return 2 * kappa * theta - volvol**2
+
+
+def calibrate_heston(
+    symbol: str, expiration: str, underlying_price, risk_free_rate, div=0.0
+):
+    t0 = time.time()
+    data = get_option_calibration_data(symbol, expiration, max_main=10, max_side=6)
 
     if data.empty:
         return {"success": False, "error": "No data found"}
 
-    Spots = np.full_like(data.maturity.values, underlying_price, dtype=float)
+    print(f"Data loaded in {time.time() - t0:.2f} seconds | {len(data)} options used")
+
+    Spots = data.forward.values
     Strikes = data.strike.values
     Maturities = data.maturity.values
-    Rates = np.full_like(data.maturity.values, risk_free_rate, dtype=float)
-    MarketP = data.mid.values
+    Rates = data.rate.values
+    MarketP = data.midPrice.values
 
     avg_iv = np.mean(data.impliedVolatility)
-    init_var = avg_iv**2
-    initial_guess = [1.5, -0.7, 0.3 * avg_iv, init_var, init_var]
-    bounds = [(0.1, 10.0), (-0.95, 0.0), (0.01, 1.5), (0.001, 0.4), (0.001, 0.4)]
+    var0 = avg_iv**2
+    init = [1.5, -0.7, 0.6 * avg_iv, var0, var0]
+    bounds = [(0.1, 10), (-0.95, 0.0), (0.01, 1.5), (0.001, 0.4), (0.001, 0.4)]
+    cons = {"type": "ineq", "fun": Feller}
 
-    results = []
-    for method in methods:
-        if time.time() - start > max_time:
-            break
-        try:
-            t0 = time.time()  # <--- start timing this method
-            if method == "LM":
+    t1 = time.time()
+    result = minimize(
+        OptFunctionFast,
+        init,
+        args=(Spots, Maturities, Rates, Strikes, MarketP, div, True),
+        method="SLSQP",
+        bounds=bounds,
+        constraints=cons,
+        options={"maxiter": 500, "disp": False},
+    )
+    elapsed = time.time() - t1
 
-                def residuals(p, Spots, Strikes, Mats, Rates, Market, div):
-                    kappa, rho, volvol, theta, var0 = p
-                    if not (
-                        0.1 <= kappa <= 15.0
-                        and -0.99 <= rho <= 0.0
-                        and 0.01 <= volvol <= 2.0
-                        and 0.001 <= theta <= 0.5
-                        and 0.001 <= var0 <= 0.5
-                    ):
-                        return np.full_like(Market, 1e5)
-                    model = heston_prices_parallel(p, Spots, Strikes, Mats, Rates, div)
-                    return model - Market
+    xopt = result.x
+    modelP = heston_prices_parallel(xopt, Spots, Strikes, Maturities, Rates, div)
+    mse = np.mean((modelP - MarketP) ** 2)
 
-                res = least_squares(
-                    residuals,
-                    initial_guess,
-                    method="lm",
-                    args=(Spots, Strikes, Maturities, Rates, MarketP, dividend_yield),
-                    xtol=1e-12,
-                    ftol=1e-12,
-                    gtol=1e-12,
-                )
-                xopt = res.x
-                model_prices = heston_prices_parallel(
-                    xopt, Spots, Strikes, Maturities, Rates, dividend_yield
-                )
-
-            else:
-                res = minimize(
-                    OptFunctionFast,
-                    initial_guess,
-                    method=method,
-                    bounds=bounds,
-                    args=(
-                        Spots,
-                        Maturities,
-                        Rates,
-                        Strikes,
-                        MarketP,
-                        dividend_yield,
-                        True,
-                    ),
-                    options={"maxiter": 500, "disp": False},
-                )
-                xopt = res.x
-                model_prices = heston_prices_parallel(
-                    xopt, Spots, Strikes, Maturities, Rates, dividend_yield
-                )
-
-            elapsed = time.time() - t0  # <--- end timing this method
-            mse = np.mean((model_prices - MarketP) ** 2)
-            results.append((method, mse, xopt, elapsed))
-            print(f"Method: {method:11s} | MSE: {mse:.6f} | Time: {elapsed:.2f} s")
-        except Exception as err:
-            print(f"Method: {method:11s} failed → {err}")
-            continue
-
-    if not results:
-        return {
-            "success": False,
-            "kappa": 0.0,
-            "theta": 0.0,
-            "volvol": 0.0,
-            "rho": 0.0,
-            "var0": 0.0,
-            "error": "All methods failed",
-        }
-
-    best_method, best_mse, best_params, best_time = min(results, key=lambda t: t[1])
+    print(result)
+    print(f"Calibration time: {elapsed:.2f}s | MSE: {mse:.6f}")
+    print(f"Feller condition: {Feller(xopt):.8f} > 0")
 
     return {
-        "success": True,
-        "kappa": float(best_params[0]),
-        "theta": float(best_params[3]),
-        "volvol": float(best_params[2]),
-        "rho": float(best_params[1]),
-        "var0": float(best_params[4]),
-        "best_method": best_method,
-        "mse": best_mse,
-        "calibration_time": time.time() - start,
-        "calibration_metrics": [
-            {"method": m, "mse": e, "params": p.tolist(), "time": t}
-            for m, e, p, t in results
-        ],
+        "result": result,
+        "success": result.success,
+        "mse": mse,
+        "kappa": round(xopt[0], 4),
+        "rho": round(xopt[1], 4),
+        "volvol": round(xopt[2], 4),
+        "theta": round(xopt[3], 4),
+        "var0": round(xopt[4], 4),
+        "optimization_time": elapsed,
+        "total_time": time.time() - t0,
     }

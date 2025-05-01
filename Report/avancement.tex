@@ -1,0 +1,73 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\geometry{margin=2.5cm}
+\titleformat{\section}{\bfseries\large}{\thesection}{1em}{}
+
+\title{
+    \textbf{Présentation du Projet de Fin d’Année} \\
+    \vspace{0.4cm}
+    Calibration et pricing des options dans les modèles à volatilité stochastique via les réseaux de neurones profonds
+}
+\author{
+    Présenté par : EL QADI Hassan \& HAJJI Achraf \\
+    Encadrant : M. FAKHOURI Imade
+}
+\date{Année Universitaire 2024-2025}
+
+\begin{document}
+
+\maketitle
+\vspace{-1em}
+\hrule
+\vspace{1em}
+
+\section{Contexte du projet}
+La valorisation des options financières est un domaine central en finance quantitative. Les modèles classiques, comme celui de Black-Scholes, reposent sur des hypothèses simplificatrices, notamment une volatilité constante, qui ne reflètent pas la réalité des marchés.
+
+Les modèles à volatilité stochastique, comme le modèle de Heston, permettent une meilleure représentation de la dynamique des marchés. Toutefois, leur calibration est mathématiquement complexe et coûteuse en temps de calcul. L’idée de ce projet est de commencer par la mise en œuvre des méthodes numériques classiques, puis d’explorer l’approche par réseaux de neurones profonds pour améliorer cette calibration, avant d'effectuer une comparaison rigoureuse des deux approches.
+
+\section{Problématique}
+Comment calibrer efficacement les modèles à volatilité stochastique (notamment le modèle de Heston) en combinant méthodes numériques classiques et réseaux de neurones profonds, afin de proposer une solution rapide, stable et précise pour le pricing des options ?
+
+\section{Objectifs}
+\subsection*{Objectifs théoriques}
+\begin{itemize}[label=--]
+    \item Comprendre les fondements des modèles à volatilité stochastique (en particulier le modèle de Heston).
+    \item Étudier les techniques classiques de calibration.
+    \item Explorer les méthodes de deep learning appliquées à la finance quantitative.
+\end{itemize}
+
+\subsection*{Objectifs pratiques}
+\begin{itemize}[label=--]
+    \item Implémenter une solution de calibration par méthodes numériques classiques.
+    \item Développer un modèle basé sur un réseau de neurones pour la calibration inverse.
+    \item Comparer les performances (précision, vitesse, robustesse) des deux approches.
+    \item Utiliser le langage \textbf{C++} pour les calculs intensifs et les simulations à grande échelle.
+\end{itemize}
+
+\section{Avancement actuel}
+À ce stade, aucune implémentation n’a encore été réalisée. Le travail actuel se concentre sur :
+
+\begin{itemize}[label=--]
+    \item La revue théorique du modèle de Heston (dynamique, équations, comportement).
+    \item L’étude des méthodes de calibration traditionnelles (moindres carrés, méthodes numériques inverses, etc.).
+    \item La prise en main des outils de simulation et des environnements de développement en \textbf{C++} et Python.
+    \item La veille technologique sur l’usage des réseaux de neurones en calibration de modèles financiers.
+\end{itemize}
+
+\section{Prochaines étapes}
+\begin{itemize}[label=--]
+    \item Implémentation des méthodes numériques classiques de calibration.
+    \item Développement du modèle de réseau de neurones (deep learning).
+    \item Génération et simulation de jeux de données (prix et volatilités).
+    \item Comparaison des deux approches (erreurs, vitesse, robustesse).
+    \item Rédaction du rapport final et préparation de la soutenance.
+\end{itemize}
+
+\end{document}

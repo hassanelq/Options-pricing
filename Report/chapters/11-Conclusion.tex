@@ -1,0 +1,35 @@
+\chapter*{Conclusion et perspectives}
+\addcontentsline{toc}{chapter}{Conclusion et perspectives}
+\markboth{Conclusion et perspectives}{Conclusion et perspectives}
+\label{sec:conclusion}
+
+\section*{Conclusion générale}
+
+Ce projet a permis de développer une plateforme web complète et performante dédiée au pricing d'options européennes, combinant les modèles financiers classiques (Black-Scholes) et avancés (Heston). 
+
+L'implémentation de méthodes semi-fermées (transformée de Fourier) et de simulations Monte Carlo a permis d'offrir une grande flexibilité dans le calcul des prix et des sensibilités (Greeks) pour différents instruments financiers.
+
+Grâce à une architecture moderne \textbf{full-stack} — avec Next.js pour le frontend et FastAPI pour le backend — l'application propose une interface intuitive, rapide, et facile d'utilisation, tout en conservant la rigueur nécessaire pour la finance quantitative.
+
+L'intégration de fonctionnalités telles que la calibration automatique du modèle de Heston, l'importation de données de marché en temps réel, ainsi que la visualisation dynamique des résultats (diagrammes de payoff et de profit) renforce encore l'aspect pédagogique et professionnel de l'outil développé.
+
+\section*{Perspectives}
+
+Plusieurs axes d'amélioration et d'extension du projet peuvent être envisagés :
+
+\begin{itemize}
+	\item \textbf{Élargissement des produits financiers} : intégrer la gestion d'options américaines, exotiques (barrières, lookbacks, etc.), ou encore d'options sur taux d'intérêt.
+	
+	\item \textbf{Amélioration de la calibration} : utiliser des méthodes d'optimisation plus robustes (algorithmes hybrides globaux/locaux, différentiation automatique) pour accélérer et fiabiliser la calibration du modèle de Heston.
+	
+	\item \textbf{Extension des modèles de volatilité} : intégrer d'autres modèles stochastiques (SABR, Bates avec sauts, modèle à volatilité locale) pour mieux capturer les dynamiques de marché.
+	
+	\item \textbf{Optimisation du backend} : paralléliser certaines opérations intensives (Monte Carlo) pour réduire les temps de réponse, et envisager l'utilisation de GPUs pour les simulations massives.
+	
+	\item \textbf{Amélioration de l'interface utilisateur} : ajouter des analyses de sensibilité (Greeks sous Heston), des surfaces de volatilité implicite, ou encore proposer des outils de backtesting et d'optimisation de stratégies d'options.
+	
+	\item \textbf{Déploiement professionnel} : renforcer la sécurité, la scalabilité (containers Docker, Kubernetes) et envisager une version API publique pour des usages tiers (fintechs, universités, etc.).
+\end{itemize}
+
+En conclusion, cette plateforme pose une base solide qui peut être enrichie pour devenir un véritable outil professionnel d'analyse et de gestion des produits dérivés dans un environnement web moderne.
+

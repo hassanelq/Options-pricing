@@ -1,0 +1,260 @@
+\chapter{Calibration du modèle de Heston}
+\label{chap:calibration_heston}
+
+\section{Principes de la calibration}
+
+La calibration d'un modèle financier est une étape cruciale consistant à déterminer les paramètres optimaux permettant de reproduire au mieux les prix observés sur le marché. Dans le cas du modèle de Heston, cette calibration représente un défi particulier en raison de la complexité de la dynamique stochastique de la volatilité et du nombre important de paramètres à estimer simultanément.
+
+\subsection{Définition du problème de calibration inverse}
+
+Le problème de calibration inverse du modèle de Heston peut être formulé ainsi : étant donné un ensemble d'options observées sur le marché, avec leurs prix $P^{market}_i$ pour $i = 1, \ldots, N$, nous cherchons le vecteur de paramètres $\boldsymbol{\theta} = (\kappa, \theta, \sigma, \rho, v_0)$ qui minimise l'écart entre les prix théoriques du modèle de Heston $P^{model}_i(\boldsymbol{\theta})$ et les prix observés.
+
+Formellement, le problème d'optimisation s'exprime par :
+
+\begin{equation}
+	\boldsymbol{\theta}^* = \argmin_{\boldsymbol{\theta} \in \Theta} \sum_{i=1}^{N} w_i \left( P^{model}_i(\boldsymbol{\theta}) - P^{market}_i \right)^2
+\end{equation}
+
+où $\Theta$ est l'espace des paramètres admissibles, et $w_i$ sont des poids permettant d'ajuster l'importance relative de chaque option dans la calibration.
+
+Il est important de distinguer deux approches différentes pour estimer les paramètres :
+
+\begin{itemize}
+	\item \textbf{Estimation statistique} : basée sur l'analyse de séries temporelles historiques du sous-jacent, par maximum de vraisemblance ou méthode des moments.
+	\item \textbf{Calibration aux prix d'options} : ajustement direct des paramètres pour reproduire les prix observés des options à un instant donné.
+\end{itemize}
+
+Dans ce projet, nous nous concentrons sur la seconde approche, privilégiée pour assurer la cohérence avec les conditions de marché actuelles, notamment pour le pricing et la couverture dynamique.
+
+\subsection{Choix de la fonction objectif}
+
+Le choix de la fonction objectif est déterminant pour obtenir une calibration fiable. Plusieurs critères peuvent être envisagés :
+
+\subsubsection{Erreur quadratique moyenne sur les prix}
+
+L'approche classique consiste à minimiser l'erreur quadratique moyenne entre les prix :
+
+\begin{equation}
+	MSE_{prix} = \frac{1}{N}\sum_{i=1}^{N} \left( P^{model}_i(\boldsymbol{\theta}) - P^{market}_i \right)^2
+\end{equation}
+
+Cette fonction est simple et présente de bonnes propriétés analytiques, mais elle tend à sur-pondérer les options ATM ou à longue maturité, qui ont des prix plus élevés.
+
+\subsubsection{Erreur relative sur les volatilités implicites}
+
+Pour équilibrer l'importance entre toutes les options, il est courant de minimiser l'erreur relative sur les volatilités implicites :
+
+\begin{equation}
+	MRAE_{vol} = \frac{1}{N} \sum_{i=1}^{N} \left| \frac{\sigma^{impl,model}_i(\boldsymbol{\theta}) - \sigma^{impl,market}_i}{\sigma^{impl,market}_i} \right|
+\end{equation}
+
+Cette approche se focalise directement sur la surface de volatilité implicite, qui est l'information la plus riche contenue dans les prix des options.
+
+\subsubsection{Pondération des options}
+
+Pour raffiner encore la calibration, on peut introduire des poids $w_i$ adaptés :
+
+\begin{itemize}
+	\item \textbf{Liquidité} : privilégier les options les plus liquides,
+	\item \textbf{Distance au money} : favoriser les options ATM et proches du strike spot,
+	\item \textbf{Maturité} : moduler selon l'horizon temporel pertinent pour l'application visée.
+\end{itemize}
+
+La fonction objectif pondérée devient alors :
+
+\begin{equation}
+	MSE_{pondéré} = \sum_{i=1}^{N} w_i \left( P^{model}_i(\boldsymbol{\theta}) - P^{market}_i \right)^2
+\end{equation}
+
+où les $w_i$ sont choisis selon des critères stratégiques liés à la couverture et à la liquidité du marché.
+
+\subsection{Contraintes et espace des paramètres}
+
+La calibration du modèle de Heston est sujette à plusieurs contraintes visant à assurer la viabilité mathématique et l'interprétation financière des paramètres.
+
+\subsubsection{Contraintes de positivité et bornes naturelles}
+
+Les contraintes de base sont :
+
+\begin{align}
+	\kappa &> 0 \quad \text{(vitesse de retour vers la moyenne)} \\
+	\theta &> 0 \quad \text{(niveau moyen de variance positif)} \\
+	\sigma &> 0 \quad \text{(volatilité de la variance positive)} \\
+	-1 \leq \rho &\leq 1 \quad \text{(corrélation bornée)} \\
+	v_0 &> 0 \quad \text{(variance initiale positive)}
+\end{align}
+
+Ces restrictions garantissent notamment que la variance est toujours positive et que la corrélation est mathématiquement valable.
+
+\subsubsection{Condition de Feller}
+
+Pour assurer que la variance $v_t$ reste strictement positive (et éviter les valeurs nulles ou négatives qui poseraient problème dans $\sqrt{v_t}$), la condition de Feller doit être respectée :
+
+\begin{equation}
+	2\kappa\theta > \sigma^2
+\end{equation}
+
+Le non-respect de cette condition peut rendre la simulation du processus délicate et compromettre la stabilité numérique.
+
+\subsection{Méthodes d'optimisation}
+
+Le problème de calibration est typiquement non convexe, avec plusieurs minima locaux possibles. Les méthodes d'optimisation peuvent être :
+
+\begin{itemize}
+	\item \textbf{Méthodes locales} : comme Levenberg-Marquardt, adaptées si on dispose d'une bonne initialisation,
+	\item \textbf{Méthodes globales} : comme les algorithmes évolutionnaires (ex : Differential Evolution, Particle Swarm Optimization) pour explorer efficacement l'ensemble de l'espace des paramètres,
+	\item \textbf{Méthodes hybrides} : combinant une recherche globale suivie d'un raffinement local pour améliorer la convergence et la précision finale.
+\end{itemize}
+
+La réussite de la calibration dépend fortement de la qualité des données d'entrée, du choix de la fonction objectif, de la gestion des contraintes et de la stratégie d'optimisation adoptée.
+
+\section{Méthodes d'optimisation classiques}
+
+La calibration du modèle de Heston représente un défi numérique important en raison de plusieurs facteurs : non-linéarité de la fonction objectif, présence de multiples minima locaux, et coût computationnel élevé du pricing d'options. Dans cette section, nous explorons les principales méthodes numériques utilisées pour résoudre ce problème complexe.
+
+\subsection{Algorithmes d'optimisation globale vs locale}
+
+Les algorithmes d'optimisation pour la calibration du modèle de Heston peuvent être classés en deux catégories principales : les méthodes d'optimisation locale et les méthodes d'optimisation globale.
+
+\paragraph{Méthodes d'optimisation locale} Ces méthodes, telles que la descente de gradient, la méthode de Newton ou l'algorithme de Levenberg-Marquardt, convergent vers un minimum local à partir d'un point initial. Elles sont rapides et efficaces lorsque le point de départ est proche de la solution optimale, mais peuvent échouer en présence de nombreux minima locaux.
+
+\textbf{Avantages} :
+\begin{itemize}
+	\item Convergence rapide vers un minimum local,
+	\item Complexité computationnelle faible,
+	\item Exploitation possible des dérivées (gradient, hessien).
+\end{itemize}
+
+\textbf{Inconvénients} :
+\begin{itemize}
+	\item Sensibilité forte au choix du point initial,
+	\item Risque de rester piégé dans un minimum local sous-optimal,
+	\item Exploration limitée de l'espace des paramètres.
+\end{itemize}
+
+\paragraph{Méthodes d'optimisation globale} Ces méthodes, telles que les algorithmes génétiques, le recuit simulé ou la recherche par essaim particulaire, visent à explorer l'ensemble de l'espace de paramètres pour identifier le minimum global.
+
+\textbf{Avantages} :
+\begin{itemize}
+	\item Exploration plus complète de l'espace des paramètres,
+	\item Moins dépendantes du point de départ,
+	\item Plus robustes face aux minima locaux.
+\end{itemize}
+
+\textbf{Inconvénients} :
+\begin{itemize}
+	\item Convergence plus lente,
+	\item Coût computationnel élevé,
+	\item Difficulté à obtenir une précision fine sans raffinement local.
+\end{itemize}
+
+\subsubsection{Problèmes de minima locaux}
+
+La fonction objectif de calibration du modèle de Heston présente de nombreux minima locaux pour plusieurs raisons :
+
+\begin{itemize}
+	\item \textbf{Non-linéarité forte} entre les paramètres et les prix d'options,
+	\item \textbf{Interactions complexes} entre les paramètres, créant des phénomènes de compensation,
+	\item \textbf{Sensibilité variable} des paramètres : certains influencent certaines régions de la surface de volatilité plus que d'autres.
+\end{itemize}
+
+Différentes combinaisons de paramètres peuvent ainsi produire des surfaces de volatilité similaires, rendant le problème potentiellement mal posé.
+
+\subsubsection{Stratégies multi-start}
+
+Pour surmonter le problème des minima locaux, une approche efficace est la stratégie \textbf{multi-start}, consistant à :
+
+\begin{enumerate}
+	\item Générer plusieurs points initiaux $\boldsymbol{\theta}_0^1, \ldots, \boldsymbol{\theta}_0^m$,
+	\item Lancer une optimisation locale à partir de chaque point,
+	\item Sélectionner la meilleure solution finale parmi toutes les solutions obtenues.
+\end{enumerate}
+
+Les méthodes de génération des points initiaux incluent :
+
+\begin{itemize}
+	\item \textbf{Grid search} : exploration systématique selon une grille régulière,
+	\item \textbf{Latin Hypercube Sampling} : couverture uniforme de l'espace,
+	\item \textbf{Adaptive multi-start} : concentration adaptative autour des régions prometteuses.
+\end{itemize}
+
+\subsection{Descente de gradient}
+
+La descente de gradient est l'une des méthodes les plus fondamentales pour l'optimisation numérique. Le principe repose sur l'actualisation des paramètres dans la direction opposée au gradient :
+
+\begin{enumerate}
+	\item Initialiser $\boldsymbol{\theta}_0$,
+	\item Calculer $\nabla f(\boldsymbol{\theta}_k)$ à l'itération $k$,
+	\item Mettre à jour selon :
+	\begin{equation}
+		\boldsymbol{\theta}_{k+1} = \boldsymbol{\theta}_k - \alpha_k \nabla f(\boldsymbol{\theta}_k)
+	\end{equation}
+	où $\alpha_k$ est le pas d'apprentissage.
+\end{enumerate}
+
+Le gradient peut être estimé de différentes manières :
+
+\begin{itemize}
+	\item \textbf{Différences finies} : approximation numérique des dérivées partielles,
+	\item \textbf{Méthodes analytiques} : dérivées explicites si disponibles,
+	\item \textbf{Différentiation automatique} : calcul automatique du gradient.
+\end{itemize}
+
+\textbf{Limites} :
+\begin{itemize}
+	\item Convergence lente si la fonction est mal conditionnée,
+	\item Gestion difficile des contraintes (ex : condition de Feller),
+	\item Choix délicat du pas d'apprentissage $\alpha_k$.
+\end{itemize}
+
+\subsection{Méthode de Levenberg-Marquardt}
+
+L'algorithme de Levenberg-Marquardt (LM) est adapté aux problèmes de moindres carrés non linéaires, comme la calibration du modèle de Heston.
+
+\subsubsection{Principe général}
+
+On définit les résidus :
+
+\begin{equation}
+	r_i(\boldsymbol{\theta}) = P^{model}_i(\boldsymbol{\theta}) - P^{market}_i
+\end{equation}
+
+et la fonction objectif :
+
+\begin{equation}
+	f(\boldsymbol{\theta}) = \frac{1}{2} \sum_{i=1}^{N} r_i(\boldsymbol{\theta})^2
+\end{equation}
+
+À chaque itération $k$, le pas $\Delta\boldsymbol{\theta}_k$ est calculé en résolvant :
+
+\begin{equation}
+	(\mathbf{J}_k^T\mathbf{J}_k + \lambda_k\mathbf{D}_k)\Delta\boldsymbol{\theta}_k = -\mathbf{J}_k^T\mathbf{r}_k
+\end{equation}
+
+où :
+\begin{itemize}
+	\item $\mathbf{J}_k$ est la jacobienne des résidus,
+	\item $\mathbf{r}_k$ est le vecteur des résidus,
+	\item $\lambda_k$ est un paramètre d'adaptation,
+	\item $\mathbf{D}_k$ est une matrice diagonale.
+\end{itemize}
+
+\textbf{Mise à jour} :
+
+\begin{equation}
+	\boldsymbol{\theta}_{k+1} = \boldsymbol{\theta}_k + \Delta\boldsymbol{\theta}_k
+\end{equation}
+
+\subsubsection{Rôle du paramètre de régularisation}
+
+Le paramètre $\lambda_k$ module entre :
+\begin{itemize}
+	\item \textbf{Gauss-Newton} (rapide près de l'optimum) lorsque $\lambda_k$ est petit,
+	\item \textbf{Descente de gradient} (robuste) lorsque $\lambda_k$ est grand.
+\end{itemize}
+
+Le LM adapte dynamiquement $\lambda_k$ selon l'efficacité de chaque itération.
+
+\section{Conclusion}
+
+La calibration du modèle de Heston est un problème d'optimisation complexe, caractérisé par la non-linéarité, la présence de multiples minima locaux, et le coût élevé du pricing. Une stratégie efficace combine souvent méthodes globales pour explorer l'espace et méthodes locales pour affiner la solution. Les algorithmes comme la descente de gradient et Levenberg-Marquardt sont essentiels dans la phase de raffinement final de la calibration.

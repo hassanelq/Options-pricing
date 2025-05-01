@@ -1,0 +1,50 @@
+\documentclass[a4paper,12pt]{report}
+
+\input{preamble/prmbl}
+
+\begin{document}
+
+\includepdf[pages=-]{preamble/00-Page-de-garde.pdf}
+\pagenumbering{Roman}
+% \include{chapters/02-Remerciements}
+\include{chapters/03-Resume}
+
+\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}} 
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}} 
+\tableofcontents
+\clearpage
+% \listoffigures
+% \clearpage
+% \listoftables
+% \clearpage
+
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Content of the report and references %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cleardoublepage
+
+\pagenumbering{arabic}
+\include{chapters/05-IntroGenerale}
+\include{chapters/07-Fondements}
+\include{chapters/08-Modeles}
+\include{chapters/09-calibration}
+\include{chapters/10-Implementation}
+\include{chapters/11-Conclusion}
+
+%choix du style de la biblio
+
+\printbibliography[nottype=misc,title={Bibliographie}]
+ 
+\printbibliography[type=misc,title={Webographie}]
+
+\appendix
+\input{chapters/12-Annexe.tex}
+
+\clearpage
+\thispagestyle{empty}
+
+\end{document}
