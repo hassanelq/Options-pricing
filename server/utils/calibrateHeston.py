@@ -6,7 +6,7 @@ from scipy.optimize import minimize, least_squares
 import yfinance as yf
 from scipy.integrate import quad
 
-from utils.fetch_data import get_option_calibration_data
+from utils.fetch_data import get_option_calibration_data, get_data_withoutR
 
 
 # --- Heston Pricing Functions ---
@@ -151,8 +151,8 @@ def calibrate_heston(
     symbol: str, expiration: str, underlying_price, risk_free_rate, div=0.0
 ):
     t0 = time.time()
-    data = get_option_calibration_data(
-        symbol, expiration, max_main=10, max_side=5, nside=3
+    data = get_data_withoutR(
+        symbol, expiration, underlying_price, max_main=5, max_side=3, nside=2
     )
 
     if data.empty:
@@ -160,10 +160,10 @@ def calibrate_heston(
 
     print(f"Data loaded in {time.time() - t0:.2f} seconds | {len(data)} options used")
 
-    Spots = data.forward.values
     Strikes = data.strike.values
     Maturities = data.maturity.values
-    Rates = data.rate.values
+    Rates = np.full_like(Maturities, risk_free_rate)
+    Spots = np.full_like(Maturities, underlying_price)
     MarketP = data.midPrice.values
 
     avg_iv = np.mean(data.impliedVolatility)
@@ -205,3 +205,63 @@ def calibrate_heston(
         "var0": round(xopt[4], 4),
         "optimization_time": elapsed,
     }
+
+
+# def calibrate_heston(
+#     symbol: str, expiration: str, underlying_price, risk_free_rate, div=0.0
+# ):
+#     t0 = time.time()
+#     data = get_option_calibration_data(
+#         symbol, expiration, max_main=5, max_side=3, nside=2
+#     )
+
+#     if data.empty:
+#         return {"success": False, "error": "No data found"}
+
+#     print(f"Data loaded in {time.time() - t0:.2f} seconds | {len(data)} options used")
+
+#     Spots = data.forward.values
+#     Strikes = data.strike.values
+#     Maturities = data.maturity.values
+#     Rates = data.rate.values
+#     MarketP = data.midPrice.values
+
+#     avg_iv = np.mean(data.impliedVolatility)
+#     var0 = avg_iv**2
+#     init = [1.5, -0.7, 0.6 * avg_iv, var0, var0]
+#     bounds = [(0.1, 10), (-0.95, 0.0), (0.01, 1.5), (0.001, 0.4), (0.001, 0.4)]
+#     cons = {"type": "ineq", "fun": Feller}
+
+#     t1 = time.time()
+#     result = minimize(
+#         OptFunctionFast,
+#         init,
+#         args=(Spots, Maturities, Rates, Strikes, MarketP, div, True),
+#         method="SLSQP",
+#         bounds=bounds,
+#         constraints=cons,
+#         options={"maxiter": 500, "disp": False},
+#     )
+#     elapsed = time.time() - t1
+
+#     xopt = result.x
+#     modelP = heston_prices_parallel(xopt, Spots, Strikes, Maturities, Rates, div)
+#     mse = np.mean((modelP - MarketP) ** 2)
+#     rmse = np.sqrt(mse)
+
+#     print(result)
+#     print(f"Calibration time: {elapsed:.2f}s | MSE: {mse:.6f}")
+#     print(f"Feller condition: {Feller(xopt):.8f} > 0")
+
+#     return {
+#         "result": result,
+#         "success": result.success,
+#         "mse": mse,
+#         "rmse": rmse,
+#         "kappa": round(xopt[0], 4),
+#         "rho": round(xopt[1], 4),
+#         "volvol": round(xopt[2], 4),
+#         "theta": round(xopt[3], 4),
+#         "var0": round(xopt[4], 4),
+#         "optimization_time": elapsed,
+#     }

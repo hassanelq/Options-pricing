@@ -280,3 +280,65 @@ def get_option_calibration_data(
             continue
 
     return pd.concat(data).reset_index(drop=True) if data else pd.DataFrame()
+
+
+def get_data_withoutR(
+    symbol, target_expiration_str, spot, max_main=20, max_side=15, nside=4
+):
+    import yfinance as yf
+    import pandas as pd
+    import numpy as np
+    from datetime import datetime
+
+    tk = yf.Ticker(symbol)
+    expiration_dates = pd.to_datetime(tk.options).date
+    target_exp = pd.to_datetime(target_expiration_str).date()
+
+    if target_exp not in expiration_dates:
+        raise ValueError("Target expiration not available.")
+
+    idx = np.where(expiration_dates == target_exp)[0][0]
+    indices = range(max(0, idx - nside - 1), min(len(expiration_dates), idx + nside))
+    selected_dates = [expiration_dates[i] for i in indices]
+
+    today = datetime.today().date()
+    result_frames = []
+
+    for expiry in selected_dates:
+        try:
+            calls = tk.option_chain(expiry.isoformat()).calls
+        except Exception:
+            continue
+
+        # Drop NA and filter positive bid/ask
+        calls = calls.dropna(
+            subset=["bid", "ask", "impliedVolatility", "volume", "openInterest"]
+        )
+        calls = calls[(calls.bid > 0) & (calls.ask > 0)]
+        if calls.empty:
+            continue
+
+        calls["midPrice"] = (calls.bid + calls.ask) * 0.5
+        T = (expiry - today).days / 365
+
+        # Use numpy for faster min-abs-strike diff
+        strike_diff = np.abs(calls.strike.values - spot)
+        atm_idx = np.argmin(strike_diff)
+        atm_strike = calls.strike.values[atm_idx]
+
+        calls["moneyness"] = np.abs(calls.strike.values - atm_strike)
+        n = max_main if expiry == target_exp else max_side
+
+        selected = calls.nsmallest(n, "moneyness").copy()
+        selected["maturityDate"] = expiry
+        selected["maturity"] = T
+
+        result_frames.append(
+            selected[
+                ["maturityDate", "maturity", "strike", "midPrice", "impliedVolatility"]
+            ]
+        )
+
+    return (
+        pd.concat(result_frames, ignore_index=True) if result_frames else pd.DataFrame()
+    )
