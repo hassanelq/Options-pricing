@@ -152,7 +152,7 @@ def calibrate_heston(
 ):
     t0 = time.time()
     data = get_option_calibration_data(
-        symbol, expiration, max_main=5, max_side=3, nside=2
+        symbol, expiration, max_main=10, max_side=5, nside=3
     )
 
     if data.empty:
