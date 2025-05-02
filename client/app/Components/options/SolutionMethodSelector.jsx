@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { PRICING_CONFIG } from "../../config";
 
@@ -11,7 +11,16 @@ const SolutionMethodSelector = ({
   setParameters,
   handleCalibrateHeston,
   isCalibrating,
+  calibrationStats,
 }) => {
+  const [localStats, setLocalStats] = useState(calibrationStats || null);
+
+  useEffect(() => {
+    if (calibrationStats) {
+      setLocalStats(calibrationStats);
+    }
+  }, [calibrationStats]);
+
   const approachData = PRICING_CONFIG[selectedStyle].find(
     (a) => a.value === approach
   );
@@ -300,6 +309,51 @@ const SolutionMethodSelector = ({
       </div>
       {/* Additional parameters section */}
       {renderAdditionalParams()}
+      {localStats && (
+        <div className="mt-6 p-4 bg-white rounded-lg shadow border border-indigo-100 text-sm text-gray-800">
+          <h4 className="text-base font-semibold text-teal-800 mb-2">
+            Calibration Metrics
+          </h4>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <span className="font-medium">Optimization Method:</span>{" "}
+              Sequential Least Squares Programming (SLSQP)
+            </div>
+            <div>
+              <span className="font-medium">Constraints:</span> Bounded
+              parameters + Feller condition for variance positivity
+            </div>
+            <div>
+              <span className="font-medium">Objective:</span> Minimize the Mean
+              Squared Error between market and model prices
+            </div>
+            <div>
+              <span className="font-medium">Initial Parameters:</span> Based on
+              average implied volatility
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t pt-4">
+            {localStats.optimization_time && (
+              <div>
+                <span className="font-medium">Optimization Time:</span>{" "}
+                {localStats.optimization_time} ms
+              </div>
+            )}
+            {localStats.optimization_time && (
+              <div>
+                <span className="font-medium">MSE:</span> {localStats.mse}
+              </div>
+            )}
+            {localStats.optimization_time && (
+              <div>
+                <span className="font-medium">RMSE:</span> {localStats.rmse}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };

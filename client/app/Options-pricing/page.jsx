@@ -105,6 +105,7 @@ const PricingPage = () => {
   const [isCalculating, setIsCalculating] = useState(false);
   const [isCalibrating, setIsCalibrating] = useState(false);
   const [compareResults, setCompareResults] = useState([]);
+  const [calibrationStats, setCalibrationStats] = useState(null);
 
   useEffect(() => {
     // Automatically advance to the next step when selections are made
@@ -272,6 +273,11 @@ const PricingPage = () => {
         rho: response.rho,
         v0: response.v0,
       }));
+      setCalibrationStats({
+        optimization_time: response.optimization_time,
+        mse: response.mse,
+        rmse: response.rmse,
+      });
     } catch (error) {
       console.error("Error caught in component:", error);
       setPriceResult("Error calibrating Heston model");
@@ -448,6 +454,7 @@ const PricingPage = () => {
               handleCalibrateHeston={handleCalibrateHeston}
               isCalibrating={isCalibrating}
               isActive={activeStep >= 7}
+              calibrationStats={calibrationStats}
             />
           </motion.div>
           <motion.div

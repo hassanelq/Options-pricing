@@ -221,7 +221,7 @@ def get_rate_key(T):
 
 
 def get_option_calibration_data(
-    symbol, target_expiration_str, max_main=20, max_side=15
+    symbol, target_expiration_str, max_main=20, max_side=15, nside=4
 ):
     tk = yf.Ticker(symbol)
     expirations = pd.to_datetime(tk.options).date
@@ -231,7 +231,9 @@ def get_option_calibration_data(
 
     idx = np.where(expirations == target_exp)[0][0]
     selected_dates = [
-        expirations[i] for i in range(idx - 3, idx + 4) if 0 <= i < len(expirations)
+        expirations[i]
+        for i in range(idx - nside - 1, idx + nside)
+        if 0 <= i < len(expirations)
     ]
 
     spot = tk.history(period="1d")["Close"].iloc[-1]

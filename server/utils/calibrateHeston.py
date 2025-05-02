@@ -151,7 +151,9 @@ def calibrate_heston(
     symbol: str, expiration: str, underlying_price, risk_free_rate, div=0.0
 ):
     t0 = time.time()
-    data = get_option_calibration_data(symbol, expiration, max_main=10, max_side=6)
+    data = get_option_calibration_data(
+        symbol, expiration, max_main=5, max_side=3, nside=2
+    )
 
     if data.empty:
         return {"success": False, "error": "No data found"}
@@ -185,6 +187,7 @@ def calibrate_heston(
     xopt = result.x
     modelP = heston_prices_parallel(xopt, Spots, Strikes, Maturities, Rates, div)
     mse = np.mean((modelP - MarketP) ** 2)
+    rmse = np.sqrt(mse)
 
     print(result)
     print(f"Calibration time: {elapsed:.2f}s | MSE: {mse:.6f}")
@@ -194,11 +197,11 @@ def calibrate_heston(
         "result": result,
         "success": result.success,
         "mse": mse,
+        "rmse": rmse,
         "kappa": round(xopt[0], 4),
         "rho": round(xopt[1], 4),
         "volvol": round(xopt[2], 4),
         "theta": round(xopt[3], 4),
         "var0": round(xopt[4], 4),
         "optimization_time": elapsed,
-        "total_time": time.time() - t0,
     }
