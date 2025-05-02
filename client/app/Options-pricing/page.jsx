@@ -220,25 +220,38 @@ const PricingPage = () => {
 
   // -------------- 1D. CALCULATE PRICE (SINGLE POST REQUEST) -------------------
   const handleCalculatePrice = async () => {
+    // Debug logs to see actual values being sent
+    console.log("Parameters before creating request:", {
+      symbol: parameters.symbol,
+      option_type: parameters.option_type,
+      underlyingPrice: parameters.underlyingPrice,
+      strikePrice: parameters.strikePrice,
+      yearsToExpiration: parameters.yearsToExpiration,
+      riskFreeRate: parameters.riskFreeRate,
+      volatility: parameters.volatility,
+    });
+
     const PricingRequest = {
       symbol: parameters.symbol,
       model_type: selectedApproach,
       solution_type: selectedSolution,
-      option_type: parameters.option_type,
-      underlying_price: parameters.underlyingPrice,
-      strike_price: parameters.strikePrice,
-      yearsToExpiration: parameters.yearsToExpiration,
-      risk_free_rate: parameters.riskFreeRate / 100,
-      volatility: parameters.volatility,
+      option_type: parameters.option_type.toLowerCase(), // Ensure lowercase
+      underlying_price: Number(parameters.underlyingPrice),
+      strike_price: Number(parameters.strikePrice),
+      yearsToExpiration: Number(parameters.yearsToExpiration),
+      risk_free_rate: Number(parameters.riskFreeRate) / 100, // Convert percentage to decimal
+      volatility: Number(parameters.volatility),
       monte_carlo_simulations:
         selectedSolution === "monteCarlo"
-          ? parameters.monte_carlo_simulations
+          ? Number(parameters.monte_carlo_simulations)
           : undefined,
-      kappa: selectedApproach === "heston" ? parameters.kappa : undefined,
-      theta: selectedApproach === "heston" ? parameters.theta : undefined,
-      xi: selectedApproach === "heston" ? parameters.xi : undefined,
-      rho: selectedApproach === "heston" ? parameters.rho : undefined,
-      v0: selectedApproach === "heston" ? parameters.v0 : undefined,
+      kappa:
+        selectedApproach === "heston" ? Number(parameters.kappa) : undefined,
+      theta:
+        selectedApproach === "heston" ? Number(parameters.theta) : undefined,
+      xi: selectedApproach === "heston" ? Number(parameters.xi) : undefined,
+      rho: selectedApproach === "heston" ? Number(parameters.rho) : undefined,
+      v0: selectedApproach === "heston" ? Number(parameters.v0) : undefined,
     };
 
     console.log("Sending request:", PricingRequest);
