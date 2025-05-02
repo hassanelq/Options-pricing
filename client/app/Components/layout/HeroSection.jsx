@@ -56,7 +56,7 @@ export default function Hero() {
                 target="_blank"
                 className="border border-teal-500 text-teal-700 hover:bg-teal-50 px-6 py-3"
               >
-                Download Project Report (PDF)
+                View Project Report
               </NavLink>
             </div>
           </motion.div>
