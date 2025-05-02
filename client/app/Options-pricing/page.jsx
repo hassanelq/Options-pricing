@@ -241,9 +241,11 @@ const PricingPage = () => {
       v0: selectedApproach === "heston" ? parameters.v0 : undefined,
     };
 
+    console.log("Sending request:", PricingRequest);
     setIsCalculating(true);
     try {
       const response = await priceOption(PricingRequest);
+      console.log("API response:", response);
       setPriceResult(response);
       setCompareResults([]);
     } catch (error) {
