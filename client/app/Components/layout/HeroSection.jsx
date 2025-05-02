@@ -37,7 +37,7 @@ export default function Hero() {
               Combine sophisticated mathematical methods with user-friendly
               interfaces to gain valuable insights into option valuation.
             </p>
-            <div className="flex items-center justify-center gap-x-4 font-medium">
+            <div className="flex items-center justify-center gap-x-4 font-medium flex-wrap">
               <NavLink
                 href="/Options-pricing"
                 className="text-white bg-gradient-to-r from-teal-600 to-emerald-500 hover:from-teal-700 hover:to-emerald-600 active:from-teal-800 active:to-emerald-700 shadow-md hover:shadow-lg px-6 py-3"
@@ -51,6 +51,13 @@ export default function Hero() {
               >
                 View Source Code
               </NavLink>
+              <a
+                href="/Options-pricing-project-report-by-Hassan-ELQADI.pdf"
+                download
+                className="border border-teal-500 text-teal-700 hover:bg-teal-50 px-6 py-3"
+              >
+                Download Project Report (PDF)
+              </a>
             </div>
           </motion.div>
         </div>
