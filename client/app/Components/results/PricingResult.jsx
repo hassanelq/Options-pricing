@@ -220,16 +220,6 @@ const PricingResult = ({
           <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 p-4 text-white">
             <div className="flex justify-between items-center">
               <h4 className="text-lg font-medium">Method Comparison</h4>
-              {/* {market_price && (
-                <div className="flex items-center">
-                  <span className="text-sm font-medium mr-2">
-                    Market Price:
-                  </span>
-                  <span className="text-lg font-bold">
-                    ${formatNumber(market_price, 2)}
-                  </span>
-                </div>
-              )} */}
             </div>
           </div>
 
@@ -243,9 +233,15 @@ const PricingResult = ({
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition-shadow"
+                className={`bg-white rounded-lg border ${
+                  item.hasError ? "border-red-200" : "border-gray-200"
+                } shadow-md hover:shadow-lg transition-shadow`}
               >
-                <div className="p-4 border-b border-gray-200 bg-gray-50">
+                <div
+                  className={`p-4 border-b border-gray-200 ${
+                    item.hasError ? "bg-red-50" : "bg-gray-50"
+                  }`}
+                >
                   <h5 className="text-lg font-bold text-slate-800 mb-1">
                     {item.method}
                   </h5>
@@ -254,47 +250,69 @@ const PricingResult = ({
 
                 <div className="p-4">
                   <div className="text-center mb-4">
-                    <span
-                      className={`text-3xl font-bold ${getPriceColor(
-                        item.result.price
-                      )}`}
-                    >
-                      ${formatNumber(item.result.price, 2)}
-                    </span>
-                    {market_price && (
-                      <div className="mt-1 text-sm">
-                        <span
-                          className={`font-medium ${
-                            Math.abs(calculateError(item.result.price)) < 5
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {calculateError(item.result.price) > 0 ? "+" : ""}
-                          {formatNumber(calculateError(item.result.price), 2)}%
-                        </span>
+                    {item.hasError ? (
+                      <div className="text-red-500 text-lg font-medium">
+                        Calculation failed
                       </div>
+                    ) : (
+                      <>
+                        <span
+                          className={`text-3xl font-bold ${getPriceColor(
+                            item.result.price
+                          )}`}
+                        >
+                          ${formatNumber(item.result.price, 2)}
+                        </span>
+                        {market_price && (
+                          <div className="mt-1 text-sm">
+                            <span
+                              className={`font-medium ${
+                                Math.abs(calculateError(item.result.price)) < 5
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                              }`}
+                            >
+                              {calculateError(item.result.price) > 0 ? "+" : ""}
+                              {formatNumber(
+                                calculateError(item.result.price),
+                                2
+                              )}
+                              %
+                            </span>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    {Object.entries(item.result).map(([key, value]) => {
-                      if (
-                        ["price", "methodology", "market_price"].includes(key)
-                      )
-                        return null;
+                    {!item.hasError &&
+                      Object.entries(item.result).map(([key, value]) => {
+                        if (
+                          ["price", "methodology", "market_price"].includes(key)
+                        )
+                          return null;
 
-                      return (
-                        <div key={key} className="flex justify-between text-sm">
-                          <span className="text-gray-600 capitalize">
-                            {key.replace(/_/g, " ")}:
-                          </span>
-                          <span className="text-slate-800 font-medium">
-                            {formatNumber(value, 4)}
-                          </span>
-                        </div>
-                      );
-                    })}
+                        return (
+                          <div
+                            key={key}
+                            className="flex justify-between text-sm"
+                          >
+                            <span className="text-gray-600 capitalize">
+                              {key.replace(/_/g, " ")}:
+                            </span>
+                            <span className="text-slate-800 font-medium">
+                              {formatNumber(value, 4)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    {item.hasError && (
+                      <div className="text-sm text-red-500">
+                        {item.result.error ||
+                          "An error occurred during calculation"}
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>

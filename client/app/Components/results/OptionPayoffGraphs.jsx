@@ -31,7 +31,7 @@ const OptionPayoffGraphs = ({ parameters, priceResult }) => {
     // Use actual premium if available, otherwise estimate it
     const premium =
       market_price ||
-      priceResult.price ||
+      (priceResult && priceResult.price) || // Added null check
       (option_type === "call"
         ? Math.max(2, underlyingPrice * volatility * 0.4)
         : Math.max(2, underlyingPrice * volatility * 0.4));
@@ -77,7 +77,7 @@ const OptionPayoffGraphs = ({ parameters, priceResult }) => {
 
     setGraphData(data);
     setRange({ min: minPrice, max: maxPrice });
-  }, [parameters]);
+  }, [parameters, priceResult]); // Added priceResult to dependencies
 
   if (!parameters || graphData.length === 0) {
     return <div className="p-4 text-center">Loading graph data...</div>;

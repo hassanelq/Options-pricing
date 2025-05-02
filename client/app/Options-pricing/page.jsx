@@ -154,37 +154,61 @@ const PricingPage = () => {
     setIsCalculating(true);
 
     try {
+      // Process each solution method separately
       for (const solution of solutions) {
-        const PricingRequest = {
-          symbol: parameters.symbol,
-          model_type: selectedApproach,
-          solution_type: solution.value,
-          option_type: parameters.option_type,
-          underlying_price: parameters.underlyingPrice,
-          strike_price: parameters.strikePrice,
-          yearsToExpiration: parameters.yearsToExpiration,
-          risk_free_rate: parameters.riskFreeRate / 100,
-          volatility: parameters.volatility,
-          monte_carlo_simulations:
-            selectedSolution === "monteCarlo"
-              ? parameters.monte_carlo_simulations
-              : undefined,
-          kappa: selectedApproach === "heston" ? parameters.kappa : undefined,
-          theta: selectedApproach === "heston" ? parameters.theta : undefined,
-          xi: selectedApproach === "heston" ? parameters.xi : undefined,
-          rho: selectedApproach === "heston" ? parameters.rho : undefined,
-          v0: selectedApproach === "heston" ? parameters.v0 : undefined,
-        };
+        try {
+          const PricingRequest = {
+            symbol: parameters.symbol,
+            model_type: selectedApproach,
+            solution_type: solution.value,
+            option_type: parameters.option_type,
+            underlying_price: parameters.underlyingPrice,
+            strike_price: parameters.strikePrice,
+            yearsToExpiration: parameters.yearsToExpiration,
+            risk_free_rate: parameters.riskFreeRate / 100,
+            volatility: parameters.volatility,
+            monte_carlo_simulations:
+              selectedSolution === "monteCarlo"
+                ? parameters.monte_carlo_simulations
+                : 50000,
+            kappa: selectedApproach === "heston" ? parameters.kappa : undefined,
+            theta: selectedApproach === "heston" ? parameters.theta : undefined,
+            xi: selectedApproach === "heston" ? parameters.xi : undefined,
+            rho: selectedApproach === "heston" ? parameters.rho : undefined,
+            v0: selectedApproach === "heston" ? parameters.v0 : undefined,
+          };
 
-        const response = await priceOption(PricingRequest);
-        results.push({
-          method: solution.name,
-          desc: solution.desc,
-          result: response,
-        });
+          const response = await priceOption(PricingRequest);
+          results.push({
+            method: solution.name,
+            desc: solution.desc,
+            result: response,
+          });
+        } catch (methodError) {
+          console.warn(
+            `Error pricing with method ${solution.name}:`,
+            methodError
+          );
+          // Add a placeholder result with error information
+          results.push({
+            method: solution.name,
+            desc: solution.desc,
+            result: {
+              price: null,
+              error: "Calculation failed for this method",
+              calculation_time: null,
+            },
+            hasError: true,
+          });
+        }
       }
-      setCompareResults(results);
-      setPriceResult(null);
+
+      if (results.length > 0) {
+        setCompareResults(results);
+        setPriceResult(null);
+      } else {
+        throw new Error("All pricing methods failed");
+      }
     } catch (error) {
       console.error("Comparison error:", error);
       setCompareResults([]);
