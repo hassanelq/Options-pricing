@@ -198,11 +198,11 @@ def calibrate_heston(
         "success": result.success,
         "mse": mse,
         "rmse": rmse,
-        "kappa": round(xopt[0], 4),
-        "rho": round(xopt[1], 4),
-        "volvol": round(xopt[2], 4),
-        "theta": round(xopt[3], 4),
-        "var0": round(xopt[4], 4),
+        "kappa": round(xopt[0], 6),
+        "rho": round(xopt[1], 6),
+        "volvol": round(xopt[2], 6),
+        "theta": round(xopt[3], 6),
+        "var0": round(xopt[4], 6),
         "optimization_time": elapsed,
     }
 
