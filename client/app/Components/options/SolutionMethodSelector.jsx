@@ -13,14 +13,6 @@ const SolutionMethodSelector = ({
   isCalibrating,
   calibrationStats,
 }) => {
-  const [localStats, setLocalStats] = useState(calibrationStats || null);
-
-  useEffect(() => {
-    if (calibrationStats) {
-      setLocalStats(calibrationStats);
-    }
-  }, [calibrationStats]);
-
   const approachData = PRICING_CONFIG[selectedStyle].find(
     (a) => a.value === approach
   );
@@ -309,7 +301,7 @@ const SolutionMethodSelector = ({
       </div>
       {/* Additional parameters section */}
       {renderAdditionalParams()}
-      {localStats && (
+      {calibrationStats && (
         <div className="mt-6 p-4 bg-white rounded-lg shadow border border-indigo-100 text-sm text-gray-800">
           <h4 className="text-base font-semibold text-teal-800 mb-2">
             Calibration Metrics
@@ -335,20 +327,22 @@ const SolutionMethodSelector = ({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t pt-4">
-            {localStats.optimization_time && (
+            {calibrationStats.optimization_time && (
               <div>
                 <span className="font-medium">Optimization Time:</span>{" "}
-                {localStats.optimization_time} ms
+                {calibrationStats.optimization_time.toFixed(2)} s
               </div>
             )}
-            {localStats.optimization_time && (
+            {calibrationStats.optimization_time && (
               <div>
-                <span className="font-medium">MSE:</span> {localStats.mse}
+                <span className="font-medium">MSE:</span>{" "}
+                {calibrationStats.mse.toFixed(4)}
               </div>
             )}
-            {localStats.optimization_time && (
+            {calibrationStats.optimization_time && (
               <div>
-                <span className="font-medium">RMSE:</span> {localStats.rmse}
+                <span className="font-medium">RMSE:</span>{" "}
+                {calibrationStats.rmse.toFixed(4)}
               </div>
             )}
           </div>

@@ -61,4 +61,7 @@ class CalibrationResult(BaseModel):
     xi: float
     rho: float
     v0: float
+    optimization_time: float
+    mse: float
+    rmse: float
     model_config = ConfigDict(extra="allow")  # Allow extra fields if needed

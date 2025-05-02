@@ -43,6 +43,9 @@ async def Calibrate_Heston(request: CalibrationRequest):
             xi=result["volvol"],  # Changed from xi to volvol
             rho=result["rho"],
             v0=result["var0"],  # Changed from v0 to var0
+            optimization_time=result["optimization_time"],
+            mse=result["mse"],
+            rmse=result["rmse"],
             success=True,
         )
 
