@@ -89,8 +89,7 @@ export default function Hero() {
               Multiple Models
             </h3>
             <p className="text-gray-600">
-              Support for Black-Scholes, Heston models with mathematical rigor
-              and precision.
+              Support for Black-Scholes, Heston model, Binomial Tree.
             </p>
           </div>
 
@@ -141,8 +140,7 @@ export default function Hero() {
               Live Market Data
             </h3>
             <p className="text-gray-600">
-              Integrate with market APIs to fetch real-time option data,
-              calculate implied volatilities, and calibrate Heston model.
+              Integrate with market APIs to fetch real-time option data.
             </p>
           </div>
         </motion.div>

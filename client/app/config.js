@@ -35,7 +35,24 @@ export const PRICING_CONFIG = {
       ],
     },
   ],
-  // American: [],
+  American: [
+    {
+      label: "Binomial Tree",
+      value: "binomialTree",
+      solutions: [
+        {
+          name: "Binomial Tree (Cox-Ross-Rubinstein)",
+          value: "coxRossRubinstein",
+          desc: "(Fast, Flexible for American Options)",
+        },
+        {
+          name: "Monte Carlo Simulation",
+          value: "monteCarlo",
+          desc: "(Slow, Suitable for Complex Payoffs)",
+        },
+      ],
+    },
+  ],
 };
 
 export const ASSET_TYPES_MAP = {
